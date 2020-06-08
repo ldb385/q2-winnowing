@@ -9,7 +9,7 @@ import biom
 from qiime2.plugin import Bool, Str, Int, Float
 
 
-import pipeline
+from q2_winnowing.pipeline import main
 
 
 def _csv_to_tsv( csvFile ):
@@ -121,7 +121,7 @@ def _winnow_csv( csvFile1, csvFile2=None, ab_comp=False, metric_name=None, c_typ
                  ):
 
     # Since pipeline takes csv we can just pass values to pipeline and return output values
-    pipeline.main( ab_comp, csvFile1, csvFile2, metric_name, c_type, min_count,
+    main( ab_comp, csvFile1, csvFile2, metric_name, c_type, min_count,
                  total_select, iteration_select, pca_components, smooth_type,
                  window_size, centrality_type, keep_threshold, correlation,
                  weighted, corr_prop, evaluation_type, plot_metric,
@@ -174,6 +174,7 @@ def winnow_data( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Ta
     metric_network_visual_result = None
     parameter_list_result = None
 
+    # TODO: This can be put in an --output-dir
     output = (
         metric_original_values_result, abundance_values_result, graph_network_visual_result,
         metric_network_values_result, metric_values_result, metric_network_visual_result, parameter_list_result
