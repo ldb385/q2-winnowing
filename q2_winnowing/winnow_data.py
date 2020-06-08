@@ -4,6 +4,10 @@ import csv
 import subprocess
 import pandas as pd
 import shutil
+import biom
+
+from qiime2.plugin import Bool, Str, Int, Float
+
 
 import pipeline
 
@@ -138,11 +142,12 @@ def _pack_results( metric_name, correlation, keep_threshold, centrality_type ):
 
 
 
-def winnow_biom( biomFile1, biomFile2=None, ab_comp=False, metric_name=None, c_type=None, min_count=3,
-                 total_select=None, iteration_select=None, pca_components=4, smooth_type="sliding_window",
-                 window_size=3, centrality_type=None, keep_threshold=0.5, correlation=None,
-                 weighted=False, corr_prop="both", evaluation_type=None, plot_metric=False,
-                 create_graph=False, plot_pca=False, naming_file=None, proc_id=0, min_connected=0
+def winnow_data( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Table=None, metric_name: Str=None,
+                 c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
+                 pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
+                 keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
+                 evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False, plot_pca: Bool=False,
+                 naming_file: Str=None, proc_id: Int=0, min_connected: Int=0
                  ):
 
     csvFile1 = _biom_to_csv( biomFile1 )
