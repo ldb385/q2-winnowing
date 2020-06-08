@@ -1,5 +1,6 @@
 # q2-winnowing
 Qiime2 plugin for inferring the interaction type of microbial communities
+NOTE THIS IS UNFINISHED
 # Installation
 # Usage
 # Versions
