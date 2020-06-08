@@ -39,11 +39,12 @@ plugin.methods.register_function(
         "biomFile1": FeatureTable[RelativeFrequency]
     },
     outputs=[
+        # TODO: Verify this is the proper output
         ("metric_original_values_result", FeatureTable[RelativeFrequency]),
         ("abundance_values_result", FeatureTable[RelativeFrequency]),
         ("graph_network_visual_result", Phylogeny[Unrooted]),
         ("metric_network_values_result", FeatureTable[RelativeFrequency]),
-        ("metric_values_result", FeatureTable[RelativeFrequency]),
+        ("metric_values_result", Phylogeny[Unrooted]),
         ("metric_network_visual_result", Phylogeny[Unrooted]),
         ("parameter_list_result", FeatureTable[RelativeFrequency])
     ],
@@ -133,6 +134,7 @@ plugin.methods.register_function(
         "min_connected": (
             "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.")
     },
+    # TODO: fill in actual return descriptions
     output_descriptions={
         "metric_original_values_result": ("A"),
         "abundance_values_result": ("B"),

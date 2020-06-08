@@ -15,7 +15,8 @@ with open('q2_winnowing/__init__.py', 'rb') as f:
     hit = _version_re.search(f.read().decode('utf-8')).group(1)
     __version__ = str(ast.literal_eval(hit))
 
-# setup information of plugin, this is not setting up the plugin
+# setup information of plugin
+# TODO: Change to valid information
 setup(
     name="winnowing",
     version=__version__,

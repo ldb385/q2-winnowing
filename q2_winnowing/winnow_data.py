@@ -128,7 +128,7 @@ def _winnow_csv( csvFile1, csvFile2=None, ab_comp=False, metric_name=None, c_typ
                  create_graph, plot_pca, naming_file, proc_id, min_connected
                  )
 
-    return _pack_results(metric_name, correlation, keep_threshold, centrality_type)
+    return
 
 
 
@@ -148,7 +148,8 @@ def winnow_data( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Ta
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
                  evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False, plot_pca: Bool=False,
                  naming_file: Str=None, proc_id: Int=0, min_connected: Int=0
-                 ):
+                 ) -> ( biom.Table, biom.Table, None, biom.Table, None, None, biom.Table ):
+    # TODO: Implement proper return types
 
     csvFile1 = _biom_to_csv( biomFile1 )
     csvFile2 = None
@@ -162,5 +163,21 @@ def winnow_data( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Ta
                  weighted, corr_prop, evaluation_type, plot_metric,
                  create_graph, plot_pca, naming_file, proc_id, min_connected
                  )
+
+    # TODO: return values must coorelate with their respective documents
+    # these are what is supposed to be output
+    metric_original_values_result = None
+    abundance_values_result = None
+    graph_network_visual_result = None
+    metric_network_values_result = None
+    metric_values_result = None
+    metric_network_visual_result = None
+    parameter_list_result = None
+
+    output = (
+        metric_original_values_result, abundance_values_result, graph_network_visual_result,
+        metric_network_values_result, metric_values_result, metric_network_visual_result, parameter_list_result
+    )
+
 
     return output
