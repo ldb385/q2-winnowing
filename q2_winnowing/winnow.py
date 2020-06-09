@@ -9,7 +9,7 @@ import biom
 from qiime2.plugin import Bool, Str, Int, Float
 
 
-from q2_winnowing.pipeline import main
+from q2_winnowing.step1_4.pipeline import main
 
 
 def _csv_to_tsv( csvFile ):
@@ -142,7 +142,7 @@ def _pack_results( metric_name, correlation, keep_threshold, centrality_type ):
 
 
 
-def winnow_data( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Table=None, metric_name: Str=None,
+def winnow_pipeline( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Table=None, metric_name: Str=None,
                  c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
@@ -150,6 +150,35 @@ def winnow_data( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Ta
                  naming_file: Str=None, proc_id: Int=0, min_connected: Int=0
                  ) -> ( biom.Table, biom.Table, None, biom.Table, None, None, biom.Table ):
     # TODO: Implement proper return types
+    """
+    Note this function executes the main functionality of steps 1-4 in the pipeline of
+    winnowing data.
+
+    :param biomFile1:
+    :param ab_comp:
+    :param biomFile2:
+    :param metric_name:
+    :param c_type:
+    :param min_count:
+    :param total_select:
+    :param iteration_select:
+    :param pca_components:
+    :param smooth_type:
+    :param window_size:
+    :param centrality_type:
+    :param keep_threshold:
+    :param correlation:
+    :param weighted:
+    :param corr_prop:
+    :param evaluation_type:
+    :param plot_metric:
+    :param create_graph:
+    :param plot_pca:
+    :param naming_file:
+    :param proc_id:
+    :param min_connected:
+    :return:
+    """
 
     csvFile1 = _biom_to_csv( biomFile1 )
     csvFile2 = None
@@ -182,3 +211,30 @@ def winnow_data( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Ta
 
 
     return output
+
+
+
+def winnow_ordering():
+
+
+    return
+
+
+def winnow_permanova():
+
+
+    return
+
+
+
+def winnow_sensativity():
+
+
+    return
+
+
+
+def winnow_network_connectivity():
+
+
+    return

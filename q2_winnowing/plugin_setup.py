@@ -3,7 +3,7 @@ from q2_types.feature_table import FeatureTable, RelativeFrequency
 from q2_types.tree import Phylogeny, Rooted, Unrooted
 
 import q2_winnowing
-from q2_winnowing.winnow_data import winnow_data
+from q2_winnowing.winnow import winnow_pipeline, winnow_ordering, winnow_permanova, winnow_sensativity ,winnow_network_connectivity
 
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
 # Note: this can be replaced with a bibliography when the thesis is completed.
@@ -39,11 +39,10 @@ plugin = qiime2.plugin.Plugin(
 )
 
 # <><><> Register functions <><><>
-# Currently all code is stored in a main pipeline, therefore only one function will be registered with many parameters.
 
-# main
+# pipeline: step 1-4
 plugin.methods.register_function(
-    function=winnow_data,
+    function=winnow_pipeline,
     inputs={
         "biomFile1": FeatureTable[RelativeFrequency]
     },
@@ -160,12 +159,30 @@ plugin.methods.register_function(
 
 
 # TODO: register function for step 5
+# pipeline: step 5
+plugin.methods.register_function(
+    function=winnow_ordering,
+)
 
 # TODO: register function for step 6
+# pipeline: step 6
+plugin.methods.register_function(
+    function=winnow_permanova,
+)
+
 
 # TODO: register function for step 7-9
+# pipeline: step 7-9
+plugin.methods.register_function(
+    function=winnow_sensativity,
+)
+
 
 # TODO: register function for step 10
+# pipeline: step
+plugin.methods.register_function(
+    function=winnow_network_connectivity,
+)
 
 
 
