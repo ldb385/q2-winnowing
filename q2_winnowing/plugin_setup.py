@@ -9,6 +9,7 @@ from q2_winnowing.winnow_data import winnow_data
 # Note: this can be replaced with a bibliography when the thesis is completed.
 
 # Setup Choice lists for easy accesability
+# <><><> NOTE: THESE ARE FOR STEPS 1-4 <><><>
 _METRIC_TYPES_ = ["graph_centrality", "pca_importance"]
 _CONDITIONING_TYPES_ = ["add_one", "hellinger"]
 _EVALUATION_TYPES_ = ["kl_divergence"]
@@ -18,6 +19,14 @@ _CORRELATION_TYPES_ = ["spearman", "pearson", "kendall", "MIC"]
 _CORRELATION_PROPERTIES_ = ["negative", "positive", "both"]
 _ALL_OR_INT_ = ["all", "0,1,2,3,..."]
 _BOOLEAN_ = ["True", "False"]
+# <><><> NOTE: THESE ARE FOR STEP 5 <><><>
+# TODO: Fill out function for step 5
+# <><><> NOTE: THESE ARE FOR STEP 6 <><><>
+# TODO: Fill out function for step 6
+# <><><> NOTE: THESE ARE FOR STEPS 7-9 <><><>
+# TODO: Fill out function for steps 7-9
+# <><><> NOTE: THESE ARE FOR STEP 10 <><><>
+# TODO: Fill out function for step 10
 
 plugin = qiime2.plugin.Plugin(
     name="winnowing",
@@ -148,3 +157,19 @@ plugin.methods.register_function(
     description=("Infer the interaction type of microbial communities through statistical analysis. "
                  "This will allow for a better understanding of taxa interaction at a micro scale.")
 )
+
+
+# TODO: register function for step 5
+
+# TODO: register function for step 6
+
+# TODO: register function for step 7-9
+
+# TODO: register function for step 10
+
+
+
+
+
+
+
