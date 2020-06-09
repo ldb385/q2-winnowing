@@ -9,7 +9,7 @@ from q2_winnowing.winnow import winnow_pipeline, winnow_ordering, winnow_permano
 # Note: this can be replaced with a bibliography when the thesis is completed.
 
 # Setup Choice lists for easy accesability
-# <><><> NOTE: THESE ARE FOR STEPS 1-4 <><><>
+# <><><> NOTE: THESE ARE FOR STEPS 1-3 <><><>
 _METRIC_TYPES_ = ["graph_centrality", "pca_importance"]
 _CONDITIONING_TYPES_ = ["add_one", "hellinger"]
 _EVALUATION_TYPES_ = ["kl_divergence"]
@@ -19,8 +19,8 @@ _CORRELATION_TYPES_ = ["spearman", "pearson", "kendall", "MIC"]
 _CORRELATION_PROPERTIES_ = ["negative", "positive", "both"]
 _ALL_OR_INT_ = ["all", "0,1,2,3,..."]
 _BOOLEAN_ = ["True", "False"]
-# <><><> NOTE: THESE ARE FOR STEP 5 <><><>
-# TODO: Fill out function for step 5
+# <><><> NOTE: THESE ARE FOR STEP 4-5 <><><>
+# TODO: Fill out function for step 4-5
 # <><><> NOTE: THESE ARE FOR STEP 6 <><><>
 # TODO: Fill out function for step 6
 # <><><> NOTE: THESE ARE FOR STEPS 7-9 <><><>
@@ -40,7 +40,7 @@ plugin = qiime2.plugin.Plugin(
 
 # <><><> Register functions <><><>
 
-# pipeline: step 1-4
+# pipeline: step 1-3
 plugin.methods.register_function(
     function=winnow_pipeline,
     inputs={
@@ -158,8 +158,8 @@ plugin.methods.register_function(
 )
 
 
-# TODO: register function for step 5
-# pipeline: step 5
+# TODO: register function for step 4-5
+# pipeline: step 4-5
 plugin.methods.register_function(
     function=winnow_ordering,
 )

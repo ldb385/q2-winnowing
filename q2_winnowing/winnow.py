@@ -9,7 +9,7 @@ import biom
 from qiime2.plugin import Bool, Str, Int, Float
 
 
-from q2_winnowing.step1_4.pipeline import main
+from q2_winnowing.step1_3.pipeline import main
 
 
 def _csv_to_tsv( csvFile ):
@@ -151,7 +151,7 @@ def winnow_pipeline( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: bio
                  ) -> ( biom.Table, biom.Table, None, biom.Table, None, None, biom.Table ):
     # TODO: Implement proper return types
     """
-    Note this function executes the main functionality of steps 1-4 in the pipeline of
+    Note this function executes the main functionality of steps 1-3 in the pipeline of
     winnowing data.
 
     :param biomFile1:
