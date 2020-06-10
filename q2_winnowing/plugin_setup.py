@@ -1,3 +1,5 @@
+
+
 import qiime2.plugin
 from q2_types.feature_table import FeatureTable, RelativeFrequency
 from q2_types.tree import Phylogeny, Rooted, Unrooted
@@ -44,7 +46,7 @@ plugin = qiime2.plugin.Plugin(
 plugin.methods.register_function(
     function=winnow_pipeline,
     inputs={
-        "biomFile1": FeatureTable[RelativeFrequency]
+        "inFile1": FeatureTable[RelativeFrequency]
     },
     outputs=[
         # TODO: Verify this is the proper output
@@ -57,12 +59,12 @@ plugin.methods.register_function(
         ("parameter_list_result", FeatureTable[RelativeFrequency])
     ],
     input_descriptions={
-        "biomFile1": ("This is the path to the csv file of OTU's that the data is read from."
+        "inFile1": ("This is the path to the csv file of OTU's that the data is read from."
                       "First file read in.")
     },
     parameters={
         "ab_comp": qiime2.plugin.Bool,
-        "biomFile2": qiime2.plugin.Str,
+        "inFile2": qiime2.plugin.Str,
         "metric_name": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
         "evaluation_type": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
         "min_count": qiime2.plugin.Int,
@@ -88,7 +90,7 @@ plugin.methods.register_function(
         "ab_comp": ("Boolean representing whether to perform AB comparison on the data."
                     "Possible inputs are:"
                     f"\t {_BOOLEAN_}"),
-        "biomFile2": ("Second file to user for A/B comparison."),
+        "inFile2": ("Second file to user for A/B comparison."),
         "metric_name": ("This is the metric to use."
                         "Possible metrics include: "
                         f"\t {_METRIC_TYPES_}"),
@@ -152,7 +154,7 @@ plugin.methods.register_function(
         "metric_network_visual_result": ("F"),
         "parameter_list_result": ("G"),
     },
-    name='Winnowing',
+    name='pipeline',
     description=("Infer the interaction type of microbial communities through statistical analysis. "
                  "This will allow for a better understanding of taxa interaction at a micro scale.")
 )
@@ -162,31 +164,57 @@ plugin.methods.register_function(
 # pipeline: step 4-5
 plugin.methods.register_function(
     function=winnow_ordering,
+    inputs={
+        "inFiles": FeatureTable[RelativeFrequency]
+    },
+    outputs=[
+        # TODO: Verify this is the proper output
+        ("outFiles",  FeatureTable[RelativeFrequency] ),
+    ],
+    input_descriptions={
+        "inFiles": ("This is a list of inputs will be compared with the AUC curve.")
+    },
+    parameters={
+        "paramFiles":  qiime2.plugin.Str,
+        "verbose" : qiime2.plugin.Bool
+    },
+    parameter_descriptions={
+        "paramFiles": (""),
+        "verbose": ("activating this option will allow for sump file with all the steps taken to "
+                    "be generated in the output folder located in step4_5.")
+    },
+    # TODO: fill in actual return descriptions
+    output_descriptions={
+        "outFiles": ("A"),
+    },
+    name='auc_ordering',
+    description=("this function orders each OTU by centrality and calculated AUC")
 )
 
-# TODO: register function for step 6
-# pipeline: step 6
-plugin.methods.register_function(
-    function=winnow_permanova,
-)
 
-
-# TODO: register function for step 7-9
-# pipeline: step 7-9
-plugin.methods.register_function(
-    function=winnow_sensativity,
-)
-
-
-# TODO: register function for step 10
-# pipeline: step
-plugin.methods.register_function(
-    function=winnow_network_connectivity,
-)
-
-
-
-
+# # TODO: register function for step 6
+# # pipeline: step 6
+# plugin.methods.register_function(
+#     function=winnow_permanova,
+# )
+#
+#
+# # TODO: register function for step 7-9
+# # pipeline: step 7-9
+# plugin.methods.register_function(
+#     function=winnow_sensativity,
+# )
+#
+#
+# # TODO: register function for step 10
+# # pipeline: step
+# plugin.methods.register_function(
+#     function=winnow_network_connectivity,
+# )
+#
+#
+#
+#
 
 
 

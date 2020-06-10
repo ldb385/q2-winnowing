@@ -5,11 +5,11 @@ import biom
 from qiime2.plugin import Bool, Str, Int, Float
 
 from q2_winnowing._file_conversions import *
-from q2_winnowing.step1_3.pipeline import main
+from q2_winnowing.step1_3.pipeline import main as step1_3_main
 
 
 
-def winnow_pipeline( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: biom.Table=None, metric_name: Str=None,
+def winnow_pipeline( inFile1: biom.Table , ab_comp: Bool=False, inFile2: biom.Table=None, metric_name: Str=None,
                  c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
@@ -21,9 +21,9 @@ def winnow_pipeline( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: bio
     Note this function executes the main functionality of steps 1-3 in the pipeline of
     winnowing data.
 
-    :param biomFile1:
+    :param inFile1:
     :param ab_comp:
-    :param biomFile2:
+    :param inFile2:
     :param metric_name:
     :param c_type:
     :param min_count:
@@ -47,13 +47,13 @@ def winnow_pipeline( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: bio
     :return:
     """
 
-    csvFile1 = biom_to_csv( biomFile1 )
+    csvFile1 = biom_to_csv( inFile1 )
     csvFile2 = None
 
     if( ab_comp ):
-        csvFile2 = biom_to_csv( biomFile2 )
+        csvFile2 = biom_to_csv( inFile2 )
 
-    output = main( csvFile1, csvFile2, ab_comp, metric_name, c_type, min_count,
+    output = step1_3_main( csvFile1, csvFile2, ab_comp, metric_name, c_type, min_count,
                  total_select, iteration_select, pca_components, smooth_type,
                  window_size, centrality_type, keep_threshold, correlation,
                  weighted, corr_prop, evaluation_type, plot_metric,
@@ -81,7 +81,7 @@ def winnow_pipeline( biomFile1: biom.Table , ab_comp: Bool=False, biomFile2: bio
 
 
 
-def winnow_ordering():
+def winnow_ordering( inFiles: [biom.Table], paramFiles: [biom.Table], verbose: Bool=False ) -> biom.Table:
 
 
     return
