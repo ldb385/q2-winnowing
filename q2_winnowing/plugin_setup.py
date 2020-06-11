@@ -21,8 +21,6 @@ _CORRELATION_TYPES_ = ["spearman", "pearson", "kendall", "MIC"]
 _CORRELATION_PROPERTIES_ = ["negative", "positive", "both"]
 _ALL_OR_INT_ = ["all", "0,1,2,3,..."]
 _BOOLEAN_ = ["True", "False"]
-# <><><> NOTE: THESE ARE FOR STEP 4-5 <><><>
-# TODO: Fill out function for step 4-5
 # <><><> NOTE: THESE ARE FOR STEP 6 <><><>
 # TODO: Fill out function for step 6
 # <><><> NOTE: THESE ARE FOR STEPS 7-9 <><><>
@@ -46,7 +44,8 @@ plugin = qiime2.plugin.Plugin(
 plugin.methods.register_function(
     function=winnow_pipeline,
     inputs={
-        "inFile1": FeatureTable[RelativeFrequency]
+        "inFile1": FeatureTable[RelativeFrequency],
+        "inFile2": FeatureTable[RelativeFrequency]
     },
     outputs=[
         # TODO: Verify this is the proper output
@@ -64,7 +63,6 @@ plugin.methods.register_function(
     },
     parameters={
         "ab_comp": qiime2.plugin.Bool,
-        "inFile2": qiime2.plugin.Str,
         "metric_name": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
         "evaluation_type": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
         "min_count": qiime2.plugin.Int,
@@ -165,27 +163,28 @@ plugin.methods.register_function(
 plugin.methods.register_function(
     function=winnow_ordering,
     inputs={
-        "inFiles": FeatureTable[RelativeFrequency]
+        "inFile": FeatureTable[RelativeFrequency],
+        "paramFile": FeatureTable[RelativeFrequency]
     },
     outputs=[
         # TODO: Verify this is the proper output
-        ("outFiles",  FeatureTable[RelativeFrequency] ),
+        ("outFile",  FeatureTable[RelativeFrequency] ),
     ],
     input_descriptions={
-        "inFiles": ("This is a list of inputs will be compared with the AUC curve.")
+        "inFile": ("This is a list of inputs will be compared with the AUC curve."),
+        "paramFile": ("This is the parameter file used to compate with the infile."
+                      "Each input file must have a paramfile.")
     },
     parameters={
-        "paramFiles":  qiime2.plugin.Str,
         "verbose" : qiime2.plugin.Bool
     },
     parameter_descriptions={
-        "paramFiles": (""),
         "verbose": ("activating this option will allow for sump file with all the steps taken to "
                     "be generated in the output folder located in step4_5.")
     },
     # TODO: fill in actual return descriptions
     output_descriptions={
-        "outFiles": ("A"),
+        "outFile": ("A file containing OTU's ordered by centrality and calculated AUC."),
     },
     name='auc_ordering',
     description=("this function orders each OTU by centrality and calculated AUC")

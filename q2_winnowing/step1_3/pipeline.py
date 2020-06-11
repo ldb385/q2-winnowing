@@ -24,6 +24,10 @@ global outdir
 global disjoint
 global connectedness
 
+# Allow for biom files
+import biom
+# Verbose global will help prevent not necessary graphs from always being generated
+global verbose
 
 
 def remove_min_count(df, min_count):
@@ -583,12 +587,13 @@ def create_ecological_network(df,data):
         #print("Rows:0 "+str(row[0])+" Row:1 "+str(row[1])+" Row:2 "+str(row[2])+" Set Value: "+str(metric_matrix[row[0]][row[1]]))
     
     metric_matrix.to_csv(os.path.join(outdir,"Metric Network.csv"))
-        
-    plt.figure()
-    plt.title("Feature Metric Heatmap")
-    plt.tight_layout()
-    sb.heatmap(metric_matrix,annot=True, cmap=['Grey','Blue'],cbar=False)
-    plt.savefig(fname=os.path.join(outdir,"Metrics Network.png"),format='png',dpi=600,bbox_inches='tight',papertype='ledger')
+
+    if( verbose ):
+        plt.figure()
+        plt.title("Feature Metric Heatmap")
+        plt.tight_layout()
+        sb.heatmap(metric_matrix,annot=True, cmap=['Grey','Blue'],cbar=False)
+        plt.savefig(fname=os.path.join(outdir,"Metrics Network.png"),format='png',dpi=600,bbox_inches='tight',papertype='ledger')
     
 
 def plot_feature_metric(features):
@@ -707,16 +712,18 @@ def log_transfrom(df,cond_type='add_one'):
 
     return  np.log( condition(df.copy(), cond_type) )
 
-def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
+def main(ab_comp, infile1: biom.Table, infile2, metric_name, c_type, min_count,
          total_select, iteration_select, pca_components, smooth_type,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, corr_prop, evaluation_type, plot_metric,
-         create_graph, plot_pca, naming_file, proc_id, min_connected):
+         create_graph, plot_pca, naming_file, proc_id, min_connected, vrbs=True):
 
+
+    verbose = vrbs
 
     t_start = time.perf_counter()
 
-    infile1_path = infile1
+    infile1_path = str( infile1 )
     infile1_name = os.path.splitext(infile1_path)[0]
     infile2_path = ''
     infile2_name = ''
@@ -725,7 +732,8 @@ def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
         infile2_name = os.path.splitext(infile2_path)[0]
 
     #read the file(s) into a pandas dataframe and condition it
-    file_a = pd.read_csv(infile1_path, index_col=False)
+    file_a = infile1.to_dataframe()
+    file_a = file_a.drop()
     file_a.fillna(0,inplace=True)
 
     global disjoint
@@ -859,6 +867,9 @@ def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
 # graph information loss, kl outlier divergence.
 #% of total information loss since removal has occurred. or look at inflection point and how far away your N otus are from that.
 if __name__ == "__main__":
+
+    # Print all output
+    verbose = True
 
     #get and set arguments for program
     parser = argparse.ArgumentParser()

@@ -6,16 +6,17 @@ from qiime2.plugin import Bool, Str, Int, Float
 
 from q2_winnowing._file_conversions import *
 from q2_winnowing.step1_3.pipeline import main as step1_3_main
+from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
 
 
 
-def winnow_pipeline( inFile1: biom.Table , ab_comp: Bool=False, inFile2: biom.Table=None, metric_name: Str=None,
+def winnow_pipeline( inFile1: biom.Table, inFile2: biom.Table=None, ab_comp: Bool=False, metric_name: Str=None,
                  c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
                  evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False, plot_pca: Bool=False,
-                 naming_file: Str=None, proc_id: Int=0, min_connected: Int=0
-                 ) -> ( biom.Table, biom.Table, None, biom.Table, None, None, biom.Table ):
+                 naming_file: Str=None, proc_id: Int=0, min_connected: Int=0, verbose: Bool=False
+                 ) -> biom.Table:
     # TODO: Implement proper return types
     """
     Note this function executes the main functionality of steps 1-3 in the pipeline of
@@ -81,10 +82,13 @@ def winnow_pipeline( inFile1: biom.Table , ab_comp: Bool=False, inFile2: biom.Ta
 
 
 
-def winnow_ordering( inFiles: [biom.Table], paramFiles: [biom.Table], verbose: Bool=False ) -> biom.Table:
+def winnow_ordering( inFile: biom.Table, paramFile: biom.Table, verbose: Bool=False ) -> biom.Table:
 
+    output = step4_5_main( inFile, paramFile, verbose )
 
-    return
+    output = csv_to_biom( output )
+
+    return output
 
 
 def winnow_permanova():
