@@ -299,9 +299,10 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
     df_dg_premanova = pd.DataFrame(columns=['test', 'order', 'auc','SumsOfSqs','MeanSqs','F.model','R2','Pval','N.taxa','F.model.scale'])
 
     # Setup variables before loop to avoid extra computation
-    # df_data_sample = np.array( df_sample["type"] )
-    # rdf_data_sample = pandas2ri.py2rpy( pd.DataFrame({ "type": df_data_sample }) ) # Need to reintroduce key inorder to convert
-    rdf_data_sample = pandas2ri.py2rpy( df_sample )
+    df_data_sample = np.array( df_sample["type"] )
+    df_data_sample = pd.DataFrame({ 'type': df_data_sample }) # Need to reintroduce key inorder to convert
+    rdf_data_sample = pandas2ri.py2rpy( df_data_sample )
+
     rformula = Formula('y ~ x')
 
     for i in range(0,len(df_dg_auc)):
@@ -310,9 +311,9 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
         rdf_data_dg_hel = rvegan.vegdist(rvegan.decostand(rdf_data_dg, "hellinger"), "euclidean")
 
         renv = rformula.environment
-        print( rdf_data_sample, rdf_data_dg_hel )
         renv['x'] = rdf_data_sample
         renv['y'] = rdf_data_dg_hel
+
         radonis = rvegan.adonis(rformula,permutations=999)
         df_dg_premanova.loc[i] = ["auc"+str(i+1)]+[str(i+1)]+[i+1]+[radonis[0][1][0]]+[radonis[0][2][0]]+[radonis[0][3][0]]+[radonis[0][4][0]]+[radonis[0][5][0]]+[len(df_data_dg.columns)]+[-1.0]
 
@@ -374,15 +375,15 @@ def main_dataFrame( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, v
 
 # <><> TEST <><>
 # Testing dataframe function
-# test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
-# test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")
-# test_AUC = pd.read_csv("./test_data/testframe_1_auc_result.csv")
-# main_dataFrame( test_abundance, test_AUC, test_sample, "Test_Step6", True, True)
-
-test_sample = "./test_data/test_sample.csv"
+test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
 test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")
 test_AUC = pd.read_csv("./test_data/testframe_1_auc_result.csv")
 main_dataFrame( test_abundance, test_AUC, test_sample, "Test_Step6", True, True)
+
+# test_sample = "./test_data/test_sample.csv"
+# test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")
+# test_AUC = pd.read_csv("./test_data/testframe_1_auc_result.csv")
+# main_dataFrame( test_abundance, test_AUC, test_sample, "Test_Step6", True, True)
 
 
 
