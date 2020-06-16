@@ -21,12 +21,7 @@ _CORRELATION_TYPES_ = ["spearman", "pearson", "kendall", "MIC"]
 _CORRELATION_PROPERTIES_ = ["negative", "positive", "both"]
 _ALL_OR_INT_ = ["all", "0,1,2,3,..."]
 _BOOLEAN_ = ["True", "False"]
-# <><><> NOTE: THESE ARE FOR STEP 6 <><><>
-# TODO: Fill out function for step 6
-# <><><> NOTE: THESE ARE FOR STEPS 7-9 <><><>
-# TODO: Fill out function for steps 7-9
-# <><><> NOTE: THESE ARE FOR STEP 10 <><><>
-# TODO: Fill out function for step 10
+
 
 plugin = qiime2.plugin.Plugin(
     name="winnowing",
@@ -156,64 +151,5 @@ plugin.methods.register_function(
     description=("Infer the interaction type of microbial communities through statistical analysis. "
                  "This will allow for a better understanding of taxa interaction at a micro scale.")
 )
-
-
-# TODO: register function for step 4-5
-# pipeline: step 4-5
-plugin.methods.register_function(
-    function=winnow_ordering,
-    inputs={
-        "inFile": FeatureTable[RelativeFrequency],
-        "paramFile": FeatureTable[RelativeFrequency]
-    },
-    outputs=[
-        # TODO: Verify this is the proper output
-        ("outFile",  FeatureTable[RelativeFrequency] ),
-    ],
-    input_descriptions={
-        "inFile": ("This is a list of inputs will be compared with the AUC curve."),
-        "paramFile": ("This is the parameter file used to compate with the infile."
-                      "Each input file must have a paramfile.")
-    },
-    parameters={
-        "verbose" : qiime2.plugin.Bool
-    },
-    parameter_descriptions={
-        "verbose": ("activating this option will allow for sump file with all the steps taken to "
-                    "be generated in the output folder located in step4_5.")
-    },
-    # TODO: fill in actual return descriptions
-    output_descriptions={
-        "outFile": ("A file containing OTU's ordered by centrality and calculated AUC."),
-    },
-    name='auc_ordering',
-    description=("this function orders each OTU by centrality and calculated AUC")
-)
-
-
-# # TODO: register function for step 6
-# # pipeline: step 6
-# plugin.methods.register_function(
-#     function=winnow_permanova,
-# )
-#
-#
-# # TODO: register function for step 7-9
-# # pipeline: step 7-9
-# plugin.methods.register_function(
-#     function=winnow_sensativity,
-# )
-#
-#
-# # TODO: register function for step 10
-# # pipeline: step
-# plugin.methods.register_function(
-#     function=winnow_network_connectivity,
-# )
-#
-#
-#
-#
-
 
 

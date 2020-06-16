@@ -6,7 +6,7 @@ from qiime2.plugin import Bool, Str, Int, Float
 
 from q2_winnowing._file_conversions import *
 from q2_winnowing.step1_3.pipeline import main as step1_3_main
-from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
+from q2_winnowing.step4_5.Step4and5_DecayCurve import main_dataFrame as step4_5_main
 
 
 
@@ -48,47 +48,29 @@ def winnow_pipeline( inFile1: biom.Table, inFile2: biom.Table=None, ab_comp: Boo
     :return:
     """
 
-    csvFile1 = biom_to_csv( inFile1 )
-    csvFile2 = None
+    dataFrame1 = inFile1.to_dataframe()
 
     if( ab_comp ):
-        csvFile2 = biom_to_csv( inFile2 )
+        dataFrame2 = inFile2.to_dataframe()
 
-    output = step1_3_main( csvFile1, csvFile2, ab_comp, metric_name, c_type, min_count,
+    output = step1_3_main( dataFrame1, dataFrame2, ab_comp, metric_name, c_type, min_count,
                  total_select, iteration_select, pca_components, smooth_type,
                  window_size, centrality_type, keep_threshold, correlation,
                  weighted, corr_prop, evaluation_type, plot_metric,
                  create_graph, plot_pca, naming_file, proc_id, min_connected
                  )
 
-    # TODO: return values must coorelate with their respective documents
-    # these are what is supposed to be output
-    metric_original_values_result = None
-    abundance_values_result = None
-    graph_network_visual_result = None
-    metric_network_values_result = None
-    metric_values_result = None
-    metric_network_visual_result = None
-    parameter_list_result = None
-
-    # TODO: This can be put in an --output-dir
-    output = (
-        metric_original_values_result, abundance_values_result, graph_network_visual_result,
-        metric_network_values_result, metric_values_result, metric_network_visual_result, parameter_list_result
-    )
-
 
     return output
 
 
 
-def winnow_ordering( inFile: biom.Table, paramFile: biom.Table, verbose: Bool=False ) -> biom.Table:
+def winnow_ordering( inDataframe, name, detailed: Bool=False,verbose: Bool=False ):
 
-    output = step4_5_main( inFile, paramFile, verbose )
+    # Output files and Parameter files are both generated from this function
+    output_result, output_param = step4_5_main( inDataframe , name=name, detailed=detailed, verbose=verbose )
 
-    output = csv_to_biom( output )
-
-    return output
+    return output_result, output_param
 
 
 def winnow_permanova():
@@ -109,3 +91,11 @@ def winnow_network_connectivity():
 
 
     return
+
+
+
+def winnow_main():
+
+    ordered_taxon = winnow_pipeline()
+
+    auc_ordering = winnow_ordering( ordered_taxon )
