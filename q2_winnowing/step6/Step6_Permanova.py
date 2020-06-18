@@ -181,30 +181,31 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
         # Convert to Hellinger distance matrix
         rdf_data_dg_hel = rvegan.vegdist(rvegan.decostand( rdf_data_dg, "hellinger"), "euclidean")
 
-        # with localconverter( default_converter + pandas2ri.converter):
-        #     pd_from_r_df = conversion.rpy2py(rdf_data_dg_hel)
-        #
-        # count = 0
-        # for x in pd_from_r_df:
-        #     count += 1
-        # print( count )
-
-        print( "Sample", len(rdf_data_sample) )
-        print( "Other", len(rdf_data_dg_hel ) )
 
         # This is STEP 3
         # Setup formula for the adonis calculation
+        rdf_data_dg_hel = rdf_data_dg_hel.reshape(( len(rdf_data_sample),-1)) # -1 infers columns based on rows
         renv = rformula.environment
-        renv['x'] = FloatVector( rdf_data_dg_hel ) # y should have equal amount of rows as x has values
+        renv['x'] = rdf_data_dg_hel # x should have equal amount of rows as y has values
+        renv['y'] = rdf_data_sample
 
         radonis = rvegan.adonis( rformula, permutations=999)
 
         # This is STEP 4
         # Must build the permanova table stated earlier
-        df_dg_premanova.loc[i] = [f"auc{str(i+1)}"] + [f"{i+1}"] + [i+1] + [radonis[0][1][0]] + [radonis[0][2][0]] + \
-                                 [radonis[0][3][0]] + [radonis[0][4][0]] + [radonis[0][5][0]] + [len(df_data_dg.columns)] + [-1.0]
-        # NOTE: this is form
-            # DataFrame[ Index ] = Test, Order, AUC, SumOfSquars, F.Model, R2, Pval, N.taxa, F.Model.scale
+        _pTest = f"auc{str(i+1)}"
+        _pOrder = f"{i+1}"
+        _pAUC = i+1
+        _pSumOfSquares = radonis[0].iloc[0, 1]
+        _pMeanSquares = radonis[0].iloc[0, 2]
+        _pFModel = radonis[0].iloc[0, 3]
+        _pR2 = radonis[0].iloc[0, 4]
+        _pPVal = radonis[0].iloc[0, 5]
+        _pNTaxa = len(df_data_dg.columns)
+        _pFModelScale = -1.0 # this just a place holder
+
+        df_dg_premanova.loc[i] = [_pTest] + [_pOrder] + [_pAUC] + [_pSumOfSquares] + [_pMeanSquares] + \
+                                 [_pFModel] + [_pR2] + [_pPVal] + [_pNTaxa] + [_pFModelScale]
 
     # This is STEP 4.5
     # Convert F.model to a scaled version of F.model
