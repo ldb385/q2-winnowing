@@ -2,6 +2,7 @@
 # <><><> SETUP IMPORTS <><><>
 
 import os
+import math
 
 import pandas as pd
 import numpy as np
@@ -12,11 +13,10 @@ from rpy2.robjects import r
 from rpy2.robjects import default_converter, conversion
 from scipy.spatial.distance import pdist,squareform
 from rpy2.robjects import pandas2ri
-from rpy2.robjects import IntVector, Formula
+from rpy2.robjects import Formula
 import rpy2.robjects as robjects
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
-from rpy2.robjects.conversion import localconverter
 
 # Install packages
 pandas2ri.activate()
@@ -49,6 +49,9 @@ rplot = r['plot']
 # <><><> DEFINE FUNCTIONS <><><>
 
 def _generate_figures( dataFrame_permanova, outdir ):
+
+    dataFrame_permanova.loc[0] = ["auc0"]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]
+    dataFrame_permanova.sort_index(axis=0,inplace=True)
 
     rf_model_scale = pandas2ri.py2rpy(dataFrame_permanova["F.model.scale"])
     sliding_sd = rzoo.rollapply(rf_model_scale, width=5, FUN=rstats.sd, fill='NA')
@@ -148,6 +151,25 @@ def _generate_figures( dataFrame_permanova, outdir ):
     return #Nothing is returned this states end of function
 
 
+
+def _convert_to_low_tri_hel_matrix( hellingerMatrix, length ):
+
+    newMatrix = np.zeros( ( length, length -1 ) )
+    colIndex = 0
+    rowIndex = 1
+    for hellingerValue in hellingerMatrix:
+        newMatrix[rowIndex][colIndex] = hellingerValue
+
+        if( rowIndex < length -1 ):
+            rowIndex += 1
+        else:
+            colIndex += 1
+            rowIndex = colIndex + 1
+
+    return newMatrix
+
+
+
 def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output_file, detailed=False, verbose=False, dump=None):
 
     if( verbose ):
@@ -163,10 +185,8 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
     df_dg_premanova = pd.DataFrame(columns=['test', 'order', 'auc','SumsOfSqs','MeanSqs','F.model','R2','Pval','N.taxa','F.model.scale'])
 
     # Setup variables before loop to avoid extra computation
-    typeIndex = int( df_sample.columns.get_loc("type") ) # Since Rpy doesn't allow for string index must get column int index
-    with localconverter( default_converter + pandas2ri.converter ):
-        rdf_sample = conversion.py2rpy( df_sample )
-    rdf_data_sample = rdf_sample[ typeIndex ]
+    typeIndex = int( df_sample.columns.get_loc("type"))  # Since Rpy doesn't allow for string index must get column int index
+    rdf_sample = pandas2ri.py2rpy(df_sample)[typeIndex]
 
     rformula = Formula('x ~ y') # Note, y is independent while x is dependant
 
@@ -174,22 +194,29 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
 
         # This is STEP 1
         df_data_dg = df_dg_auc100.iloc[:, 0:int(df_dg_auc.iloc[i,2]) ] # get all columns with rows 0 to value at [i,2]
-        with localconverter(default_converter + pandas2ri.converter):
-            rdf_data_dg = conversion.py2rpy(df_data_dg)
+        rdf_data_dg = pandas2ri.py2rpy(df_data_dg)
 
         # This is STEP 2
         # Convert to Hellinger distance matrix
-        rdf_data_dg_hel = rvegan.vegdist(rvegan.decostand( rdf_data_dg, "hellinger"), "euclidean")
-
+        rdf_data_dg_hel = rvegan.vegdist( rvegan.decostand( rdf_data_dg, "hellinger"), "euclidean")
+        # this should be reformatted to lower triangular matrix where x rows == y values
+        rdf_data_dg_hel_tri = _convert_to_low_tri_hel_matrix( rdf_data_dg_hel, len( rdf_sample ) )
 
         # This is STEP 3
-        # Setup formula for the adonis calculation
-        rdf_data_dg_hel = rdf_data_dg_hel.reshape(( len(rdf_data_sample),-1)) # -1 infers columns based on rows
+        # Setup formula for the adonis calculation.
         renv = rformula.environment
-        renv['x'] = rdf_data_dg_hel # x should have equal amount of rows as y has values
-        renv['y'] = rdf_data_sample
+        renv['x'] = rdf_data_dg_hel_tri # LHS
+        renv['y'] = rdf_sample # RHS
 
-        radonis = rvegan.adonis( rformula, permutations=999)
+        radonis = rvegan.adonis( rformula, permutations=999 )
+
+        if( i == 0 ):
+            print("\n\n")
+            print( rdf_data_dg_hel_tri )
+            print("\n\n")
+            print( rdf_sample )
+            print("\n\n")
+            print( radonis[0] )
 
         # This is STEP 4
         # Must build the permanova table stated earlier
@@ -214,9 +241,6 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
 
     if( detailed ):
         df_dg_premanova.to_csv( output_file )
-
-    # df_dg_premanova.loc[0] = ["auc0"]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]
-    # df_dg_premanova.sort_index(axis=0,inplace=True)
 
     if( verbose and detailed ):
         dump.write( f"Output is Written in File: {str(output_file)} \n\n" )
