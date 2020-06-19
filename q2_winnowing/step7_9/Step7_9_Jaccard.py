@@ -299,12 +299,12 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 
 
 # <><><> TEST <><><>
-bfa = pd.read_csv("./test_data/arc_bac_fun_abundances.csv") # Hmmmmmmm
-bfa.rename(columns={'hor.plot': 'OTUid'}, inplace=True)  # Hmmmmmmm
-
-loo = pd.read_csv("./test_data/results-brome_total_bad_removed.csv")
-
-main( loo, "test_results", True, True )
+# bfa = pd.read_csv("./test_data/arc_bac_fun_abundances.csv") # Hmmmmmmm
+# bfa.rename(columns={'hor.plot': 'OTUid'}, inplace=True)  # Hmmmmmmm
+#
+# loo = pd.read_csv("./test_data/results-brome_total_bad_removed.csv")
+#
+# main( loo, "test_results", True, True )
 
 
 
