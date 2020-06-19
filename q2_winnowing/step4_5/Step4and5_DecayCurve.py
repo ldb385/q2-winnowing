@@ -11,7 +11,7 @@ from rpy2.robjects.vectors import StrVector
 from rpy2.robjects import r
 from scipy.spatial.distance import pdist, squareform
 from rpy2.robjects import pandas2ri
-from rpy2.robjects import IntVector, Formula
+from rpy2.robjects import Formula
 import rpy2.robjects as robjects
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
