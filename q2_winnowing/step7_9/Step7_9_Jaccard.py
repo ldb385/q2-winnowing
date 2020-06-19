@@ -14,9 +14,9 @@ from rpy2.robjects import IntVector, Formula
 import rpy2.robjects as robjects
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
-pandas2ri.activate()
 
 # Setup R packages used
+pandas2ri.activate()
 
 utils = rpackages.importr('utils')
 utils.chooseCRANmirror(ind=1)
