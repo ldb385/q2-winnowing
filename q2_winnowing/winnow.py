@@ -4,13 +4,12 @@ import biom
 
 from qiime2.plugin import Bool, Str, Int, Float
 
-from q2_winnowing._file_conversions import *
-from q2_winnowing.step1_3.pipeline import main as step1_3_main
+from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main_dataFrame as step4_5_main
 
 
 
-def winnow_pipeline( inFile1: biom.Table, inFile2: biom.Table=None, ab_comp: Bool=False, metric_name: Str=None,
+def winnow_processing( inFile1: biom.Table, inFile2: biom.Table=None, ab_comp: Bool=False, metric_name: Str=None,
                  c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",

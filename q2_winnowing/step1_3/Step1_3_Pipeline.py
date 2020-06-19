@@ -712,7 +712,7 @@ def log_transfrom(df,cond_type='add_one'):
 
     return  np.log( condition(df.copy(), cond_type) )
 
-def main(ab_comp, infile1: biom.Table, infile2, metric_name, c_type, min_count,
+def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
          total_select, iteration_select, pca_components, smooth_type,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, corr_prop, evaluation_type, plot_metric,
@@ -837,17 +837,10 @@ def main(ab_comp, infile1: biom.Table, infile2, metric_name, c_type, min_count,
 
     # get the abundances for each of the important features and write those to a new file
     #print('final important features', important_features)
-    important_features.to_csv(os.path.join(outdir,metric_filename))
+    important_features.to_csv(os.path.join(outdir,metric_filename)) # this will be passed to next steps
 
     feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
 
-    '''evaluation_results = evaluation(evaluation_type, file_a, file_b, important_feature_list, iteration_select, c_type)
-    eval_row = eval_params + evaluation_results
-    with open('evaluation_results.csv', 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow(evaluation_results)
-    print('evaluation results', eval_row)
-    '''
 
     param_dict = {'ab_comp':ab_comp, 'infile1':infile1, 'infile2':infile2,
                   'metric_name':metric_name, 'c_type':c_type, 'min_count':min_count,
@@ -863,6 +856,8 @@ def main(ab_comp, infile1: biom.Table, infile2, metric_name, c_type, min_count,
                                 columns = ['Parameter','Values'])
     param_filename = 'parameter_list-{}.csv'.format(process_id)
     parameter_df.to_csv(os.path.join(outdir,param_filename))
+
+    return important_features
 
 # graph information loss, kl outlier divergence.
 #% of total information loss since removal has occurred. or look at inflection point and how far away your N otus are from that.

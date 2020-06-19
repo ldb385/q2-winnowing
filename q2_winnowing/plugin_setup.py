@@ -5,7 +5,7 @@ from q2_types.feature_table import FeatureTable, RelativeFrequency
 from q2_types.tree import Phylogeny, Rooted, Unrooted
 
 import q2_winnowing
-from q2_winnowing.winnow import winnow_pipeline, winnow_ordering, winnow_permanova, winnow_sensativity ,winnow_network_connectivity
+from q2_winnowing.winnow import winnow_processing
 
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
 # Note: this can be replaced with a bibliography when the thesis is completed.
@@ -37,7 +37,7 @@ plugin = qiime2.plugin.Plugin(
 
 # pipeline: step 1-3
 plugin.methods.register_function(
-    function=winnow_pipeline,
+    function=winnow_processing,
     inputs={
         "inFile1": FeatureTable[RelativeFrequency],
         "inFile2": FeatureTable[RelativeFrequency]
@@ -147,7 +147,7 @@ plugin.methods.register_function(
         "metric_network_visual_result": ("F"),
         "parameter_list_result": ("G"),
     },
-    name='pipeline',
+    name='processing',
     description=("Infer the interaction type of microbial communities through statistical analysis. "
                  "This will allow for a better understanding of taxa interaction at a micro scale.")
 )
