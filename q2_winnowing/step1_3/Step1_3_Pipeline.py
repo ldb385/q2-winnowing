@@ -2,19 +2,19 @@
 import sys
 import argparse
 import numpy as np
-#import skbio as sb  # Use this for ANOSIM
+# import skbio as sb  # Use this for ANOSIM
 import pandas as pd  # Use this for working with dataframes
 import os
 import networkx
 import scipy.stats as stats
-#import scipy.spatial.distance as distance # conda install scipy
-#from skbio.diversity import beta_diversity # for bray curtis conditioning
+# import scipy.spatial.distance as distance # conda install scipy
+# from skbio.diversity import beta_diversity # for bray curtis conditioning
 from sklearn.decomposition import PCA  # Use for PCA
 import matplotlib.pyplot as plt  # Use this for plotting
-#from skbio.stats.distance import anosim
+# from skbio.stats.distance import anosim
 import math
 import csv
-import minepy #pip install minepy
+import minepy  # pip install minepy
 import time
 import seaborn as sb
 
@@ -26,64 +26,67 @@ global connectedness
 
 # Allow for biom files
 import biom
+
 # Verbose global will help prevent not necessary graphs from always being generated
 global verbose
 
 
 def remove_min_count(df, min_count):
-    '''
+    """
     Function remove_min_count: This function removes data that is all zeros in a column
         best used once merging has taken place to get rid of all features that are zero in both conditions
     :param df: @type pandas dataframe: The data to remove counts below min_count
     :return: @type pandas dataframe: The resulting dataframe after removal
-    '''
+    """
     return (df.loc[:, (df > min_count).any(axis=0)])
 
 
 def add_one_smoothing(df):
-    '''
+    """
     Function add_one_smoothing: Add one accounts for the possibility of unseen events (0s) occurring in the future.
     :param df: @type pandas dataframe: The data to smooth
     :return: @type pandas dataframe: The smoothed data
-    '''
+    """
     temp = df.copy() + 1
     temp = temp / temp.sum()
     return temp
 
 
 def bray_curtis(df):
-    '''
-        Function bray_curtis: Performs a bray-curtis dissimilarity
-        :param df: @type pandas dataframe: The data to do the dissimilarity on
-        :return: @type pandas dataframe: The bray-curtis'ed data
-        Computes the Bray-Curtis distance between two 1-D arrays.
-        '''
+    """
+    Function bray_curtis: Performs a bray-curtis dissimilarity
+    :param df: @type pandas dataframe: The data to do the dissimilarity on
+    :return: @type pandas dataframe: The bray-curtis'ed data
+    Computes the Bray-Curtis distance between two 1-D arrays.
+    """
     temp = df.copy()
     ids = df.columns.values.tolist()
     bc = beta_diversity("braycurtis", temp.transpose(), ids)
     bc_df = pd.DataFrame(data=bc.data, index=bc.ids, columns=bc.ids)
     return bc_df
 
+
 def hellinger(df):
-    '''
+    """
     Function hellinger: The hellinger transformation deals with the double zero problem in ecology.
             The hellinger transformation is the square root of the result of the current row
             divided by the sum of all rows. This is done for each element in the dataframe.
     :param df: @type pandas dataframe: The data to do the transformation on.
     :return: @type pandas dataframe: A dataframe of the hellinger transformed data.
-    '''
+    """
     temp = df.copy()
     hellinger_data = np.sqrt(temp.div(temp.sum(axis=1), axis=0))  # Hellinger transformation
     return hellinger_data
 
+
 def condition(df, cond_type):
-    '''
+    """
     Function condition: A preprocessing step to condition the data based on the type specidied
     :param data: @type pandas dataframe - The data to be conditioned
     :param cond_type: @type string - The type of conditioning to run. Valid values: add_one, hellinger
     :return: @type pandas dataframe - The conditioned dataframe.
-    '''
-    #print('conditioning type', cond_type)
+    """
+    # print('conditioning type', cond_type)
     temp = df.copy()
     temp = temp.loc[(temp != 0).any(axis=1)]
     if cond_type == 'add_one':
@@ -96,13 +99,14 @@ def condition(df, cond_type):
         conditioned_data = temp
     return conditioned_data
 
+
 def smooth(df, type):
-    '''
+    """
     Function smooth: Smoothing function to filter out noise
     :param df: @type pandas dataframe: The data to be smoothed
     :param type: @type string: The type of smoothing to do (currently sliding_window is the only option)
     :return: @type pandas dataframe: A dataframe of the smoothed data
-    '''
+    """
     temp = df.copy()
     if type == 'sliding_window':
         result = temp.rolling(window_size, min_periods=1, center=True).mean()
@@ -112,7 +116,7 @@ def smooth(df, type):
 
 
 def pca_abundance(df, num_pca_components=4, cond_type='hellinger'):
-    '''
+    """
     Function pca_abundance: running PCA iteratively on the data, removing the highest/lowest abundance features
         (based on sorting of abundances array). The gradient is used to find the greatest change in inertia when
          features are removed. Then we select all the features up to that point. These are the most important features
@@ -121,38 +125,41 @@ def pca_abundance(df, num_pca_components=4, cond_type='hellinger'):
     :param cond_type: @type string: The conditioning type to use for pca (eg. hellinger, add_one)
     :param smoothing_type: @type string: The type of smoothing to do on the dataframe of total eigenvalues found by PCA
     :return: important_features - a list of the most important features as found by running the PCA
-    '''
+    """
 
-    pca = PCA(n_components= num_pca_components)  # Run a PCA with n components
+    pca = PCA(n_components=num_pca_components)  # Run a PCA with n components
     data = df.copy()  # copy the data into a dataframe to manipulate
-    eigen_df = pd.DataFrame() # create a dataframe to hold the eigenvalues from the pca
+    eigen_df = pd.DataFrame()  # create a dataframe to hold the eigenvalues from the pca
 
-    abundances_arr = pd.unique(data.sum(axis=0)) #get the set of unique values
-    abundances_arr = np.sort(abundances_arr)[::-1] # sort highest to lowest
+    abundances_arr = pd.unique(data.sum(axis=0))  # get the set of unique values
+    abundances_arr = np.sort(abundances_arr)[::-1]  # sort highest to lowest
 
     # now we want to loop through all the abundances and find those with the most variance
     # once we find those we'll have to match them back up to the features with those abundances
     # so that we can send back the list of sorted features
     for i in range(len(abundances_arr)):
-        if len(abundances_arr)-i == num_pca_components:
+        if len(abundances_arr) - i == num_pca_components:
             break
         conditioned_df = condition(data, cond_type)  # condition data
         result = pca.fit(conditioned_df)  # Run the PCA on the conditioned data here
         variance_arr = result.explained_variance_ratio_  # Output the variance associated with each eigenvector
-        drop_list = list(data.columns[data.sum(axis=0) == abundances_arr[i]])  # Find all features with the current abundance
+        drop_list = list(
+            data.columns[data.sum(axis=0) == abundances_arr[i]])  # Find all features with the current abundance
         components = result.components_
-        variance_df = pd.DataFrame(variance_arr, columns=[str(abundances_arr[i])]).transpose()  # Convert the eigenvalues to a data frame of OTU rows x N components
-        #variance_df = pd.DataFrame(variance_arr).transpose()  # Convert the eigenvalues to a data frame of OTU rows x N components
+        variance_df = pd.DataFrame(variance_arr, columns=[
+            str(abundances_arr[i])]).transpose()  # Convert the eigenvalues to a data frame of OTU rows x N components
+        # variance_df = pd.DataFrame(variance_arr).transpose()  # Convert the eigenvalues to a data frame of OTU rows x N components
         eigen_df = eigen_df.append(variance_df)  # Append to the eigenvalue df
         data.drop(drop_list, inplace=True, axis=1)  # Drop all the features with the current abundance
         # You can only iterate over the number of features minus the number of components.
-        if len(abundances_arr)-i == num_pca_components:
+        if len(abundances_arr) - i == num_pca_components:
             break
 
-    eigen_df['Total'] = eigen_df.sum(axis=1) # sum up the eigenvalues to get the total variance of all components
-    #print('eigen df', eigen_df)
-    total_eigen = eigen_df.copy().iloc[:,[-1]]
-    total_eigen.sort_values(by='Total', ascending=0, inplace=True) # order the values in descending order, since we want to remove the highest eigenvalues
+    eigen_df['Total'] = eigen_df.sum(axis=1)  # sum up the eigenvalues to get the total variance of all components
+    # print('eigen df', eigen_df)
+    total_eigen = eigen_df.copy().iloc[:, [-1]]
+    total_eigen.sort_values(by='Total', ascending=0,
+                            inplace=True)  # order the values in descending order, since we want to remove the highest eigenvalues
 
     # loop through each row and get the feature name and the abundance.
     # Match the feature name to the eigenvector variance from the total_eigen dataframe.
@@ -160,14 +167,14 @@ def pca_abundance(df, num_pca_components=4, cond_type='hellinger'):
     ordered_features = pd.DataFrame(columns=['variance'])
     for index, row in df.sum(axis=0).iteritems():
         if str(row) in total_eigen.index:
-            #print('variance = ',total_eigen['Total'].loc[str(row)])
+            # print('variance = ',total_eigen['Total'].loc[str(row)])
             ordered_features.loc[index] = total_eigen['Total'].loc[str(row)]
         ordered_features.sort_values(by='variance', ascending=0, inplace=True)
     return ordered_features
 
 
 def pca_importance(df, num_pca_components=4, cond_type='hellinger'):
-    '''
+    """
     Function pca_importance: running PCA and selecting the most important features as found
         by the eigenvectors.
     :param data: @type pandas dataframe: The data to run pca on
@@ -176,33 +183,37 @@ def pca_importance(df, num_pca_components=4, cond_type='hellinger'):
     :param cond_type: @type string: The conditioning type to use for pca (eg. hellinger, add_one)
     :param smoothing_type: @type string: The type of smoothing to do on the dataframe of total eigenvalues found by PCA
     :return: ordered_features - a numpy array of the features ordered from most important to least, as found by running the PCA
-    '''
+    """
 
     pca = PCA(n_components=num_pca_components)  # Run a PCA with n components
     data = df.copy()  # copy the data into a dataframe to manipulate
     conditioned_df = condition(data, cond_type)  # condition data
 
     result = pca.fit(conditioned_df)  # Run the PCA on the conditioned data here
-    components = result.components_ # the eigenvectors/components
+    components = result.components_  # the eigenvectors/components
     eigenvectors = pd.DataFrame(components, columns=[data.columns])
 
-    abs_eigens = np.absolute(eigenvectors) #element wise absolute value to get rid of negatives
-    variance = pd.DataFrame({'metric': abs_eigens.sum(axis=0)})  # sum up the components to get the amount of variance across all components for each feature
-    variance['pca1'],variance['pca2'] = eigenvectors.iloc[0], eigenvectors.iloc[1]
+    abs_eigens = np.absolute(eigenvectors)  # element wise absolute value to get rid of negatives
+    variance = pd.DataFrame({'metric': abs_eigens.sum(
+        axis=0)})  # sum up the components to get the amount of variance across all components for each feature
+    variance['pca1'], variance['pca2'] = eigenvectors.iloc[0], eigenvectors.iloc[1]
 
-    #order the features from largest to smallest to return as our sorted dataframe
+    # order the features from largest to smallest to return as our sorted dataframe
     ordered_features = variance.sort_values(by='metric', ascending=0)
-    #print('ordered_features columns', ordered_features.index.values)
+    # print('ordered_features columns', ordered_features.index.values)
     return ordered_features
+
 
 def pca_legendre(df, num_pca_components, cond_type='hellinger'):
     return 0
+
 
 def abundance(df):
     data = df.copy()
     summed_vals = data.sum(axis=0)
     sorted_abundances = summed_vals.sort_values(ascending=0)
     return sorted_abundances
+
 
 def find_correlation(df, corr_type='spearman'):
     df_r = 0
@@ -224,17 +235,18 @@ def find_correlation(df, corr_type='spearman'):
         df_r = data.corr(corr_type)
 
     if isinstance(df_r, pd.DataFrame):
-        df_r.fillna(0,inplace=True)  # ugly hack to make the NAs go away, should work for sampling but not advisable
+        df_r.fillna(0, inplace=True)  # ugly hack to make the NAs go away, should work for sampling but not advisable
         df_r = df_r[(df_r != 0).any(axis=1)]
         df_r = df_r.loc[:, (df_r != 0).any(axis=0)]
     return df_r
 
-#this function returns the sorted centrality for a given centrality
-#given a dataframe organized as an adjacency matrix, build a graph and compute the centrality
-#return sorted centrality and the graph in networkx format
-def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='add_one', corr_type='spearman', weighted=False, corr_dir='none', min_connected=0):
-    '''
 
+# this function returns the sorted centrality for a given centrality
+# given a dataframe organized as an adjacency matrix, build a graph and compute the centrality
+# return sorted centrality and the graph in networkx format
+def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='add_one', corr_type='spearman',
+                     weighted=False, corr_dir='none', min_connected=0):
+    """
     :param df: @type pandas DataFrame
     :param cent_type: @type string - valid values: betweenness, degree, closeness, eigenvector
     :param keep_thresh: @type float - default 0.5
@@ -243,7 +255,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     :param weighted: @type: boolean - True if you want to produce a graph with weighted edges, False otherwise
     :param corr_dir: @type: string - valid values: none, positive, negative
     :return:
-    '''
+    """
 
     print('In Graph Centrality Function')
 
@@ -251,12 +263,13 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     conditioned_df = condition(data, cond_type)  # condition data
     w_corr_df = find_correlation(conditioned_df, corr_type)
     if corr_dir == 'positive':
-        w_corr_df_b = 1 - w_corr_df.copy()  #only keep strong positive correlations (small positive numbers)
+        w_corr_df_b = 1 - w_corr_df.copy()  # only keep strong positive correlations (small positive numbers)
     elif corr_dir == 'negative':
-        w_corr_df_b = 1 + w_corr_df.copy() # only keep strong negative correlations (small negative numbers)
+        w_corr_df_b = 1 + w_corr_df.copy()  # only keep strong negative correlations (small negative numbers)
     else:
-        w_corr_df_b = 1 - abs(w_corr_df.copy()) # keep both strong positive and negative correlations
-    w_corr_df_b[(w_corr_df_b >= 1 - keep_thresh)] = 1 # set anything greater than the threshold value to 1 so we can remove it.
+        w_corr_df_b = 1 - abs(w_corr_df.copy())  # keep both strong positive and negative correlations
+    w_corr_df_b[
+        (w_corr_df_b >= 1 - keep_thresh)] = 1  # set anything greater than the threshold value to 1 so we can remove it.
     labels = list(w_corr_df_b.index)
     temp = abs(w_corr_df_b.copy())
     temp.insert(0, 'var1', labels)
@@ -268,27 +281,27 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
 
     df_b = pd.melt(temp, 'var1', var_name='var2', value_name=attr)
 
-    df_b = df_b.loc[((df_b[attr] <= 1 - keep_thresh) & (df_b[attr] >= 0.0)), :]  # take only those edge pairs that are at or above the threshold
+    df_b = df_b.loc[((df_b[attr] <= 1 - keep_thresh) & (df_b[attr] >= 0.0)),
+           :]  # take only those edge pairs that are at or above the threshold
     df_g = networkx.from_pandas_edgelist(df_b, 'var1', 'var2', attr)  # takes a list of valid edges
 
-    #create a graphml file
-    #graph_filename = "graph-{}.graphml".format(process_id)
-    #networkx.write_graphml(df_g, os.path.join(outdir,graph_filename))
-    #draw and display the graph with labels
-    #networkx.draw(df_g, with_labels=True)
-    #networkx.draw(df_g)
-    #pylab.show()
+    # create a graphml file
+    # graph_filename = "graph-{}.graphml".format(process_id)
+    # networkx.write_graphml(df_g, os.path.join(outdir,graph_filename))
+    # draw and display the graph with labels
+    # networkx.draw(df_g, with_labels=True)
+    # networkx.draw(df_g)
+    # pylab.show()
 
     # store the adjacency matrix in a pandas dataframe and then export it to a csv
     # if there isn't an adjacency matrix csv with this id, create a csv file
 
-    #am = networkx.to_pandas_adjacency(df_g)
-    #adjacency_filename = "adj_matrix-{}.csv".format(process_id)
-    #am.to_csv(os.path.join(outdir,adjacency_filename))
+    # am = networkx.to_pandas_adjacency(df_g)
+    # adjacency_filename = "adj_matrix-{}.csv".format(process_id)
+    # am.to_csv(os.path.join(outdir,adjacency_filename))
 
     # check to see if the graph is disjoint. If it is, we just want to return an empty dataframe
     # and stop the winnowing process
-
 
     num_subgraphs = networkx.number_connected_components(df_g)
     total_nodes = networkx.number_of_nodes(df_g)
@@ -296,14 +309,14 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
 
     print('total', total_nodes, ' largest', nodes_sg)
-    percent_connected = nodes_sg/total_nodes*100
+    percent_connected = nodes_sg / total_nodes * 100
     print('percent connected', percent_connected)
     global connectedness
     connectedness.append((nodes_sg, total_nodes, float(str(round(percent_connected, 2)))))
-    print('connectedness',connectedness)
+    print('connectedness', connectedness)
     if percent_connected < float(min_connected):
         print('graph under min connectedness... returning')
-        disjoint= True
+        disjoint = True
         return pd.DataFrame()
     else:
         if cent_type == 'betweenness':
@@ -320,14 +333,14 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
                 disjoint = True
                 return pd.DataFrame()
         else:
-            #print('error, unknown centrality')
+            # print('error, unknown centrality')
             return -1
 
         centrality_df = pd.DataFrame.from_dict(centrality, orient='index')
         centrality_df.columns = ['metric']
 
         if not centrality_df.empty:
-            centrality_df = centrality_df[centrality_df.ix[:,0] > 0]
+            centrality_df = centrality_df[centrality_df.ix[:, 0] > 0]
 
         if not centrality_df.empty:
             centrality_df.sort_values('metric', axis=0, ascending=False, inplace=True)
@@ -343,13 +356,14 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
 
     return centrality_df
 
+
 def selection(func, s_total, s_per_iter, df, *args):
-    '''
+    """
     Function selection: does N loops of the metric before going to the evaluation step
     :param type: are we selecting features to remove or to retain
     :param N: the number of features for selection
     :return: not sure yet
-    '''
+    """
 
     data = df.copy()
     feature_list = []
@@ -379,14 +393,14 @@ def selection(func, s_total, s_per_iter, df, *args):
     # make sure they aren't trying to select more features per iter than total features
     select_per_iter = min(select_per_iter, select_total)
     select = select_per_iter
-    for i in range(0, math.ceil(select_total/select_per_iter)):
-        #call the metric with the current data
+    for i in range(0, math.ceil(select_total / select_per_iter)):
+        # call the metric with the current data
         sorted_df = func(data, *args)
 
         if not sorted_df.empty:
-            if ((i+1)*select_per_iter > select_total):
+            if ((i + 1) * select_per_iter > select_total):
                 select = select_total % selected
-            #take the top n features returned by the metric
+            # take the top n features returned by the metric
             top_features = sorted_df.ix[:select].index.values
             selected_df = selected_df.append(sorted_df.ix[:select])
             selected += select
@@ -403,7 +417,7 @@ def selection(func, s_total, s_per_iter, df, *args):
                 selected_df = selected_df.append(same_vals)
             # add to the list of features selected
             feature_list.extend(top_features)
-            #remove the top features from the data frame
+            # remove the top features from the data frame
             data.drop(top_features.tolist(), axis=1, inplace=True)
         else:
             return selected_df
@@ -415,12 +429,14 @@ def selection(func, s_total, s_per_iter, df, *args):
 def reduction(func, select_total, remove_per_iter, df, *args):
     return 0
 
+
 def evaluation(func, *args):
     result = func(*args)
     return result
 
+
 def pca_inertia_eval(df, num_pca_components, cond_type, smoothing_type):
-    '''
+    """
     Function pca_abundance: running PCA iteratively on the data, removing the highest/lowest abundance features
         (based on sorting of abundances array). The gradient is used to find the greatest change in inertia when
          features are removed. Then we select all the features up to that point. These are the most important features
@@ -429,40 +445,42 @@ def pca_inertia_eval(df, num_pca_components, cond_type, smoothing_type):
     :param cond_type: @type string: The conditioning type to use for pca (eg. hellinger, add_one, bray_curtis)
     :param smoothing_type: @type string: The type of smoothing to do on the dataframe of total eigenvalues found by PCA
     :return: important_features - a list of the most important features as found by running the PCA
-    '''
+    """
 
-    pca = PCA(n_components= num_pca_components)  # Run a PCA with n components
+    pca = PCA(n_components=num_pca_components)  # Run a PCA with n components
     data = df.copy()  # copy the data into a dataframe to manipulate
-    eigen_df = pd.DataFrame() # create a dataframe to hold the eigenvalues from the pca
+    eigen_df = pd.DataFrame()  # create a dataframe to hold the eigenvalues from the pca
 
-    abundances_arr = pd.unique(data.sum(axis=0)) #get the set of unique values
+    abundances_arr = pd.unique(data.sum(axis=0))  # get the set of unique values
 
     #   ------------ QUESTION ----------
     # if it's sorted from lowest to highest, it can't run the PCA on the four biggest abundances
     # so they aren't in the eigen_df dataframe, meaning they aren't added to the important OTU list
     # Should we always sort highest to lowest, or should I be creating the important_OTUS list differently?
-    abundances_arr = np.sort(abundances_arr)[::-1] # sort highest to lowest
+    abundances_arr = np.sort(abundances_arr)[::-1]  # sort highest to lowest
 
     for i in range(len(abundances_arr)):
         conditioned_df = condition(data, cond_type)  # condition data
         result = pca.fit(conditioned_df)  # Run the PCA on the conditioned data here
         variance_arr = result.explained_variance_ratio_  # Output the variance associated with each eigenvector
         drop_list = list(data.columns[data.sum(axis=0) == abundances_arr[i]])  # Find the top features
-        variance_df = pd.DataFrame(variance_arr, columns=[str(abundances_arr[i])]).transpose()  # Convert the eigenvalues to a data frame of OTU rows x N components
+        variance_df = pd.DataFrame(variance_arr, columns=[
+            str(abundances_arr[i])]).transpose()  # Convert the eigenvalues to a data frame of OTU rows x N components
         eigen_df = eigen_df.append(variance_df)  # Append to the eigenvalue df
         data.drop(drop_list, inplace=True, axis=1)  # Drop all the features with the current abundance
 
         # You can only iterate over the number of features minus the number of components.
-        if len(abundances_arr)-i == num_pca_components:
+        if len(abundances_arr) - i == num_pca_components:
             break
 
-    eigen_df['Total'] = eigen_df.sum(axis=1) # sum up the eigenvalues to get the total variance of all components
-    total_eigen = eigen_df.copy().iloc[:,[-1]]
-    #sorted list to return
-    total_eigen.sort_values(by='Total', ascending=0, inplace=True) # order the values in descending order, since we want to remove the highest eigenvalues
+    eigen_df['Total'] = eigen_df.sum(axis=1)  # sum up the eigenvalues to get the total variance of all components
+    total_eigen = eigen_df.copy().iloc[:, [-1]]
+    # sorted list to return
+    total_eigen.sort_values(by='Total', ascending=0,
+                            inplace=True)  # order the values in descending order, since we want to remove the highest eigenvalues
 
-    #evaluation
-    smoothed = smooth(total_eigen, smoothing_type) # then smooth the values using a sliding window
+    # evaluation
+    smoothed = smooth(total_eigen, smoothing_type)  # then smooth the values using a sliding window
 
     # use the gradient function to find the greatest slope between two abundances
     # this is our max inertia and we will return features above that point
@@ -471,40 +489,40 @@ def pca_inertia_eval(df, num_pca_components, cond_type, smoothing_type):
     maxGradient = smoothed['Gradient'].argmax()
     topAbundances = smoothed.loc[:maxGradient].index.values
 
-    #get all the features that have the abundance totals selected
+    # get all the features that have the abundance totals selected
     important_features = []
     for i in range(len(topAbundances)):
         important_features.extend(data.columns[data.sum(axis=0) == int(topAbundances[i])].values)
 
-    #show the graph of the smoothed summed eigenvalues from running the PCA at each step.
+    # show the graph of the smoothed summed eigenvalues from running the PCA at each step.
     fig = plt.figure()
     ax = fig.add_subplot(111)
     smoothed['Total'].plot(kind='bar', title='Total Variation')
     ax.set_xticklabels([])
-    #plt.show()
+    # plt.show()
 
     return important_features
 
 
 def kl_divergence(A, B, features, select_per_iter, cond_type):
-    '''
-
+    """
     :param A: @type: pandas dataframe - data file 1
     :param B: @type: pandas dataframe
     :param selected_features: @type - list
     :param select_per_iter: @type - int
     :return: @type list - the list of kl divergence values
-    '''
+    """
     selected_features = list(features)
-    #condition(data, cond_type)
-    data1 = condition(A.sum(axis=0).transpose(), cond_type)  # KL divergence requires that histograms are the same size so sum to remove differences in number of samples
+    # condition(data, cond_type)
+    data1 = condition(A.sum(axis=0).transpose(),
+                      cond_type)  # KL divergence requires that histograms are the same size so sum to remove differences in number of samples
     data2 = condition(B.sum(axis=0).transpose(), cond_type)
     num_features = len(selected_features)
     diverge_vals = []
     feature_count = 0
     select = select_per_iter
     for i in range(0, math.ceil(num_features / select_per_iter)):
-        if ((i+1)*select_per_iter > num_features):
+        if ((i + 1) * select_per_iter > num_features):
             select = num_features % feature_count
 
         # need to drop the first 'select' features from the list
@@ -531,15 +549,17 @@ def kl_divergence(A, B, features, select_per_iter, cond_type):
 
     return diverge_vals
 
+
 def create_pca_plot(features):
     data = features.copy()
-    plt.scatter(data['pca1'],data['pca2'])
+    plt.scatter(data['pca1'], data['pca2'])
     plt.xlabel('Principle Component 1')
     plt.ylabel('Principle Component 2')
     plt.title('Scatter Plot of Principle Components 1 and 2')
     plt.tight_layout()
-    plt.savefig(os.path.join(outdir,"pca_scatter.png"))
-    #plt.show()
+    plt.savefig(os.path.join(outdir, "pca_scatter.png"))
+    # plt.show()
+
 
 def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh, weighted):
     data = features.copy()
@@ -555,7 +575,8 @@ def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh,
         w_corr_df_b = 1 + w_corr_df.copy()  # only keep strong negative correlations (small negative numbers)
     else:
         w_corr_df_b = 1 - abs(w_corr_df.copy())  # keep both strong positive and negative correlations
-    w_corr_df_b[(w_corr_df_b >= 1 - keep_thresh)] = 1  # set anything greater than the threshold value to 1 so we can remove it.
+    w_corr_df_b[
+        (w_corr_df_b >= 1 - keep_thresh)] = 1  # set anything greater than the threshold value to 1 so we can remove it.
 
     labels = list(w_corr_df_b.index)
     temp = abs(w_corr_df_b.copy())
@@ -567,34 +588,37 @@ def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh,
         attr = 'edge'
 
     df_b = pd.melt(temp, 'var1', var_name='var2', value_name=attr)
-    df_b = df_b.loc[((df_b[attr] <= 1 - keep_thresh) & (df_b[attr] > 0.0)),:]  # take only those edge pairs that made the cut
+    df_b = df_b.loc[((df_b[attr] <= 1 - keep_thresh) & (df_b[attr] > 0.0)),
+           :]  # take only those edge pairs that made the cut
     df_g = networkx.from_pandas_edgelist(df_b, 'var1', 'var2', attr)  # takes a list of valid edges
     networkx.write_graphml(df_g, 'graph_network.graphml')
-    networkx.draw(df_g, node_color='dodgerblue',edge_color='dimgrey', with_labels=True)
+    networkx.draw(df_g, node_color='dodgerblue', edge_color='dimgrey', with_labels=True)
 
-    plt.savefig(os.path.join(outdir,"graph_network.png"))
-    create_ecological_network(df_b.copy(),data.copy())
-    #plt.show()
+    plt.savefig(os.path.join(outdir, "graph_network.png"))
+    create_ecological_network(df_b.copy(), data.copy())
+    # plt.show()
 
-def create_ecological_network(df,data):
+
+def create_ecological_network(df, data):
     feature_names = data.columns
-    metric_matrix = pd.DataFrame(columns = feature_names, index=feature_names,dtype='float64')
+    metric_matrix = pd.DataFrame(columns=feature_names, index=feature_names, dtype='float64')
     metric_matrix.fillna(value=0.0, inplace=True)
-    
+
     for i in df.index:
         row = df.loc[i].tolist()
         metric_matrix.loc[row[0]][row[1]] = row[2]
-        #print("Rows:0 "+str(row[0])+" Row:1 "+str(row[1])+" Row:2 "+str(row[2])+" Set Value: "+str(metric_matrix[row[0]][row[1]]))
-    
-    metric_matrix.to_csv(os.path.join(outdir,"Metric Network.csv"))
+        # print("Rows:0 "+str(row[0])+" Row:1 "+str(row[1])+" Row:2 "+str(row[2])+" Set Value: "+str(metric_matrix[row[0]][row[1]]))
 
-    if( verbose ):
+    metric_matrix.to_csv(os.path.join(outdir, "Metric Network.csv"))
+
+    if (verbose):
         plt.figure()
         plt.title("Feature Metric Heatmap")
         plt.tight_layout()
-        sb.heatmap(metric_matrix,annot=True, cmap=['Grey','Blue'],cbar=False)
-        plt.savefig(fname=os.path.join(outdir,"Metrics Network.png"),format='png',dpi=600,bbox_inches='tight',papertype='ledger')
-    
+        sb.heatmap(metric_matrix, annot=True, cmap=['Grey', 'Blue'], cbar=False)
+        plt.savefig(fname=os.path.join(outdir, "Metrics Network.png"), format='png', dpi=600, bbox_inches='tight',
+                    papertype='ledger')
+
 
 def plot_feature_metric(features):
     # x-axis is the OTU (feature) in ranked order
@@ -606,23 +630,24 @@ def plot_feature_metric(features):
     plt.ylabel('Metric Value')
     plt.title('Metric Value Per Feature')
     plt.tight_layout()
-    plt.savefig(os.path.join(outdir,"metric_value.png"))
-    #plt.show()
+    plt.savefig(os.path.join(outdir, "metric_value.png"))
+    # plt.show()
+
 
 def name_imp_features(feature_df, filename):
-    '''
-        Function name_imp_features: takes the dataframe of important features in the format
-                                    [feature_id,metric] and a file to match the names of
-                                    the features to the actual names from a given file.
-                                    This is for naming species.
-        :param feature_df: the dataframe of features we want to name
-        :param filename: the filename (including absolute path if necessary) of the
-                         file to use to map the names of the features. This file must be in
-                         the format: feature name, [size], kingdom, phylum, class, order,
-                         family, genus, species. Each of those names must be wrapped in
-                         a formatter (e.g. k__Bacteria(100)
-        :return: the named feature df
-        '''
+    """
+    Function name_imp_features: takes the dataframe of important features in the format
+                                [feature_id,metric] and a file to match the names of
+                                the features to the actual names from a given file.
+                                This is for naming species.
+    :param feature_df: the dataframe of features we want to name
+    :param filename: the filename (including absolute path if necessary) of the
+                     file to use to map the names of the features. This file must be in
+                     the format: feature name, [size], kingdom, phylum, class, order,
+                     family, genus, species. Each of those names must be wrapped in
+                     a formatter (e.g. k__Bacteria(100)
+    :return: the named feature df
+    """
     # read in the naming file
     namefile_path = filename
     name_file = pd.read_csv(namefile_path, index_col='OTU')
@@ -640,26 +665,27 @@ def name_imp_features(feature_df, filename):
     name_df = pd.DataFrame(index=name_file.index)
     name_df['name'] = name_file['name']
 
-    #join the feature id to the actual name
+    # join the feature id to the actual name
     merged = pd.concat([feature_df, name_df['name']], axis=1, join_axes=[feature_df.index])
     name_dict = merged['name'].to_dict()
     renamed_df = merged.rename(index=name_dict)
     return renamed_df['metric']
 
+
 def name_feature_list(feature_df, filename):
-    '''
-        Function name_feature_list: takes the dataframe of the winnowed data in its original
-                                    abundance format and a file to match the names of
-                                    the features to the actual names from a given file.
-                                    This is for naming species.
-        :param feature_df: the dataframe of features we want to name
-        :param filename: the filename (including absolute path if necessary) of the
-                         file to use to map the names of the features. This file must be in
-                         the format: feature name, [size], kingdom, phylum, class, order,
-                         family, genus, species. Each of those names must be wrapped in
-                         a formatter (e.g. k__Bacteria(100)
-        :return: the named feature df
-        '''
+    """
+    Function name_feature_list: takes the dataframe of the winnowed data in its original
+                                abundance format and a file to match the names of
+                                the features to the actual names from a given file.
+                                This is for naming species.
+    :param feature_df: the dataframe of features we want to name
+    :param filename: the filename (including absolute path if necessary) of the
+                     file to use to map the names of the features. This file must be in
+                     the format: feature name, [size], kingdom, phylum, class, order,
+                     family, genus, species. Each of those names must be wrapped in
+                     a formatter (e.g. k__Bacteria(100)
+    :return: the named feature df
+    """
     # read in the naming file
     namefile_path = filename
     name_file = pd.read_csv(namefile_path, index_col='OTU')
@@ -677,53 +703,53 @@ def name_feature_list(feature_df, filename):
     name_df = pd.DataFrame(index=name_file.index)
     name_df['name'] = name_file['name']
 
-    #join the feature id to the actual name
+    # join the feature id to the actual name
     name_dict = name_df['name'].to_dict()
     renamed_df = feature_df.rename(columns=name_dict)
     return renamed_df
 
-def log_transfrom_balance(df,cond_type='add_one'):
 
+def log_transfrom_balance(df, cond_type='add_one'):
     print("In the Log Transfom Balance Function")
 
-    data = condition(df.copy(), cond_type) 
+    data = condition(df.copy(), cond_type)
 
-    mertic_result = pd.DataFrame(columns = ['OTU','metric'])
+    mertic_result = pd.DataFrame(columns=['OTU', 'metric'])
 
     for col in data.columns:
-        k_pos = int(data[col].count()/2)
-        k_neg = int(data[col].count()/2)
-        #data[col]+=1
+        k_pos = int(data[col].count() / 2)
+        k_neg = int(data[col].count() / 2)
+        # data[col]+=1
         sum_k_pos_log = 0
         sum_k_neg_log = 0
 
-        for j in range(0,k_pos):
-            sum_k_pos_log+=math.log(data[col][j])
-            sum_k_neg_log+=math.log(data[col][j+k_pos])
-        
-        balance = 1/k_pos*sum_k_pos_log - 1/k_neg*sum_k_neg_log
-        mertic_result = mertic_result.append({'OTU':col,'metric': balance},ignore_index=True)
-       
-    mertic_result.set_index('OTU',inplace=True)
+        for j in range(0, k_pos):
+            sum_k_pos_log += math.log(data[col][j])
+            sum_k_neg_log += math.log(data[col][j + k_pos])
+
+        balance = 1 / k_pos * sum_k_pos_log - 1 / k_neg * sum_k_neg_log
+        mertic_result = mertic_result.append({'OTU': col, 'metric': balance}, ignore_index=True)
+
+    mertic_result.set_index('OTU', inplace=True)
     return mertic_result
 
-def log_transfrom(df,cond_type='add_one'):
+
+def log_transfrom(df, cond_type='add_one'):
     print("In the log Transfom Function")
 
-    return  np.log( condition(df.copy(), cond_type) )
+    return np.log(condition(df.copy(), cond_type))
 
-def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
+
+def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
          total_select, iteration_select, pca_components, smooth_type,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, corr_prop, evaluation_type, plot_metric,
          create_graph, plot_pca, naming_file, proc_id, min_connected, vrbs=True):
-
-
     verbose = vrbs
 
     t_start = time.perf_counter()
 
-    infile1_path = str( infile1 )
+    infile1_path = str(infile1)
     infile1_name = os.path.splitext(infile1_path)[0]
     infile2_path = ''
     infile2_name = ''
@@ -731,10 +757,10 @@ def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
         infile2_path = args.file2
         infile2_name = os.path.splitext(infile2_path)[0]
 
-    #read the file(s) into a pandas dataframe and condition it
+    # read the file(s) into a pandas dataframe and condition it
     file_a = infile1.to_dataframe()
     file_a = file_a.drop()
-    file_a.fillna(0,inplace=True)
+    file_a.fillna(0, inplace=True)
 
     global disjoint
     disjoint = False
@@ -743,7 +769,7 @@ def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
     process_id = proc_id
 
     global outdir
-    outdir = 'Results/'+ metric_name +'_' + correlation +'_' + str(keep_threshold) +'_'+ centrality_type
+    outdir = 'Results/' + metric_name + '_' + correlation + '_' + str(keep_threshold) + '_' + centrality_type
     os.makedirs(outdir, exist_ok=True)
 
     global connectedness
@@ -751,8 +777,10 @@ def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
 
     # set up the metric variables and the file names
     if ab_comp:
-        metric_params = [ab_comp, infile1_path, infile2_path, metric_name, centrality_type, total_select, iteration_select,
-                         min_count, smooth_type, c_type, keep_threshold, correlation, weighted, corr_prop,min_connected]
+        metric_params = [ab_comp, infile1_path, infile2_path, metric_name, centrality_type, total_select,
+                         iteration_select,
+                         min_count, smooth_type, c_type, keep_threshold, correlation, weighted, corr_prop,
+                         min_connected]
         eval_params = [ab_comp, infile1_path, infile2_path, evaluation, c_type, total_select, iteration_select]
 
         file_b = pd.read_csv(infile2_path, index_col=False)
@@ -765,35 +793,39 @@ def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
 
     else:
         metric_params = [ab_comp, infile1_path, metric_name, centrality_type, total_select,
-                         iteration_select, min_count, smooth_type, c_type, keep_threshold, correlation, weighted, corr_prop]
+                         iteration_select, min_count, smooth_type, c_type, keep_threshold, correlation, weighted,
+                         corr_prop]
         eval_params = [ab_comp, infile1_path, evaluation, c_type, total_select, iteration_select]
 
         data_file = file_a
         metric_filename = "{}-{}.csv".format(infile1_name, process_id)
-        abundance_filename = "{}-abundances-{}.csv".format(infile1_name,process_id)
+        abundance_filename = "{}-abundances-{}.csv".format(infile1_name, process_id)
 
     if min_count != -1:
         data = remove_min_count(data_file, min_count)
     else:
         data = data_file
 
-    #log_transfrom(data)
+    # log_transfrom(data)
 
     # run the metric selection step to return the important features
     important_features = pd.DataFrame()
     if metric_name == 'graph_centrality':
         metric = graph_centrality
-        important_features = selection(metric, total_select, iteration_select, data, centrality_type, keep_threshold, c_type, correlation, weighted, corr_prop, min_connected)
+        important_features = selection(metric, total_select, iteration_select, data, centrality_type, keep_threshold,
+                                       c_type, correlation, weighted, corr_prop, min_connected)
     elif metric_name == 'pca_importance':
         metric = pca_importance
-        important_features = selection(metric, total_select, iteration_select, data, pca_components,  c_type)
+        important_features = selection(metric, total_select, iteration_select, data, pca_components, c_type)
     elif metric_name == 'abundance':
         metric = abundance
         important_features = reduction(metric, total_select, iteration_select, data)
     elif metric_name == 'log_transform':
         metric = graph_centrality
-        important_features = selection(metric, total_select, iteration_select, log_transfrom(data,c_type) , centrality_type, keep_threshold, c_type, correlation, weighted, corr_prop, min_connected)
-    
+        important_features = selection(metric, total_select, iteration_select, log_transfrom(data, c_type),
+                                       centrality_type, keep_threshold, c_type, correlation, weighted, corr_prop,
+                                       min_connected)
+
     # print("Printing Log Transformed Important Features")
     # print(important_features)
 
@@ -802,10 +834,10 @@ def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
     metric_params.append(runtime)
 
     # add the abundance totals to the resulting dataframe and create a list of the important feature names
-    important_features['abundances'] = data[important_features.index.values].sum(axis=0) #add abundances to the df
+    important_features['abundances'] = data[important_features.index.values].sum(axis=0)  # add abundances to the df
     important_feature_list = list(important_features.index.values)
-    
-    #create a dataframe with the abundances of the features determined as 'important'
+
+    # create a dataframe with the abundances of the features determined as 'important'
     feature_abundances = data[important_feature_list]
 
     if important_features.empty:
@@ -824,69 +856,77 @@ def main(ab_comp, infile1 , infile2, metric_name, c_type, min_count,
     if create_graph and metric == graph_centrality:
         plot_graph_centrality(feature_abundances, c_type, correlation, corr_prop, keep_threshold, weighted)
 
-
     #
     # create csv files for all the outputs.
     #
 
-    #add the metric information to the important features and append to the metric results csv
+    # add the metric information to the important features and append to the metric results csv
     feature_row = metric_params + important_feature_list
     with open('metric_results.csv', 'a') as f:
         writer = csv.writer(f)
         writer.writerow(feature_row)
 
     # get the abundances for each of the important features and write those to a new file
-    #print('final important features', important_features)
-    important_features.to_csv(os.path.join(outdir,metric_filename)) # this will be passed to next steps
+    # print('final important features', important_features)
+    important_features.to_csv(os.path.join(outdir, metric_filename))  # this will be passed to next steps
 
     feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
 
-
-    param_dict = {'ab_comp':ab_comp, 'infile1':infile1, 'infile2':infile2,
-                  'metric_name':metric_name, 'c_type':c_type, 'min_count':min_count,
-                'total_select':total_select, 'iteration_select':iteration_select,
-                'pca_components':pca_components, 'smooth_type':smooth_type,
-                'window_size':window_size, 'centrality_type':centrality_type,
-                'keep_threshold':keep_threshold, 'correlation':correlation,
-                'weighted':weighted, 'corr_prop':corr_prop, 'evaluation_type':evaluation_type,
-                'plot_metric':plot_metric, 'create_graph':create_graph, 'plot_pca':plot_pca,
-                'naming_file':naming_file, 'proc_id':proc_id, 'runtime':runtime, 'min_connected':min_connected,
-                'connectedness': connectedness}
+    param_dict = {'ab_comp': ab_comp, 'infile1': infile1, 'infile2': infile2,
+                  'metric_name': metric_name, 'c_type': c_type, 'min_count': min_count,
+                  'total_select': total_select, 'iteration_select': iteration_select,
+                  'pca_components': pca_components, 'smooth_type': smooth_type,
+                  'window_size': window_size, 'centrality_type': centrality_type,
+                  'keep_threshold': keep_threshold, 'correlation': correlation,
+                  'weighted': weighted, 'corr_prop': corr_prop, 'evaluation_type': evaluation_type,
+                  'plot_metric': plot_metric, 'create_graph': create_graph, 'plot_pca': plot_pca,
+                  'naming_file': naming_file, 'proc_id': proc_id, 'runtime': runtime, 'min_connected': min_connected,
+                  'connectedness': connectedness}
     parameter_df = pd.DataFrame(list(param_dict.items()),
-                                columns = ['Parameter','Values'])
+                                columns=['Parameter', 'Values'])
     param_filename = 'parameter_list-{}.csv'.format(process_id)
-    parameter_df.to_csv(os.path.join(outdir,param_filename))
+    parameter_df.to_csv(os.path.join(outdir, param_filename))
 
     return important_features
 
+
 # graph information loss, kl outlier divergence.
-#% of total information loss since removal has occurred. or look at inflection point and how far away your N otus are from that.
+# % of total information loss since removal has occurred. or look at inflection point and how far away your N otus are from that.
 if __name__ == "__main__":
 
     # Print all output
     verbose = True
 
-    #get and set arguments for program
+    # get and set arguments for program
     parser = argparse.ArgumentParser()
     parser.add_argument('--ab_comp', '-ab', action='store_true', default=False)
     parser.add_argument('--file1', '-f1', help='First file to read in')
     parser.add_argument('--file2', '-f2', help='Second file to user for A/B comparison')
     parser.add_argument('--metric', '-m', help='Metric to use')
     parser.add_argument('--evaluation', '-e', help='Evaluation type to use')
-    parser.add_argument('--min_features', '-min', help='Features with counts below this number will be removed', type=int, default=0)
+    parser.add_argument('--min_features', '-min', help='Features with counts below this number will be removed',
+                        type=int, default=0)
     parser.add_argument('--conditioning', '-c', help='Conditioning type to use on the data')
     parser.add_argument('--total_select', '-st', help='Number of features to select in total')
-    parser.add_argument('--iteration_select', '-si', help='Number of features to select for each time the metric is called')
+    parser.add_argument('--iteration_select', '-si',
+                        help='Number of features to select for each time the metric is called')
     parser.add_argument('--pca_components', '-p', help='Number of pca components to find', type=int, default=4)
-    parser.add_argument('--smooth', '-sm', help='Type of Smoothing to be used to remove noise', type=str, default='sliding_window')
-    parser.add_argument('--window_size', '-w', help='If Smoothing type is a sliding window, this is the size of the window', type=int)
-    parser.add_argument('--centrality', '-cent', help='If graph_centrality is the metric type, this is the type of Centrality to use')
-    parser.add_argument('--threshold', '-th', help='If graph_centrality is the metric type, this is the threshold to use to remove weak edges', type=float, default=0.5)
-    parser.add_argument('--correlation', '-cor', help='If graph_centrality is the metric type, this is the type of correlation to use to build the graph')
+    parser.add_argument('--smooth', '-sm', help='Type of Smoothing to be used to remove noise', type=str,
+                        default='sliding_window')
+    parser.add_argument('--window_size', '-w',
+                        help='If Smoothing type is a sliding window, this is the size of the window', type=int)
+    parser.add_argument('--centrality', '-cent',
+                        help='If graph_centrality is the metric type, this is the type of Centrality to use')
+    parser.add_argument('--threshold', '-th',
+                        help='If graph_centrality is the metric type, this is the threshold to use to remove weak edges',
+                        type=float, default=0.5)
+    parser.add_argument('--correlation', '-cor',
+                        help='If graph_centrality is the metric type, this is the type of correlation to use to build the graph')
     parser.add_argument('--weighted', '-wt', action='store_true', default=False,
                         help='If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph')
     parser.add_argument('--correlation_property', '-cp',
-                        help='If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used.', default='both')
+                        help='If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used.',
+                        default='both')
     parser.add_argument('--plot_metric', '-pm',
                         help='Including this parameter will create a line plot of the metric values for the selected features',
                         action='store_true', default=False)
@@ -904,7 +944,8 @@ if __name__ == "__main__":
                         help='The identifying number to use in the output file names',
                         default=0)
     parser.add_argument('--min_connected', '-mc',
-                        help='The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.', default=0)
+                        help='The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.',
+                        default=0)
 
     args = parser.parse_args()
     ab = args.ab_comp
@@ -933,16 +974,12 @@ if __name__ == "__main__":
     run_number = args.run_number
     min_connected = args.min_connected
 
-
     main(ab, file1, file2, metric, conditioning, min_features,
          total_select, iteration_select, pca_components, smooth,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, correlation_property, evaluation, plot_metric,
-         create_graph, plot_pca, naming_file,run_number,min_connected)
-
-
-
+         create_graph, plot_pca, naming_file, run_number, min_connected)
 
 # front end takes in a file parses each line to set the selection parameters.
 # for each selection parameter, put the output files into a folder.
-    # Then output the folder at the end.
+# Then output the folder at the end.
