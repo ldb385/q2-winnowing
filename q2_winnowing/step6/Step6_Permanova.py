@@ -152,11 +152,15 @@ def _generate_figures( dataFrame_permanova, outdir ):
 
 
 
-def _convert_to_low_tri_hel_matrix( hellingerMatrix, length ):
+def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
 
-    newMatrix = np.zeros( ( length, length -1 ) )
+    # initialize an empty matrix to fill
+    newMatrix = np.zeros( ( length, length ), dtype=float )
+
     colIndex = 0
     rowIndex = 1
+
+    # needs to fill by columns instead of by rows so need to do this manually
     for hellingerValue in hellingerMatrix:
         newMatrix[rowIndex][colIndex] = hellingerValue
 
@@ -165,6 +169,10 @@ def _convert_to_low_tri_hel_matrix( hellingerMatrix, length ):
         else:
             colIndex += 1
             rowIndex = colIndex + 1
+
+    # it needs the upper triangle to mirror the lower
+    newMatrix[ np.triu_indices(length, 1 )] = hellingerMatrix
+
 
     return newMatrix
 
@@ -200,7 +208,11 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
         # Convert to Hellinger distance matrix
         rdf_data_dg_hel = rvegan.vegdist( rvegan.decostand( rdf_data_dg, "hellinger"), "euclidean")
         # this should be reformatted to lower triangular matrix where x rows == y values
-        rdf_data_dg_hel_tri = _convert_to_low_tri_hel_matrix( rdf_data_dg_hel, len( rdf_sample ) )
+        rdf_data_dg_hel_tri = _convert_to_dist_hel_matrix( rdf_data_dg_hel, len( rdf_sample ) )
+
+        if( i == 0 ):
+            print("\n\n")
+            print( rdf_data_dg_hel_tri )
 
         # This is STEP 3
         # Setup formula for the adonis calculation.
@@ -211,8 +223,6 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
         radonis = rvegan.adonis( rformula, permutations=999 )
 
         if( i == 0 ):
-            print("\n\n")
-            print( rdf_data_dg_hel_tri )
             print("\n\n")
             print( rdf_sample )
             print("\n\n")
@@ -291,10 +301,10 @@ def main_dataFrame( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, v
 
 # <><> TEST <><>
 # Testing dataframe function
-test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
-test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
-test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
-main_dataFrame( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
+# test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
+# test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
+# test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
+# main_dataFrame( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
 
 # test_sample = "./test_data/test_sample.csv"
 # test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")
