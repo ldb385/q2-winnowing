@@ -231,8 +231,7 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
         _pNTaxa = len(df_data_dg.columns)
         _pFModelScale = -1.0 # this just a place holder
 
-        df_dg_premanova.loc[i] = [_pTest] + [_pOrder] + [_pAUC] + [_pSumOfSquares] + [_pMeanSquares] + \
-                                 [_pFModel] + [_pR2] + [_pPVal] + [_pNTaxa] + [_pFModelScale]
+        df_dg_premanova.loc[i] = [_pTest, _pOrder, _pAUC, _pSumOfSquares, _pMeanSquares, _pFModel, _pR2, _pPVal, _pNTaxa, _pFModelScale]
 
     # This is STEP 4.5
     # Convert F.model to a scaled version of F.model
@@ -291,10 +290,10 @@ def main_dataFrame( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, v
 
 # <><> TEST <><>
 # Testing dataframe function
-# test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
-# test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
-# test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
-# main_dataFrame( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
+test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
+test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
+test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
+main_dataFrame( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
 
 # test_sample = "./test_data/test_sample.csv"
 # test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")
