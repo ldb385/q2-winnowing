@@ -210,10 +210,6 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
         # this should be reformatted to lower triangular matrix where x rows == y values
         rdf_data_dg_hel_tri = _convert_to_dist_hel_matrix( rdf_data_dg_hel, len( rdf_sample ) )
 
-        if( i == 0 ):
-            print("\n\n")
-            print( rdf_data_dg_hel_tri )
-
         # This is STEP 3
         # Setup formula for the adonis calculation.
         renv = rformula.environment
@@ -221,12 +217,6 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
         renv['y'] = rdf_sample # RHS
 
         radonis = rvegan.adonis( rformula, permutations=999 )
-
-        if( i == 0 ):
-            print("\n\n")
-            print( rdf_sample )
-            print("\n\n")
-            print( radonis[0] )
 
         # This is STEP 4
         # Must build the permanova table stated earlier
