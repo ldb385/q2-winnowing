@@ -25,7 +25,7 @@ setup(
     author_email="JohnDoe@FakeMail.com",
     description="Infer the interaction type of microbial communities through statistical analysis. " +
                 "This will allow for a better understanding of taxa interaction at a micro scale.",
-    url="https://github.com/sua474/winnowing-pipeline-merged",
+    url="https://github.com/ldb385/q2-winnowing",
     entry_points={
         "qiime2.plugins":
             ["q2-winnowing=q2_winnowing.plugin_setup:plugin"]
