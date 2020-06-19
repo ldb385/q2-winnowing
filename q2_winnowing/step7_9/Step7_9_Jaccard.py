@@ -252,8 +252,8 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
         _kAgreement = None # DEFINED LATER
 
         if (len( df_leaveOneOut.iloc[:, [i, j]].dropna()) >= 1):
-            _kKappa = (rirr.kappa2((loo.iloc[:, [i, j]]).dropna())[4][0])
-            _kAgreement = jaccard_coefficient(loo.iloc[:, i].dropna(), loo.iloc[:, j].dropna())
+            _kKappa = (rirr.kappa2((df_leaveOneOut.iloc[:, [i, j]]).dropna())[4][0])
+            _kAgreement = jaccard_coefficient(df_leaveOneOut.iloc[:, i].dropna(), df_leaveOneOut.iloc[:, j].dropna())
 
         elif (len( df_leaveOneOut.iloc[:, [i, j]].dropna()) <= 0):
             _kKappa = np.nan
