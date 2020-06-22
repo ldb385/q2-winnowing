@@ -176,7 +176,7 @@ def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
 
 
 
-def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output_file, detailed=False, verbose=False, dump=None):
+def perform_permanova( sample_file, data_frame_1, data_frame_2, output_file, detailed=False, verbose=False, dump=None):
 
     if( verbose ):
         dump.write( f"Processing Input File: {str(data_frame_1)} \n")
@@ -247,7 +247,7 @@ def perform_permanova_dataFrame( sample_file, data_frame_1, data_frame_2, output
 
 
 # <><><> DEFINE EXECUTION FUNCTION <><><>
-def main_dataFrame( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=False):
+def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=False):
 
     if( detailed ):
         outFile = f"output/{name}_PERMANOVA_result.csv"
@@ -260,13 +260,13 @@ def main_dataFrame( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, v
             dump = open("output/step6_dump.txt", "w", encoding="utf-8")
 
             # Call PERMANOVA calculation
-            df_permanova = perform_permanova_dataFrame( sampleFile, dataFrame1, dataFrame2, outFile, detailed, verbose, dump )
+            df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, outFile, detailed, verbose, dump )
             dump.write( f"Plots generated to {outDir}.\n" )
             dump.close()
 
         else:
             # Call PERMANOVA calculation
-            df_permanova = perform_permanova_dataFrame( sampleFile, dataFrame1, dataFrame2, outFile, detailed )
+            df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, outFile, detailed )
 
         # Since this is detailed must generate plots
         _generate_figures( df_permanova, outDir )
@@ -276,12 +276,12 @@ def main_dataFrame( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, v
         dump = open("output/step6_dump.txt", "w", encoding="utf-8")
 
         # Call PERMANOVA calculation
-        df_permanova = perform_permanova_dataFrame( sampleFile, dataFrame1, dataFrame2, verbose=verbose, dump=dump )
+        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, verbose=verbose, dump=dump )
         dump.close()
 
     else:
         # No excess files necessary just generate dataframe to pass on
-        df_permanova = perform_permanova_dataFrame( sampleFile, dataFrame1, dataFrame2 )
+        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2 )
 
     return df_permanova
 
@@ -291,7 +291,7 @@ def main_dataFrame( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, v
 test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
 test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
 test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
-main_dataFrame( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
+main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
 
 # test_sample = "./test_data/test_sample.csv"
 # test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")

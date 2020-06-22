@@ -24,8 +24,6 @@ global outdir
 global disjoint
 global connectedness
 
-# Allow for biom files
-import biom
 
 # Verbose global will help prevent not necessary graphs from always being generated
 global verbose
@@ -740,27 +738,20 @@ def log_transfrom(df, cond_type='add_one'):
     return np.log(condition(df.copy(), cond_type))
 
 
-def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
+def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
          total_select, iteration_select, pca_components, smooth_type,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, corr_prop, evaluation_type, plot_metric,
-         create_graph, plot_pca, naming_file, proc_id, min_connected, vrbs=True):
-    verbose = vrbs
+         create_graph, plot_pca, naming_file, proc_id, min_connected,
+         detailed=False, verbose=False):
 
     t_start = time.perf_counter()
 
-    infile1_path = str(infile1)
-    infile1_name = os.path.splitext(infile1_path)[0]
-    infile2_path = ''
-    infile2_name = ''
-    if ab_comp:
-        infile2_path = args.file2
-        infile2_name = os.path.splitext(infile2_path)[0]
 
     # read the file(s) into a pandas dataframe and condition it
-    file_a = infile1.to_dataframe()
-    file_a = file_a.drop()
-    file_a.fillna(0, inplace=True)
+    dataframe1 = dataframe1
+    dataframe1 = dataframe1.drop()
+    dataframe1.fillna(0, inplace=True)
 
     global disjoint
     disjoint = False
@@ -769,7 +760,7 @@ def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
     process_id = proc_id
 
     global outdir
-    outdir = 'Results/' + metric_name + '_' + correlation + '_' + str(keep_threshold) + '_' + centrality_type
+    outdir = f"output/{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}"
     os.makedirs(outdir, exist_ok=True)
 
     global connectedness
@@ -777,29 +768,31 @@ def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
 
     # set up the metric variables and the file names
     if ab_comp:
-        metric_params = [ab_comp, infile1_path, infile2_path, metric_name, centrality_type, total_select,
+        metric_params = [ab_comp, dataframe1, dataframe2, metric_name, centrality_type, total_select,
                          iteration_select,
                          min_count, smooth_type, c_type, keep_threshold, correlation, weighted, corr_prop,
                          min_connected]
-        eval_params = [ab_comp, infile1_path, infile2_path, evaluation, c_type, total_select, iteration_select]
+        eval_params = [ab_comp, dataframe1, dataframe2, evaluation, c_type, total_select, iteration_select]
 
-        file_b = pd.read_csv(infile2_path, index_col=False)
-        file_b.fillna(0, inplace=True)
+        dataframe2.fillna(0, inplace=True)
 
-        data_file = pd.concat([file_b, file_a])
+        data_file = pd.concat([dataframe2, dataframe1])
 
-        metric_filename = "{}-{}-results-{}.csv".format(infile1_name, infile2_name, process_id)
-        abundance_filename = "{}-{}-abundances-{}.csv".format(infile1_name, infile2_name, process_id)
+        if( detailed ):
+            metric_filename = f"{dataframe1.name}-{dataframe2.name}-results-{process_id}.csv"
+            abundance_filename = f"{dataframe1.name}-{dataframe2.name}-abundances-{process_id}.csv"
 
     else:
-        metric_params = [ab_comp, infile1_path, metric_name, centrality_type, total_select,
+        metric_params = [ab_comp, dataframe1, metric_name, centrality_type, total_select,
                          iteration_select, min_count, smooth_type, c_type, keep_threshold, correlation, weighted,
                          corr_prop]
-        eval_params = [ab_comp, infile1_path, evaluation, c_type, total_select, iteration_select]
+        eval_params = [ab_comp, dataframe1, evaluation, c_type, total_select, iteration_select]
 
-        data_file = file_a
-        metric_filename = "{}-{}.csv".format(infile1_name, process_id)
-        abundance_filename = "{}-abundances-{}.csv".format(infile1_name, process_id)
+        data_file = dataframe1
+
+        if( detailed ):
+            metric_filename = f"{dataframe1.name}-{process_id}.csv"
+            abundance_filename = f"{dataframe1.name}-abundances-{process_id}.csv"
 
     if min_count != -1:
         data = remove_min_count(data_file, min_count)
@@ -860,19 +853,21 @@ def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
     # create csv files for all the outputs.
     #
 
-    # add the metric information to the important features and append to the metric results csv
+    # add the metric information to the important features and append to the metric results dataframe
     feature_row = metric_params + important_feature_list
-    with open('metric_results.csv', 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow(feature_row)
+    if( detailed ):
+        with open( os.path.join( outdir, 'metric_results.csv'), 'a') as f:
+            writer = csv.writer(f)
+            writer.writerow(feature_row)
+
 
     # get the abundances for each of the important features and write those to a new file
     # print('final important features', important_features)
-    important_features.to_csv(os.path.join(outdir, metric_filename))  # this will be passed to next steps
+    if( detailed ):
+        important_features.to_csv(os.path.join(outdir, metric_filename))
+        feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
 
-    feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
-
-    param_dict = {'ab_comp': ab_comp, 'infile1': infile1, 'infile2': infile2,
+    param_dict = {'ab_comp': ab_comp, 'dataframe1': dataframe1, 'dataframe2': dataframe2,
                   'metric_name': metric_name, 'c_type': c_type, 'min_count': min_count,
                   'total_select': total_select, 'iteration_select': iteration_select,
                   'pca_components': pca_components, 'smooth_type': smooth_type,
@@ -882,103 +877,17 @@ def main(ab_comp, infile1, infile2, metric_name, c_type, min_count,
                   'plot_metric': plot_metric, 'create_graph': create_graph, 'plot_pca': plot_pca,
                   'naming_file': naming_file, 'proc_id': proc_id, 'runtime': runtime, 'min_connected': min_connected,
                   'connectedness': connectedness}
-    parameter_df = pd.DataFrame(list(param_dict.items()),
-                                columns=['Parameter', 'Values'])
-    param_filename = 'parameter_list-{}.csv'.format(process_id)
-    parameter_df.to_csv(os.path.join(outdir, param_filename))
 
-    return important_features
+    if( detailed ):
+        parameter_df = pd.DataFrame(list(param_dict.items()),
+                                    columns=['Parameter', 'Values'])
+        param_filename = f'parameter_list-{process_id}.csv'
+        parameter_df.to_csv(os.path.join(outdir, param_filename))
 
+    return ( feature_row, important_features, feature_abundances )
 
 # graph information loss, kl outlier divergence.
 # % of total information loss since removal has occurred. or look at inflection point and how far away your N otus are from that.
-if __name__ == "__main__":
-
-    # Print all output
-    verbose = True
-
-    # get and set arguments for program
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--ab_comp', '-ab', action='store_true', default=False)
-    parser.add_argument('--file1', '-f1', help='First file to read in')
-    parser.add_argument('--file2', '-f2', help='Second file to user for A/B comparison')
-    parser.add_argument('--metric', '-m', help='Metric to use')
-    parser.add_argument('--evaluation', '-e', help='Evaluation type to use')
-    parser.add_argument('--min_features', '-min', help='Features with counts below this number will be removed',
-                        type=int, default=0)
-    parser.add_argument('--conditioning', '-c', help='Conditioning type to use on the data')
-    parser.add_argument('--total_select', '-st', help='Number of features to select in total')
-    parser.add_argument('--iteration_select', '-si',
-                        help='Number of features to select for each time the metric is called')
-    parser.add_argument('--pca_components', '-p', help='Number of pca components to find', type=int, default=4)
-    parser.add_argument('--smooth', '-sm', help='Type of Smoothing to be used to remove noise', type=str,
-                        default='sliding_window')
-    parser.add_argument('--window_size', '-w',
-                        help='If Smoothing type is a sliding window, this is the size of the window', type=int)
-    parser.add_argument('--centrality', '-cent',
-                        help='If graph_centrality is the metric type, this is the type of Centrality to use')
-    parser.add_argument('--threshold', '-th',
-                        help='If graph_centrality is the metric type, this is the threshold to use to remove weak edges',
-                        type=float, default=0.5)
-    parser.add_argument('--correlation', '-cor',
-                        help='If graph_centrality is the metric type, this is the type of correlation to use to build the graph')
-    parser.add_argument('--weighted', '-wt', action='store_true', default=False,
-                        help='If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph')
-    parser.add_argument('--correlation_property', '-cp',
-                        help='If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used.',
-                        default='both')
-    parser.add_argument('--plot_metric', '-pm',
-                        help='Including this parameter will create a line plot of the metric values for the selected features',
-                        action='store_true', default=False)
-    parser.add_argument('--create_graph', '-cg',
-                        help='If graph centrality is the metric, including this parameter will create a graph image of '
-                             'the selected features (using the same correlation type used to select the features).',
-                        action='store_true', default=True)
-    parser.add_argument('--plot_pca', '-pp',
-                        help='If PCA is the metric, including this parameter will create a scatter plot image of '
-                             'the first two principle components',
-                        action='store_true', default=False)
-    parser.add_argument('--naming_file', '-nf',
-                        help='The file to be used to name the features. If not used, the features will be outputted with the names the input file.')
-    parser.add_argument('--run_number', '-rn',
-                        help='The identifying number to use in the output file names',
-                        default=0)
-    parser.add_argument('--min_connected', '-mc',
-                        help='The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.',
-                        default=0)
-
-    args = parser.parse_args()
-    ab = args.ab_comp
-    file1 = args.file1
-    file2 = ''
-    if ab:
-        file2 = args.file2
-    conditioning = args.conditioning
-    min_features = args.min_features
-    total_select = args.total_select
-    iteration_select = args.iteration_select
-    pca_components = args.pca_components
-    smooth = args.smooth
-    window_size = args.window_size
-    centrality_type = args.centrality
-    keep_threshold = args.threshold
-    correlation = args.correlation
-    weighted = args.weighted
-    correlation_property = args.correlation_property
-    metric = args.metric
-    evaluation = args.evaluation
-    plot_metric = args.plot_metric
-    create_graph = args.create_graph
-    plot_pca = args.plot_pca
-    naming_file = args.naming_file
-    run_number = args.run_number
-    min_connected = args.min_connected
-
-    main(ab, file1, file2, metric, conditioning, min_features,
-         total_select, iteration_select, pca_components, smooth,
-         window_size, centrality_type, keep_threshold, correlation,
-         weighted, correlation_property, evaluation, plot_metric,
-         create_graph, plot_pca, naming_file, run_number, min_connected)
 
 # front end takes in a file parses each line to set the selection parameters.
 # for each selection parameter, put the output files into a folder.
