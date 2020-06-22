@@ -288,10 +288,10 @@ def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=Fal
 
 # <><> TEST <><>
 # Testing dataframe function
-test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
-test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
-test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
-main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
+# test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
+# test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
+# test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
+# main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
 
 # test_sample = "./test_data/test_sample.csv"
 # test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")

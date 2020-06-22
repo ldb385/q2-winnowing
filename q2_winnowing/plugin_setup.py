@@ -44,19 +44,15 @@ plugin.methods.register_function(
     },
     outputs=[
         # TODO: Verify this is the proper output
-        ("metric_original_values_result", FeatureTable[RelativeFrequency]),
-        ("abundance_values_result", FeatureTable[RelativeFrequency]),
-        ("graph_network_visual_result", Phylogeny[Unrooted]),
-        ("metric_network_values_result", FeatureTable[RelativeFrequency]),
-        ("metric_values_result", Phylogeny[Unrooted]),
-        ("metric_network_visual_result", Phylogeny[Unrooted]),
-        ("parameter_list_result", FeatureTable[RelativeFrequency])
+        ("interaction_of_taxa_result", FeatureTable[RelativeFrequency])
     ],
     input_descriptions={
-        "inFile1": ("This is the path to the csv file of OTU's that the data is read from."
-                      "First file read in.")
+        "inFile1": ("This is the biom file which will have OTU info extracted from and analyzed to generate "
+                    "an interaction table of taxom."),
+        "inFile2": ("This is only used in the case of an A/B analysis and will not be used if ab_comp is False.")
     },
     parameters={
+        "name": qiime2.plugin.Str,
         "ab_comp": qiime2.plugin.Bool,
         "metric_name": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
         "evaluation_type": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
@@ -77,13 +73,14 @@ plugin.methods.register_function(
         "plot_pca": qiime2.plugin.Bool,
         "naming_file": qiime2.plugin.Str,
         "proc_id": qiime2.plugin.Int,
-        "min_connected": qiime2.plugin.Float
+        "min_connected": qiime2.plugin.Float,
+        "detailed": qiime2.plugin.Bool,
+        "verbose": qiime2.plugin.Bool
     },
     parameter_descriptions={
         "ab_comp": ("Boolean representing whether to perform AB comparison on the data."
                     "Possible inputs are:"
                     f"\t {_BOOLEAN_}"),
-        "inFile2": ("Second file to user for A/B comparison."),
         "metric_name": ("This is the metric to use."
                         "Possible metrics include: "
                         f"\t {_METRIC_TYPES_}"),
@@ -135,17 +132,18 @@ plugin.methods.register_function(
             "The file to be used to name the features. If not used, the features will be outputted with the names the input file."),
         "proc_id": ("The identifying number to use in the output file names."),
         "min_connected": (
-            "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.")
+            "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted."),
+        "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout"
+                     "computation. If not enabled files will not be generated"),
+        "verbose": ("Notifies plugin to generate dump files for every step. These will contain all data that previously "
+                    "may have been output through print statements during execution. Each dump.txt file is stored in "
+                    "output foleders that correspond with each step.")
     },
-    # TODO: fill in actual return descriptions
     output_descriptions={
-        "metric_original_values_result": ("A"),
-        "abundance_values_result": ("B"),
-        "graph_network_visual_result": ("C"),
-        "metric_network_values_result": ("D"),
-        "metric_values_result": ("E"),
-        "metric_network_visual_result": ("F"),
-        "parameter_list_result": ("G"),
+        "interaction_of_taxa_result": ("This is the completed table of different taxa with their corresponding interactions"
+                                       "to other taxa in their enviroment. This was computed through the use of methods"
+                                       "such as: Abundance analysis, AUC analysis, F-Score ordering,"
+                                       "PERMANOVA calculation, Jacobian matrices, and SEM analysis ")
     },
     name='processing',
     description=("Infer the interaction type of microbial communities through statistical analysis. "
