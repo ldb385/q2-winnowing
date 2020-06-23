@@ -1,11 +1,11 @@
 
 
 import qiime2.plugin
-from q2_types.feature_table import FeatureTable, RelativeFrequency
+from q2_types.feature_table import FeatureTable, RelativeFrequency, BIOMV210DirFmt
 from q2_types.tree import Phylogeny, Rooted, Unrooted
 
 import q2_winnowing
-from q2_winnowing.winnow import winnow_pipeline, winnow_ordering, winnow_permanova, winnow_sensativity ,winnow_network_connectivity
+from q2_winnowing.winnow import winnow_processing
 
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
 # Note: this can be replaced with a bibliography when the thesis is completed.
@@ -21,14 +21,7 @@ _CORRELATION_TYPES_ = ["spearman", "pearson", "kendall", "MIC"]
 _CORRELATION_PROPERTIES_ = ["negative", "positive", "both"]
 _ALL_OR_INT_ = ["all", "0,1,2,3,..."]
 _BOOLEAN_ = ["True", "False"]
-# <><><> NOTE: THESE ARE FOR STEP 4-5 <><><>
-# TODO: Fill out function for step 4-5
-# <><><> NOTE: THESE ARE FOR STEP 6 <><><>
-# TODO: Fill out function for step 6
-# <><><> NOTE: THESE ARE FOR STEPS 7-9 <><><>
-# TODO: Fill out function for steps 7-9
-# <><><> NOTE: THESE ARE FOR STEP 10 <><><>
-# TODO: Fill out function for step 10
+
 
 plugin = qiime2.plugin.Plugin(
     name="winnowing",
@@ -44,27 +37,26 @@ plugin = qiime2.plugin.Plugin(
 
 # pipeline: step 1-3
 plugin.methods.register_function(
-    function=winnow_pipeline,
+    name='processing',
+    description=("Infer the interaction type of microbial communities through statistical analysis. "
+                 "This will allow for a better understanding of taxa interaction at a micro scale."),
+    function=winnow_processing,
     inputs={
-        "inFile1": FeatureTable[RelativeFrequency]
+        "infile1": FeatureTable[RelativeFrequency],
+        "infile2": FeatureTable[RelativeFrequency]
     },
     outputs=[
         # TODO: Verify this is the proper output
-        ("metric_original_values_result", FeatureTable[RelativeFrequency]),
-        ("abundance_values_result", FeatureTable[RelativeFrequency]),
-        ("graph_network_visual_result", Phylogeny[Unrooted]),
-        ("metric_network_values_result", FeatureTable[RelativeFrequency]),
-        ("metric_values_result", Phylogeny[Unrooted]),
-        ("metric_network_visual_result", Phylogeny[Unrooted]),
-        ("parameter_list_result", FeatureTable[RelativeFrequency])
+        ("interaction_of_taxa_result", FeatureTable[RelativeFrequency])
     ],
     input_descriptions={
-        "inFile1": ("This is the path to the csv file of OTU's that the data is read from."
-                      "First file read in.")
+        "infile1": ("This is the biom file which will have OTU info extracted from and analyzed to generate "
+                    "an interaction table of taxom."),
+        "infile2": ("This is only used in the case of an A/B analysis and will not be used if ab_comp is False.")
     },
     parameters={
+        "name": qiime2.plugin.Str,
         "ab_comp": qiime2.plugin.Bool,
-        "inFile2": qiime2.plugin.Str,
         "metric_name": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
         "evaluation_type": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
         "min_count": qiime2.plugin.Int,
@@ -84,23 +76,18 @@ plugin.methods.register_function(
         "plot_pca": qiime2.plugin.Bool,
         "naming_file": qiime2.plugin.Str,
         "proc_id": qiime2.plugin.Int,
-        "min_connected": qiime2.plugin.Float
+        "min_connected": qiime2.plugin.Float,
+        "detailed": qiime2.plugin.Bool,
+        "verbose": qiime2.plugin.Bool
     },
     parameter_descriptions={
-        "ab_comp": ("Boolean representing whether to perform AB comparison on the data."
-                    "Possible inputs are:"
-                    f"\t {_BOOLEAN_}"),
-        "inFile2": ("Second file to user for A/B comparison."),
-        "metric_name": ("This is the metric to use."
-                        "Possible metrics include: "
-                        f"\t {_METRIC_TYPES_}"),
-        "evaluation_type": ("This is the evaluation type to use."
-                            "Possible evaluation types are:"
-                            f"\t {_EVALUATION_TYPES_}"),
+        "name": ("This is the string that will be attached to output files. This is used especially in "
+                 "the case of detailed."),
+        "ab_comp": ("Boolean representing whether to perform AB comparison on the data."),
+        "metric_name": ("This is the metric to use."),
+        "evaluation_type": ("This is the evaluation type to use."),
         "min_count": ("Features with counts below this number will be removed."),
-        "c_type": ("Conditioning type to use on the data."
-                   "Possible conditioning types are:"
-                   f"\t {_CONDITIONING_TYPES_}"),
+        "c_type": ("Conditioning type to use on the data."),
         "total_select": ("Number of features to select in total."
                          "Possible selections are:"
                          f"\t {_ALL_OR_INT_}"),
@@ -108,113 +95,39 @@ plugin.methods.register_function(
                              "Possible selections are:"
                              f"\t {_ALL_OR_INT_}"),
         "pca_components": ("Number of pca components to find"),
-        "smooth_type": ("Type of Smoothing to be used to remove noise."
-                        "Possible smoothing:"
-                        f"\t {_SMOOTHING_TYPES_}"),
+        "smooth_type": ("Type of Smoothing to be used to remove noise."),
         "window_size": ("If Smoothing type is a sliding window, this is the size of the window."),
-        "centrality_type": ("If graph_centrality is the metric type, this is the type of Centrality to use."
-                            "Possible centrality types include:"
-                            f"\t {_CENTRALITY_TYPES_}"),
+        "centrality_type": ("If graph_centrality is the metric type, this is the type of Centrality to use."),
         "keep_threshold": ( "If graph_centrality is the metric type, this is the threshold to use to remove weak edges."),
         "correlation":
-            ("If graph_centrality is the metric type, this is the type of correlation to use to build the graph."
-             "Possible correlations are:"
-             f"\t {_CORRELATION_TYPES_}"),
+            ("If graph_centrality is the metric type, this is the type of correlation to use to build the graph."),
         "weighted": (
-            "If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph."
-            "Possible inputs are:"
-            f"\t {_BOOLEAN_}"),
+            "If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph."),
         "corr_prop": (
-            "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."
-            "Possible correlation properties are:"
-            f"\t {_CORRELATION_PROPERTIES_}"),
+            "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."),
         "plot_metric": (
             "Including this parameter will create a line plot of the metric values for the selected features."),
         "create_graph": ("If graph centrality is the metric, including this parameter will create a graph image of "
-                         "the selected features (using the same correlation type used to select the features)."
-                         "Possible inputs are:"
-                         f"\t {_BOOLEAN_}"),
+                         "the selected features (using the same correlation type used to select the features)."),
         "plot_pca": ("If PCA is the metric, including this parameter will create a scatter plot image of "
-                     "the first two principle components."
-                     "Possible inputs are:"
-                     f"\t {_BOOLEAN_}"),
+                     "the first two principle components."),
         "naming_file": (
             "The file to be used to name the features. If not used, the features will be outputted with the names the input file."),
         "proc_id": ("The identifying number to use in the output file names."),
         "min_connected": (
-            "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.")
+            "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted."),
+        "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout"
+                     "computation. If not enabled files will not be generated"),
+        "verbose": ("Notifies plugin to generate dump files for every step. These will contain all data that previously "
+                    "may have been output through print statements during execution. Each dump.txt file is stored in "
+                    "output foleders that correspond with each step.")
     },
-    # TODO: fill in actual return descriptions
     output_descriptions={
-        "metric_original_values_result": ("A"),
-        "abundance_values_result": ("B"),
-        "graph_network_visual_result": ("C"),
-        "metric_network_values_result": ("D"),
-        "metric_values_result": ("E"),
-        "metric_network_visual_result": ("F"),
-        "parameter_list_result": ("G"),
-    },
-    name='pipeline',
-    description=("Infer the interaction type of microbial communities through statistical analysis. "
-                 "This will allow for a better understanding of taxa interaction at a micro scale.")
+        "interaction_of_taxa_result": ("This is the completed table of different taxa with their corresponding interactions"
+                                       "to other taxa in their enviroment. This was computed through the use of methods"
+                                       "such as: Abundance analysis, AUC analysis, F-Score ordering,"
+                                       "PERMANOVA calculation, Jacobian matrices, and SEM analysis ")
+    }
 )
-
-
-# TODO: register function for step 4-5
-# pipeline: step 4-5
-plugin.methods.register_function(
-    function=winnow_ordering,
-    inputs={
-        "inFiles": FeatureTable[RelativeFrequency]
-    },
-    outputs=[
-        # TODO: Verify this is the proper output
-        ("outFiles",  FeatureTable[RelativeFrequency] ),
-    ],
-    input_descriptions={
-        "inFiles": ("This is a list of inputs will be compared with the AUC curve.")
-    },
-    parameters={
-        "paramFiles":  qiime2.plugin.Str,
-        "verbose" : qiime2.plugin.Bool
-    },
-    parameter_descriptions={
-        "paramFiles": (""),
-        "verbose": ("activating this option will allow for sump file with all the steps taken to "
-                    "be generated in the output folder located in step4_5.")
-    },
-    # TODO: fill in actual return descriptions
-    output_descriptions={
-        "outFiles": ("A"),
-    },
-    name='auc_ordering',
-    description=("this function orders each OTU by centrality and calculated AUC")
-)
-
-
-# # TODO: register function for step 6
-# # pipeline: step 6
-# plugin.methods.register_function(
-#     function=winnow_permanova,
-# )
-#
-#
-# # TODO: register function for step 7-9
-# # pipeline: step 7-9
-# plugin.methods.register_function(
-#     function=winnow_sensativity,
-# )
-#
-#
-# # TODO: register function for step 10
-# # pipeline: step
-# plugin.methods.register_function(
-#     function=winnow_network_connectivity,
-# )
-#
-#
-#
-#
-
 
 
