@@ -96,6 +96,8 @@ def csv_to_biom( csvFile ):
     # Function completed, data stored in tmp
     return path
 
+# csv_to_biom( "C:/Users/liamb/VirtualSharedFolder/q2-winnowing/TEST/bromeA_all.csv")
+
 def biom_to_csv( biomFile ):
     # Convert biom to tsv
     path = _biom_to_tsv( biomFile )

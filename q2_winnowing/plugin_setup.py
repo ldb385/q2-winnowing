@@ -1,7 +1,7 @@
 
 
 import qiime2.plugin
-from q2_types.feature_table import FeatureTable, RelativeFrequency
+from q2_types.feature_table import FeatureTable, RelativeFrequency, BIOMV210DirFmt
 from q2_types.tree import Phylogeny, Rooted, Unrooted
 
 import q2_winnowing
@@ -37,19 +37,22 @@ plugin = qiime2.plugin.Plugin(
 
 # pipeline: step 1-3
 plugin.methods.register_function(
+    name='processing',
+    description=("Infer the interaction type of microbial communities through statistical analysis. "
+                 "This will allow for a better understanding of taxa interaction at a micro scale."),
     function=winnow_processing,
     inputs={
-        "inFile1": FeatureTable[RelativeFrequency],
-        "inFile2": FeatureTable[RelativeFrequency]
+        "infile1": FeatureTable[RelativeFrequency],
+        "infile2": FeatureTable[RelativeFrequency]
     },
     outputs=[
         # TODO: Verify this is the proper output
         ("interaction_of_taxa_result", FeatureTable[RelativeFrequency])
     ],
     input_descriptions={
-        "inFile1": ("This is the biom file which will have OTU info extracted from and analyzed to generate "
+        "infile1": ("This is the biom file which will have OTU info extracted from and analyzed to generate "
                     "an interaction table of taxom."),
-        "inFile2": ("This is only used in the case of an A/B analysis and will not be used if ab_comp is False.")
+        "infile2": ("This is only used in the case of an A/B analysis and will not be used if ab_comp is False.")
     },
     parameters={
         "name": qiime2.plugin.Str,
@@ -78,19 +81,13 @@ plugin.methods.register_function(
         "verbose": qiime2.plugin.Bool
     },
     parameter_descriptions={
-        "ab_comp": ("Boolean representing whether to perform AB comparison on the data."
-                    "Possible inputs are:"
-                    f"\t {_BOOLEAN_}"),
-        "metric_name": ("This is the metric to use."
-                        "Possible metrics include: "
-                        f"\t {_METRIC_TYPES_}"),
-        "evaluation_type": ("This is the evaluation type to use."
-                            "Possible evaluation types are:"
-                            f"\t {_EVALUATION_TYPES_}"),
+        "name": ("This is the string that will be attached to output files. This is used especially in "
+                 "the case of detailed."),
+        "ab_comp": ("Boolean representing whether to perform AB comparison on the data."),
+        "metric_name": ("This is the metric to use."),
+        "evaluation_type": ("This is the evaluation type to use."),
         "min_count": ("Features with counts below this number will be removed."),
-        "c_type": ("Conditioning type to use on the data."
-                   "Possible conditioning types are:"
-                   f"\t {_CONDITIONING_TYPES_}"),
+        "c_type": ("Conditioning type to use on the data."),
         "total_select": ("Number of features to select in total."
                          "Possible selections are:"
                          f"\t {_ALL_OR_INT_}"),
@@ -98,36 +95,22 @@ plugin.methods.register_function(
                              "Possible selections are:"
                              f"\t {_ALL_OR_INT_}"),
         "pca_components": ("Number of pca components to find"),
-        "smooth_type": ("Type of Smoothing to be used to remove noise."
-                        "Possible smoothing:"
-                        f"\t {_SMOOTHING_TYPES_}"),
+        "smooth_type": ("Type of Smoothing to be used to remove noise."),
         "window_size": ("If Smoothing type is a sliding window, this is the size of the window."),
-        "centrality_type": ("If graph_centrality is the metric type, this is the type of Centrality to use."
-                            "Possible centrality types include:"
-                            f"\t {_CENTRALITY_TYPES_}"),
+        "centrality_type": ("If graph_centrality is the metric type, this is the type of Centrality to use."),
         "keep_threshold": ( "If graph_centrality is the metric type, this is the threshold to use to remove weak edges."),
         "correlation":
-            ("If graph_centrality is the metric type, this is the type of correlation to use to build the graph."
-             "Possible correlations are:"
-             f"\t {_CORRELATION_TYPES_}"),
+            ("If graph_centrality is the metric type, this is the type of correlation to use to build the graph."),
         "weighted": (
-            "If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph."
-            "Possible inputs are:"
-            f"\t {_BOOLEAN_}"),
+            "If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph."),
         "corr_prop": (
-            "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."
-            "Possible correlation properties are:"
-            f"\t {_CORRELATION_PROPERTIES_}"),
+            "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."),
         "plot_metric": (
             "Including this parameter will create a line plot of the metric values for the selected features."),
         "create_graph": ("If graph centrality is the metric, including this parameter will create a graph image of "
-                         "the selected features (using the same correlation type used to select the features)."
-                         "Possible inputs are:"
-                         f"\t {_BOOLEAN_}"),
+                         "the selected features (using the same correlation type used to select the features)."),
         "plot_pca": ("If PCA is the metric, including this parameter will create a scatter plot image of "
-                     "the first two principle components."
-                     "Possible inputs are:"
-                     f"\t {_BOOLEAN_}"),
+                     "the first two principle components."),
         "naming_file": (
             "The file to be used to name the features. If not used, the features will be outputted with the names the input file."),
         "proc_id": ("The identifying number to use in the output file names."),
@@ -144,10 +127,7 @@ plugin.methods.register_function(
                                        "to other taxa in their enviroment. This was computed through the use of methods"
                                        "such as: Abundance analysis, AUC analysis, F-Score ordering,"
                                        "PERMANOVA calculation, Jacobian matrices, and SEM analysis ")
-    },
-    name='processing',
-    description=("Infer the interaction type of microbial communities through statistical analysis. "
-                 "This will allow for a better understanding of taxa interaction at a micro scale.")
+    }
 )
 
 
