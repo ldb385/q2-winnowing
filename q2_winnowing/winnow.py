@@ -77,25 +77,25 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
         dataFrame2 = infile2.to_dataframe()
         dataFrame2.name = f"{name}_2_"
 
-    # # Pass data to steps 1 to 3
-    # metric_result, important_features, abundances = \
-    #     _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
-    #                       c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_select,
-    #                       pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
-    #                       centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
-    #                       weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
-    #                       create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
-    #                       min_connected=min_connected, detailed=detailed, verbose=verbose)
-    # # these are used in: Step7_9, Step4_5, Step6
-    #
-    # # Pass data to steps 4 to 5
-    # AUC_results, AUC_parameters = \
-    #     _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
-    #
-    # # Pass data to step 6
-    #
-    #
-    #
+    # Pass data to steps 1 to 3
+    metric_result, important_features, abundances = \
+        _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
+                          c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_select,
+                          pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
+                          centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
+                          weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
+                          create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
+                          min_connected=min_connected, detailed=detailed, verbose=verbose)
+    # these are used in: Step7_9, Step4_5, Step6
+
+    # Pass data to steps 4 to 5
+    AUC_results, AUC_parameters = \
+        _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
+
+    # Pass data to step 6
+
+
+
 
 
     return _dummy_biom_table()
