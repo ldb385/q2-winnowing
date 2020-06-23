@@ -249,15 +249,17 @@ def perform_permanova( sample_file, data_frame_1, data_frame_2, output_file, det
 # <><><> DEFINE EXECUTION FUNCTION <><><>
 def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=False):
 
+    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    # allows for cleaner execution and use of relative paths
+
     if( detailed ):
-        outFile = f"output/{name}_PERMANOVA_result.csv"
+        outFile = f"{outDir}/{name}_PERMANOVA_result.csv"
         # Create new files for output
         outFile = open(outFile, "w+", encoding="utf-8")
-        outDir = "./output/"
 
         if( verbose ):
 
-            dump = open("output/step6_dump.txt", "w", encoding="utf-8")
+            dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
             # Call PERMANOVA calculation
             df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, outFile, detailed, verbose, dump )
@@ -273,7 +275,7 @@ def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=Fal
 
     elif( verbose ):
 
-        dump = open("output/step6_dump.txt", "w", encoding="utf-8")
+        dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
         # Call PERMANOVA calculation
         df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, verbose=verbose, dump=dump )

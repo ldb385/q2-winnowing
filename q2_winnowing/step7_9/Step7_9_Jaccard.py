@@ -1,7 +1,7 @@
 
 
 # <><><> SETUP IMPORTS <><><>
-
+import os
 import pandas as pd
 import numpy as np
 from rpy2.robjects.packages import importr
@@ -224,6 +224,9 @@ def _check_iterations( df_kappa, row, iteration_index, iteration_flag ):
 
 def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 
+    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    # allows for cleaner execution and use of relative paths
+
     # TODO: TEST IF THIS PART IS NECCESSARY, MIGHT NOT BE
     df_leaveOneOut = df_leaveOneOut.iloc[:, 15:]
     df_leaveOneOut = df_leaveOneOut.T
@@ -281,7 +284,7 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
         iter_flag = _check_iterations( kappa_df, i, 4, iter_flag )
 
     if( detailed ):
-        outFile = f"output/{name}_Jaccard_result.csv"
+        outFile = f"{outDir}/{name}_Jaccard_result.csv"
         # Create new files for output
         outFile = open(outFile, "w+", encoding="utf-8")
         kappa_df.to_csv( outFile )
@@ -289,7 +292,7 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 
     if( verbose ):
         # write all summaries to dump file
-        dump = open("output/step7_9_dump.txt", "w", encoding="utf-8")
+        dump = open( f"{outDir}/step7_9_dump.txt", "w", encoding="utf-8" )
         _print_summaries( kappa_df, dump )
         dump.close()
 

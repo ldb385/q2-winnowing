@@ -31,7 +31,7 @@ def _dummy_biom_table():
     return table
 
 def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str="NoNameGiven", ab_comp: Bool=False, metric_name: Str=None,
-                 c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
+                 c_type: Str=None, min_count: Int=3, total_select: Str="all", iteration_select: Str="all",
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
                  evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False, plot_pca: Bool=False,
@@ -88,9 +88,9 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
                           min_connected=min_connected, detailed=detailed, verbose=verbose)
     # these are used in: Step7_9, Step4_5, Step6
 
-    # Pass data to steps 4 to 5
-    AUC_results, AUC_parameters = \
-        _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
+    # # Pass data to steps 4 to 5
+    # AUC_results, AUC_parameters = \
+    #     _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
 
     # Pass data to step 6
 
@@ -139,6 +139,18 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
     :param verbose:
     :return:
     """
+
+    if( total_select and total_select != "all" ):
+        try:
+            total_select = int( total_select )
+        except:
+            total_select = "all"
+    if( iteration_select and iteration_select != "all" ):
+        try:
+            iteration_select = int( iteration_select )
+        except:
+            iteration_select = "all"
+
 
     if( ab_comp ):
         metric_result, important_features, abundances = \

@@ -2,6 +2,7 @@
 
 # <><><> SETUP IMPORTS <><><>
 
+import os
 import pandas as pd
 import numpy as np
 import itertools
@@ -74,10 +75,13 @@ def calc_auc_percentile( input_df, verbose=False, dump=None ):
 
 def main( inDataframe, name, detailed=False, verbose=False ):
 
+    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    # allows for cleaner execution and use of relative paths
+
 
     if( detailed ):
-        outFile = f"output/{name}_auc_result.csv"
-        parameterFile = f"output/{name}_auc_parameter.csv"
+        outFile = f"{outDir}/{name}_auc_result.csv"
+        parameterFile = f"{outDir}/{name}_auc_parameter.csv"
 
         # Create new files for output
         outFile = open( outFile, "w+", encoding="utf-8")
@@ -85,7 +89,7 @@ def main( inDataframe, name, detailed=False, verbose=False ):
 
         if( verbose ):
             # Since this is verbose we must also write to a dump
-            dump = open("output/step4_5_dump.txt", "w", encoding="utf-8")
+            dump = open(f"{outDir}/step4_5_dump.txt", "w", encoding="utf-8")
 
             dump.write(f"\n\nProcessing Input dataFrame: {name}\n")
             result, param = calc_auc_percentile(inDataframe, True, dump)
@@ -108,7 +112,7 @@ def main( inDataframe, name, detailed=False, verbose=False ):
 
     elif( verbose ):
         # Since this is verbose we must also write to a dump
-        dump = open("output/step4_5_dump.txt", "w", encoding="utf-8")
+        dump = open(f"{outDir}/step4_5_dump.txt", "w", encoding="utf-8")
 
         dump.write(f"\n\nProcessing Input dataFrame: {name}\n")
         result, param = calc_auc_percentile(inDataframe, True, dump)

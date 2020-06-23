@@ -53,6 +53,9 @@ def string_find_replace(str_returned):
 
 def main():
 
+    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    # allows for cleaner execution and use of relative paths
+
     # Transforming the Inputs
     AE = sem_data["Archaea Evenness"] * 10
     AR = sem_data["Archaea Richness"] / 10

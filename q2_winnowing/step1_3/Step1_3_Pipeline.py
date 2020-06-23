@@ -748,9 +748,10 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     t_start = time.perf_counter()
 
 
+    print( dataframe1 )
     # read the file(s) into a pandas dataframe and condition it
     dataframe1 = dataframe1
-    dataframe1 = dataframe1.drop()
+    # dataframe1 = dataframe1.drop(columns=0)
     dataframe1.fillna(0, inplace=True)
 
     global disjoint
@@ -760,7 +761,8 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     process_id = proc_id
 
     global outdir
-    outdir = f"output/{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}"
+    outdir = f"{os.path.dirname(os.path.realpath(__file__))}/output/{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}"
+    # allows for cleaner execution and use of relative paths
     os.makedirs(outdir, exist_ok=True)
 
     global connectedness
