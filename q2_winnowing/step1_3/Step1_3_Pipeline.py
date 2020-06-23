@@ -415,9 +415,8 @@ def selection(func, s_total, s_per_iter, df, *args):
                 selected_df = selected_df.append(same_vals)
             # add to the list of features selected
             feature_list.extend(top_features)
-            # remove the top features from the data frame
-            for x in top_features.tolist():
-                data.drop( x[0], axis=1, inplace=True )
+            #remove the top features from the data frame
+            data.drop( [x[0] for x in top_features.tolist() ], axis=1, inplace=True)
         else:
             return selected_df
 
@@ -749,10 +748,8 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     t_start = time.perf_counter()
 
 
-    print( dataframe1 )
     # read the file(s) into a pandas dataframe and condition it
-    dataframe1 = dataframe1
-    # dataframe1 = dataframe1.drop(columns=0)
+    dataframe1.reset_index( drop=True, inplace=True )
     dataframe1.fillna(0, inplace=True)
 
     global disjoint
@@ -771,11 +768,11 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     # set up the metric variables and the file names
     if ab_comp:
-        metric_params = [ab_comp, dataframe1, dataframe2, metric_name, centrality_type, total_select,
+        metric_params = [ab_comp, dataframe1.name, dataframe2.name, metric_name, centrality_type, total_select,
                          iteration_select,
                          min_count, smooth_type, c_type, keep_threshold, correlation, weighted, corr_prop,
                          min_connected]
-        eval_params = [ab_comp, dataframe1, dataframe2, evaluation, c_type, total_select, iteration_select]
+        eval_params = [ab_comp, dataframe1.name, dataframe2.name, evaluation, c_type, total_select, iteration_select]
 
         dataframe2.fillna(0, inplace=True)
 
@@ -786,10 +783,10 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
             abundance_filename = f"{dataframe1.name}-{dataframe2.name}-abundances-{process_id}.csv"
 
     else:
-        metric_params = [ab_comp, dataframe1, metric_name, centrality_type, total_select,
+        metric_params = [ab_comp, dataframe1.name, metric_name, centrality_type, total_select,
                          iteration_select, min_count, smooth_type, c_type, keep_threshold, correlation, weighted,
                          corr_prop]
-        eval_params = [ab_comp, dataframe1, evaluation, c_type, total_select, iteration_select]
+        eval_params = [ab_comp, dataframe1.name, evaluation, c_type, total_select, iteration_select]
 
         data_file = dataframe1
 
@@ -830,14 +827,12 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     metric_params.append(runtime)
 
     # add the abundance totals to the resulting dataframe and create a list of the important feature names
-    for x in important_features.index.values:
-        important_features['abundances'] = ( data[x[0]].sum(axis=0) ) # add abundances to the df
+
+    important_features['abundances'] = data[ [x[0] for x in important_features.index.values] ].sum(axis=0) #add abundances to the df
     important_feature_list = list(important_features.index.values)
 
-    # create a dataframe with the abundances of the features determined as 'important'
-    feature_abundances = pd.DataFrame()
-    for x in important_feature_list:
-        feature_abundances = data[ x[0]]
+    #create a dataframe with the abundances of the features determined as 'important'
+    feature_abundances = data[[x[0] for x in important_feature_list]]
 
     if important_features.empty:
         important_features.loc[1] = 'Warning: No features returned.'
