@@ -416,7 +416,8 @@ def selection(func, s_total, s_per_iter, df, *args):
             # add to the list of features selected
             feature_list.extend(top_features)
             # remove the top features from the data frame
-            data.drop(top_features.tolist(), axis=1, inplace=True)
+            for x in top_features.tolist():
+                data.drop( x[0], axis=1, inplace=True )
         else:
             return selected_df
 
@@ -829,11 +830,14 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     metric_params.append(runtime)
 
     # add the abundance totals to the resulting dataframe and create a list of the important feature names
-    important_features['abundances'] = data[important_features.index.values].sum(axis=0)  # add abundances to the df
+    for x in important_features.index.values:
+        important_features['abundances'] = ( data[x[0]].sum(axis=0) ) # add abundances to the df
     important_feature_list = list(important_features.index.values)
 
     # create a dataframe with the abundances of the features determined as 'important'
-    feature_abundances = data[important_feature_list]
+    feature_abundances = pd.DataFrame()
+    for x in important_feature_list:
+        feature_abundances = data[ x[0]]
 
     if important_features.empty:
         important_features.loc[1] = 'Warning: No features returned.'
