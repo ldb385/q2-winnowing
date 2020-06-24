@@ -91,6 +91,7 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
     # Pass data to steps 4 to 5
     AUC_results, AUC_parameters = \
         _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
+    # these are used in: Step6, None
 
     # Pass data to step 6
 
