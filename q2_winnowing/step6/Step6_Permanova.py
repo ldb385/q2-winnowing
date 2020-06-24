@@ -276,12 +276,12 @@ def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=Fal
         dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
         # Call PERMANOVA calculation
-        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, verbose=verbose, dump=dump )
+        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, None, verbose=verbose, dump=dump )
         dump.close()
 
     else:
         # No excess files necessary just generate dataframe to pass on
-        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2 )
+        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, None )
 
     return df_permanova
 

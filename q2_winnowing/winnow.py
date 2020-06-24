@@ -3,12 +3,15 @@
 import biom
 import qiime2
 import numpy as np
+import pandas as pd
 
 from qiime2.plugin import Bool, Str, Int, Float
 
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
 from q2_winnowing.step6.Step6_Permanova import main as step6_main
+# from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
+# from q2_winnowing.step10.Step10_SEM import main as step10_main
 
 def _dummy_biom_table():
     data = np.arange(40).reshape(10, 4)
@@ -30,6 +33,25 @@ def _dummy_biom_table():
         sample_metadata, table_id = 'Example Table')
 
     return table
+
+
+def _assemble_biom_table_from_SEM_data( dataframe ):
+
+    num_rows = len( dataframe )
+    num_columns = len( dataframe.columns )
+
+    sample_ids = ["S%d" % i for i in range( num_rows )]
+    observation_ids = ["O%d" % i for i in range( num_columns )]
+
+    sample_metadata = dataframe[dataframe.columns[0]]
+    observations_tested_metadata = dataframe.iloc[0]
+
+    data = np.array( dataframe.to_csv( header=None, Index=None ) )
+
+    table = biom.Table( data, observation_ids, sample_ids, observations_tested_metadata,
+                        sample_metadata, table_id="Winnowed Interaction Table of Taxon")
+    return table
+
 
 def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str="NoNameGiven", ab_comp: Bool=False, metric_name: Str=None,
                  c_type: Str=None, min_count: Int=3, total_select: Str="all", iteration_select: Str="all",
@@ -76,6 +98,7 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
 
     # Will likely need to grab sample data here too. This will then be used as part of the PERMANOVA calculation
     # TODO: Strip sample data off input
+    sample_legend = pd.read_csv( "C:/Users/liamb/VirtualSharedFolder/q2-winnowing/q2_winnowing/step6/test_data/Brome_BFA_AB_sample_info.csv" )  # AB horizon, BRA
 
     if( ab_comp ):
         dataFrame2 = infile2.to_dataframe().to_dense()
@@ -97,9 +120,12 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
         _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
     # these are used in: Step6, None
 
-
-
     # Pass data to step 6
+    PERMANOVA_results = \
+        _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_legend,
+                           name=name, detailed=detailed, verbose=verbose )
+
+    # Pass data to steps 7 to 9
 
 
 
