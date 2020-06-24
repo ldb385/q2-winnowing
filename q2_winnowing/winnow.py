@@ -88,9 +88,9 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
                           min_connected=min_connected, detailed=detailed, verbose=verbose)
     # these are used in: Step7_9, Step4_5, Step6
 
-    # # Pass data to steps 4 to 5
-    # AUC_results, AUC_parameters = \
-    #     _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
+    # Pass data to steps 4 to 5
+    AUC_results, AUC_parameters = \
+        _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
 
     # Pass data to step 6
 
