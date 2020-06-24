@@ -176,13 +176,11 @@ def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
 
 
 
-def perform_permanova( sample_file, data_frame_1, data_frame_2, output_file, detailed=False, verbose=False, dump=None):
+def perform_permanova( df_sample, data_frame_1, data_frame_2, output_file, detailed=False, verbose=False, dump=None):
 
     if( verbose ):
         dump.write( f"Processing Input File: {str(data_frame_1)} \n")
         dump.write( f"Processing Input file: {str(data_frame_2)} \n")
-
-    df_sample = pd.read_csv(sample_file) # AB horizon, BRA
 
     df_dg_auc = data_frame_1 # AUC curves for subsetting
     df_dg_auc100 = data_frame_2 # Abundances used for Hellinger
@@ -295,7 +293,7 @@ def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=Fal
 # test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
 # main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
 
-# test_sample = "./test_data/test_sample.csv"
+# test_sample = pd.read_csv( "./test_data/Brome_BFA_AB_sample_info.csv" )  # AB horizon, BRA
 # test_abundance = pd.read_csv("./test_data/bromeA_all-abundances-0.csv")
 # test_AUC = pd.read_csv("./test_data/testframe_1_auc_result.csv")
 # main_dataFrame( test_abundance, test_AUC, test_sample, "Test_Step6", True, True)

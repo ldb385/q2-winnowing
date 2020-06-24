@@ -8,6 +8,7 @@ from qiime2.plugin import Bool, Str, Int, Float
 
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
+from q2_winnowing.step6.Step6_Permanova import main as step6_main
 
 def _dummy_biom_table():
     data = np.arange(40).reshape(10, 4)
@@ -73,6 +74,9 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
     dataFrame1.name = f"{name}_1_"
     dataFrame2 = None
 
+    # Will likely need to grab sample data here too. This will then be used as part of the PERMANOVA calculation
+    # TODO: Strip sample data off input
+
     if( ab_comp ):
         dataFrame2 = infile2.to_dataframe().to_dense()
         dataFrame2.name = f"{name}_2_"
@@ -92,6 +96,8 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
     AUC_results, AUC_parameters = \
         _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
     # these are used in: Step6, None
+
+
 
     # Pass data to step 6
 
@@ -179,15 +185,17 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
 def _winnow_ordering( dataframe, name, detailed: Bool=False, verbose: Bool=False ):
 
     # Output files and Parameter files are both generated from this function
-    output_result, output_param = step4_5_main( dataframe , name=name, detailed=detailed, verbose=verbose )
+    auc_result, auc_param = step4_5_main( dataframe , name=name, detailed=detailed, verbose=verbose )
 
-    return ( output_result, output_param )
-
-
-def _winnow_permanova():
+    return ( auc_result, auc_param )
 
 
-    return
+def _winnow_permanova( df_AUC_ordering, df_abundances, df_samples,  name, detailed=False, verbose=False ):
+
+    # Permanova results are generated here
+    permanova_result = step6_main( df_AUC_ordering, df_abundances, df_samples, name, detailed=detailed, verbose=verbose)
+
+    return permanova_result
 
 
 
