@@ -69,12 +69,12 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
     """
 
     # Convert input to dataframes
-    dataFrame1 = infile1.to_dataframe()
+    dataFrame1 = infile1.to_dataframe().to_dense()
     dataFrame1.name = f"{name}_1_"
     dataFrame2 = None
 
     if( ab_comp ):
-        dataFrame2 = infile2.to_dataframe()
+        dataFrame2 = infile2.to_dataframe().to_dense()
         dataFrame2.name = f"{name}_2_"
 
     # Pass data to steps 1 to 3
@@ -160,7 +160,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
                           weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
                           create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
-                          min_connected=min_connected, detailed=detailed,verbose=verbose )
+                          min_connected=min_connected, detailed=detailed,verbose_p=verbose )
     else:
         metric_result, important_features, abundances = \
             step1_3_main( dataframe1=dataFrame1, dataframe2=None, ab_comp=False, metric_name=metric_name, c_type=c_type,
@@ -169,7 +169,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
                           weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
                           create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
-                          min_connected=min_connected, detailed=detailed,verbose=verbose )
+                          min_connected=min_connected, detailed=detailed,verbose_p=verbose )
 
 
     return ( metric_result, important_features, abundances )

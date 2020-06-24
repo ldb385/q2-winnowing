@@ -303,7 +303,8 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
 
     num_subgraphs = networkx.number_connected_components(df_g)
     total_nodes = networkx.number_of_nodes(df_g)
-    largest_subgraph = max(networkx.connected_component_subgraphs(df_g), key=len)
+    largest_subgraph = max( (df_g.subgraph(c) for c in networkx.connected_components( df_g ) ), key=len )
+    # largest_subgraph = max( networkx.connected_component_subgraphs(df_g), key=len ) #Deprecated
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
 
     print('total', total_nodes, ' largest', nodes_sg)
@@ -413,10 +414,11 @@ def selection(func, s_total, s_per_iter, df, *args):
                 last_value = last_row.iloc[0]['metric']
                 same_vals = sorted_df[(sorted_df['metric'] == last_value) & (~sorted_df.index.isin(selected_df.index))]
                 selected_df = selected_df.append(same_vals)
+
             # add to the list of features selected
             feature_list.extend(top_features)
             #remove the top features from the data frame
-            data.drop( [x[0] for x in top_features.tolist() ], axis=1, inplace=True)
+            data.drop(top_features.tolist(), axis=1, inplace=True)
         else:
             return selected_df
 
@@ -743,10 +745,12 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, corr_prop, evaluation_type, plot_metric,
          create_graph, plot_pca, naming_file, proc_id, min_connected,
-         detailed=False, verbose=False):
+         detailed=False, verbose_p=False):
 
     t_start = time.perf_counter()
 
+    global verbose # Using global since this will not change and passing verbose to all methods will be confusing
+    verbose = verbose_p
 
     # read the file(s) into a pandas dataframe and condition it
     dataframe1.reset_index( drop=True, inplace=True )
@@ -827,12 +831,11 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     metric_params.append(runtime)
 
     # add the abundance totals to the resulting dataframe and create a list of the important feature names
-
-    important_features['abundances'] = data[ [x[0] for x in important_features.index.values] ].sum(axis=0) #add abundances to the df
+    important_features['abundances'] = data[important_features.index.values].sum(axis=0) #add abundances to the df
     important_feature_list = list(important_features.index.values)
 
     #create a dataframe with the abundances of the features determined as 'important'
-    feature_abundances = data[[x[0] for x in important_feature_list]]
+    feature_abundances = data[important_feature_list]
 
     if important_features.empty:
         important_features.loc[1] = 'Warning: No features returned.'
@@ -868,16 +871,28 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
         important_features.to_csv(os.path.join(outdir, metric_filename))
         feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
 
-    param_dict = {'ab_comp': ab_comp, 'dataframe1': dataframe1, 'dataframe2': dataframe2,
-                  'metric_name': metric_name, 'c_type': c_type, 'min_count': min_count,
-                  'total_select': total_select, 'iteration_select': iteration_select,
-                  'pca_components': pca_components, 'smooth_type': smooth_type,
-                  'window_size': window_size, 'centrality_type': centrality_type,
-                  'keep_threshold': keep_threshold, 'correlation': correlation,
-                  'weighted': weighted, 'corr_prop': corr_prop, 'evaluation_type': evaluation_type,
-                  'plot_metric': plot_metric, 'create_graph': create_graph, 'plot_pca': plot_pca,
-                  'naming_file': naming_file, 'proc_id': proc_id, 'runtime': runtime, 'min_connected': min_connected,
-                  'connectedness': connectedness}
+    if( ab_comp ):
+        param_dict = {'ab_comp': ab_comp, 'dataframe1': dataframe1.name, 'dataframe2': dataframe2.name,
+                      'metric_name': metric_name, 'c_type': c_type, 'min_count': min_count,
+                      'total_select': total_select, 'iteration_select': iteration_select,
+                      'pca_components': pca_components, 'smooth_type': smooth_type,
+                      'window_size': window_size, 'centrality_type': centrality_type,
+                      'keep_threshold': keep_threshold, 'correlation': correlation,
+                      'weighted': weighted, 'corr_prop': corr_prop, 'evaluation_type': evaluation_type,
+                      'plot_metric': plot_metric, 'create_graph': create_graph, 'plot_pca': plot_pca,
+                      'naming_file': naming_file, 'proc_id': proc_id, 'runtime': runtime, 'min_connected': min_connected,
+                      'connectedness': connectedness}
+    else:
+        param_dict = {'ab_comp': ab_comp, 'dataframe1': dataframe1.name, 'dataframe2': "",
+                      'metric_name': metric_name, 'c_type': c_type, 'min_count': min_count,
+                      'total_select': total_select, 'iteration_select': iteration_select,
+                      'pca_components': pca_components, 'smooth_type': smooth_type,
+                      'window_size': window_size, 'centrality_type': centrality_type,
+                      'keep_threshold': keep_threshold, 'correlation': correlation,
+                      'weighted': weighted, 'corr_prop': corr_prop, 'evaluation_type': evaluation_type,
+                      'plot_metric': plot_metric, 'create_graph': create_graph, 'plot_pca': plot_pca,
+                      'naming_file': naming_file, 'proc_id': proc_id, 'runtime': runtime, 'min_connected': min_connected,
+                      'connectedness': connectedness}
 
     if( detailed ):
         parameter_df = pd.DataFrame(list(param_dict.items()),
