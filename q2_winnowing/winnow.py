@@ -60,36 +60,6 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
                  evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False, plot_pca: Bool=False,
                  naming_file: Str=None, proc_id: Int=0, min_connected: Int=0, detailed: Bool=False, verbose: Bool=False
                  ) -> biom.Table:
-    """
-
-    :param infile1:
-    :param infile2:
-    :param name:
-    :param ab_comp:
-    :param metric_name:
-    :param c_type:
-    :param min_count:
-    :param total_select:
-    :param iteration_select:
-    :param pca_components:
-    :param smooth_type:
-    :param window_size:
-    :param centrality_type:
-    :param keep_threshold:
-    :param correlation:
-    :param weighted:
-    :param corr_prop:
-    :param evaluation_type:
-    :param plot_metric:
-    :param create_graph:
-    :param plot_pca:
-    :param naming_file:
-    :param proc_id:
-    :param min_connected:
-    :param detailed:
-    :param verbose:
-    :return:
-    """
 
     # Convert input to dataframes
     dataFrame1 = infile1.to_dataframe().to_dense()
@@ -145,32 +115,44 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
     Note this function executes the main functionality of steps 1-3 in the pipeline of
     winnowing data.
 
-    :param dataFrame1:
-    :param dataFrame2:
-    :param ab_comp:
-    :param metric_name:
-    :param c_type:
-    :param min_count:
-    :param total_select:
-    :param iteration_select:
-    :param pca_components:
-    :param smooth_type:
-    :param window_size:
-    :param centrality_type:
-    :param keep_threshold:
-    :param correlation:
-    :param weighted:
-    :param corr_prop:
-    :param evaluation_type:
-    :param plot_metric:
-    :param create_graph:
-    :param plot_pca:
-    :param naming_file:
-    :param proc_id:
-    :param min_connected:
-    :param detailed:
-    :param verbose:
-    :return:
+    :param dataFrame1: This is the biom file which will have OTU info extracted from and analyzed to generate
+        an interaction table of taxom.
+    :param dataFrame2: This is only used in the case of an A/B analysis and will not be used if ab_comp is False.
+    :param ab_comp: Boolean representing whether to perform AB comparison on the data.
+    :param metric_name: This is the metric to use.
+    :param c_type: Conditioning type to use on the data.
+    :param min_count: Features with counts below this number will be removed.
+    :param total_select: Number of features to select in total. ie: 1,2,3,... or 'all'
+    :param iteration_select: Number of features to select for each time the metric is called. ie: 1,2,3,... or 'all'
+    :param pca_components: Number of pca components to find
+    :param smooth_type: Type of Smoothing to be used to remove noise.
+    :param window_size: If Smoothing type is a sliding window, this is the size of the window.
+    :param centrality_type: If graph_centrality is the metric type, this is the type of Centrality to use.
+    :param keep_threshold: If graph_centrality is the metric type, this is the threshold to use to remove weak edges.
+    :param correlation: If graph_centrality is the metric type, this is the type of correlation to
+        use to build the graph.
+    :param weighted: If graph_centrality is the metric type, this specifies if weighted edges should be used
+        to create the graph.
+    :param corr_prop: If graph centrality is the metric, this specifies if positive, negative, or both types
+        of correlation should be used.
+    :param evaluation_type: This is the evaluation type to use.
+    :param plot_metric: Including this parameter will create a line plot of the metric values for the selected features.
+    :param create_graph: If graph centrality is the metric, including this parameter will create a graph image of the
+        selected features (using the same correlation type used to select the features).
+    :param plot_pca: If PCA is the metric, including this parameter will create a scatter plot image of the first two
+        principle components.
+    :param naming_file: The file to be used to name the features. If not used, the features will be outputted with
+        the names the input file.
+    :param proc_id: The identifying number to use in the output file names.
+    :param min_connected: The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.
+    :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
+        computation. If not enabled files will not be generated
+    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
+        may have been output through print statements during execution. Each dump.txt file is stored in output folders
+        that correspond with each step.
+    :return: This is the completed table of different taxa with their corresponding interactions to other taxa
+         in their enviroment. This was computed through the use of methods such as: Abundance analysis, AUC analysis,
+         F-Score ordering, PERMANOVA calculation, Jacobian matrices, and SEM analysis
     """
 
     if( total_select and total_select != "all" ):
@@ -209,6 +191,17 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
 
 
 def _winnow_ordering( dataframe, name, detailed: Bool=False, verbose: Bool=False ):
+    """
+    Each OTU is now ordered by centrality and the AUC of each is calculated.
+    :param dataframe: Important features and OTUs that have been passed on to be ordered
+    :param name: Each file generated by this step will be identified by this name
+    :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
+        computation. If not enabled files will not be generated
+    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
+        may have been output through print statements during execution. Each dump.txt file is stored in output folders
+        that correspond with each step.
+    :return: A dataframe representing each OTU ordered by centrality and calculated AUC
+    """
 
     # Output files and Parameter files are both generated from this function
     auc_result, auc_param = step4_5_main( dataframe , name=name, detailed=detailed, verbose=verbose )
@@ -217,6 +210,21 @@ def _winnow_ordering( dataframe, name, detailed: Bool=False, verbose: Bool=False
 
 
 def _winnow_permanova( df_AUC_ordering, df_abundances, df_samples,  name, detailed=False, verbose=False ):
+    """
+    100 Permanovas are ran, Each time adding in more OTUs at a 1% interval according to their order in step 5
+    Essentially a sweet spot of additions will be reached and the most influential OTUs will be identified based off
+    when additions of OTUs provides little amounts of change in output.
+    :param df_AUC_ordering: AUC ordering that was completed earlier
+    :param df_abundances: abundances that were generated from initial step
+    :param df_samples: Sample that provide data on whether taxom were invade or uninvaded
+    :param name: Each file generated by this step will be identified by this name
+    :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
+        computation. If not enabled files will not be generated
+    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
+        may have been output through print statements during execution. Each dump.txt file is stored in output folders
+        that correspond with each step.
+    :return: a dataframe organised to represent the most influential OTUs
+    """
 
     # Permanova results are generated here
     permanova_result = step6_main( df_AUC_ordering, df_abundances, df_samples, name, detailed=detailed, verbose=verbose)
