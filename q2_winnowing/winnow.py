@@ -4,6 +4,7 @@ import biom
 import qiime2
 import numpy as np
 import pandas as pd
+import os
 
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn
 
@@ -62,8 +63,15 @@ def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile
                        plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
                        detailed: Bool=False, verbose: Bool=False
                  ) -> biom.Table:
+    if( verbose ):
+        outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+        # allows for cleaner execution and use of relative paths
+        dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
     # This will then be used as part of the PERMANOVA calculation
+
+    if( verbose ):
+        dump.write("Beginning to convert input to dataframes.\n")
 
     # Convert input to dataframes
     dataFrame1 = infile1.to_dataframe().to_dense()
@@ -84,6 +92,8 @@ def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
 
+    if( verbose ):
+        dump.write("Finished converting input to dataframes.\nStarting steps 1 to 3\n")
 
     # Pass data to steps 1 to 3
     metric_result, important_features, abundances = \
@@ -96,21 +106,31 @@ def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile
                           min_connected=min_connected, detailed=detailed, verbose=verbose)
     # these are used in: Step7_9, Step4_5, Step6
 
+    if( verbose ):
+        dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
+
     # Pass data to steps 4 to 5
     AUC_results, AUC_parameters = \
         _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
     # these are used in: Step6, None
+
+    if( verbose ):
+        dump.write("Finished steps 4 to 5.\nStarting step 6\n")
 
     # Pass data to step 6
     PERMANOVA_results = \
         _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
                            name=name, detailed=detailed, verbose=verbose )
 
+    if( verbose ):
+        dump.write("Finished step 6.\nStarting steps 7 to 9\n")
+
     # Pass data to steps 7 to 9
 
 
 
 
+    dump.close()
 
     return _dummy_biom_table()
 

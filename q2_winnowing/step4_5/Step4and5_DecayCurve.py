@@ -49,6 +49,9 @@ def calc_auc_percentile( input_df, verbose=False, dump=None ):
     result_df = pd.DataFrame(columns=['auc', 'otu.num'])
     parameter_df = pd.DataFrame(columns=['x', 'y'])
 
+    # This will need to be refactored since it causes errors in the next step
+    # the issue is it makes it so there needs to be 100 AUC calculation and since the indexing it the next
+    # step goes off the length of AUC then if there is less samples/OTU's then 100 the program idexes out of bounds.
     for factor in np.arange(0.01, 1.00, 0.01):
         area = 0.0
         end_range = 2
