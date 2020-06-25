@@ -171,7 +171,6 @@ def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
     # it needs the upper triangle to mirror the lower
     newMatrix[ np.triu_indices(length, 1 )] = hellingerMatrix
 
-
     return newMatrix
 
 
@@ -189,7 +188,7 @@ def perform_permanova( df_sample, data_frame_1, data_frame_2, output_file, detai
     df_dg_premanova = pd.DataFrame(columns=['test', 'order', 'auc','SumsOfSqs','MeanSqs','F.model','R2','Pval','N.taxa','F.model.scale'])
 
     # Setup variables before loop to avoid extra computation
-    typeIndex = int( df_sample.columns.get_loc("type"))  # Since Rpy doesn't allow for string index must get column int index
+    typeIndex = int( df_sample.columns.get_loc("Type"))  # Since Rpy doesn't allow for string index must get column int index
     rdf_sample = pandas2ri.py2rpy(df_sample)[typeIndex]
 
     rformula = Formula('x ~ y') # Note, y is independent while x is dependant
@@ -245,7 +244,7 @@ def perform_permanova( df_sample, data_frame_1, data_frame_2, output_file, detai
 
 
 # <><><> DEFINE EXECUTION FUNCTION <><><>
-def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=False):
+def main( dataFrame1, dataFrame2, sampleDataframe,  name, detailed=False, verbose=False):
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
@@ -260,13 +259,13 @@ def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=Fal
             dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
             # Call PERMANOVA calculation
-            df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, outFile, detailed, verbose, dump )
+            df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, outFile, detailed, verbose, dump )
             dump.write( f"Plots generated to {outDir}.\n" )
             dump.close()
 
         else:
             # Call PERMANOVA calculation
-            df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, outFile, detailed )
+            df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, outFile, detailed )
 
         # Since this is detailed must generate plots
         _generate_figures( df_permanova, outDir )
@@ -276,19 +275,19 @@ def main( dataFrame1, dataFrame2, sampleFile,  name, detailed=False, verbose=Fal
         dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
         # Call PERMANOVA calculation
-        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, None, verbose=verbose, dump=dump )
+        df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, None, verbose=verbose, dump=dump )
         dump.close()
 
     else:
         # No excess files necessary just generate dataframe to pass on
-        df_permanova = perform_permanova( sampleFile, dataFrame1, dataFrame2, None )
+        df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, None )
 
     return df_permanova
 
 
 # <><> TEST <><>
 # Testing dataframe function
-# test_sample = "./test_data/Brome_BFA_AB_sample_info.csv"
+# test_sample = pd.read_csv("./test_data/Brome_BFA_AB_sample_info.csv")
 # test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
 # test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
 # main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)

@@ -1,8 +1,8 @@
 
 
 import qiime2.plugin
+from qiime2.plugin import Metadata, MetadataColumn, Categorical
 from q2_types.feature_table import FeatureTable, RelativeFrequency, BIOMV210DirFmt
-from q2_types.tree import Phylogeny, Rooted, Unrooted
 
 import q2_winnowing
 from q2_winnowing.winnow import winnow_processing
@@ -56,6 +56,7 @@ plugin.methods.register_function(
     },
     parameters={
         "name": qiime2.plugin.Str,
+        "sample_types": MetadataColumn[Categorical],
         "ab_comp": qiime2.plugin.Bool,
         "metric_name": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
         "evaluation_type": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
@@ -83,6 +84,9 @@ plugin.methods.register_function(
     parameter_descriptions={
         "name": ("This is the string that will be attached to output files. This is used especially in "
                  "the case of detailed."),
+        "sample_types": ("This data provides a legend for which samples are of different types. This allows for "
+                         "permutations in PERMANOVA calculations to be descriptive. Data is labelled as "
+                         "invaded and natural"),
         "ab_comp": ("Boolean representing whether to perform AB comparison on the data."),
         "metric_name": ("This is the metric to use."),
         "evaluation_type": ("This is the evaluation type to use."),

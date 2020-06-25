@@ -339,7 +339,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
         centrality_df.columns = ['metric']
 
         if not centrality_df.empty:
-            centrality_df = centrality_df[centrality_df.ix[:, 0] > 0]
+            centrality_df = centrality_df[centrality_df.iloc[:, 0] > 0]
 
         if not centrality_df.empty:
             centrality_df.sort_values('metric', axis=0, ascending=False, inplace=True)
@@ -400,8 +400,9 @@ def selection(func, s_total, s_per_iter, df, *args):
             if ((i + 1) * select_per_iter > select_total):
                 select = select_total % selected
             # take the top n features returned by the metric
-            top_features = sorted_df.ix[:select].index.values
-            selected_df = selected_df.append(sorted_df.ix[:select])
+            top_features = sorted_df.iloc[:select].index.values
+
+            selected_df = selected_df.append(sorted_df.iloc[:select])
             selected += select
 
             # if this is the last time we're selecting features,
@@ -807,6 +808,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     # run the metric selection step to return the important features
     important_features = pd.DataFrame()
+
     if metric_name == 'graph_centrality':
         metric = graph_centrality
         important_features = selection(metric, total_select, iteration_select, data, centrality_type, keep_threshold,

@@ -5,7 +5,7 @@ import qiime2
 import numpy as np
 import pandas as pd
 
-from qiime2.plugin import Bool, Str, Int, Float
+from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn
 
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
@@ -53,26 +53,37 @@ def _assemble_biom_table_from_SEM_data( dataframe ):
     return table
 
 
-def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str="NoNameGiven", ab_comp: Bool=False, metric_name: Str=None,
-                 c_type: Str=None, min_count: Int=3, total_select: Str="all", iteration_select: Str="all",
-                 pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
-                 keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
-                 evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False, plot_pca: Bool=False,
-                 naming_file: Str=None, proc_id: Int=0, min_connected: Int=0, detailed: Bool=False, verbose: Bool=False
+def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
+                       name: Str="NoNameGiven", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
+                       min_count: Int=3, total_select: Str="all", iteration_select: Str="all", pca_components: Int=4,
+                       smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
+                       keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
+                       evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False,
+                       plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
+                       detailed: Bool=False, verbose: Bool=False
                  ) -> biom.Table:
+
+    # This will then be used as part of the PERMANOVA calculation
 
     # Convert input to dataframes
     dataFrame1 = infile1.to_dataframe().to_dense()
     dataFrame1.name = f"{name}_1_"
     dataFrame2 = None
-
-    # Will likely need to grab sample data here too. This will then be used as part of the PERMANOVA calculation
-    # TODO: Strip sample data off input
-    sample_legend = pd.read_csv( "C:/Users/liamb/VirtualSharedFolder/q2-winnowing/q2_winnowing/step6/test_data/Brome_BFA_AB_sample_info.csv" )  # AB horizon, BRA
-
     if( ab_comp ):
         dataFrame2 = infile2.to_dataframe().to_dense()
         dataFrame2.name = f"{name}_2_"
+
+    sample_types = sample_types.to_dataframe()
+
+    num_samples = len( infile1.ids( axis='observation' ) )
+    try:
+        num_sample_types = len( sample_types.loc[:,"Type"] )
+    except:
+        raise Exception( "Error: sample metadata must include a column titled Type.")
+
+    if( num_samples != num_sample_types ):
+        raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
+
 
     # Pass data to steps 1 to 3
     metric_result, important_features, abundances = \
@@ -92,7 +103,7 @@ def winnow_processing( infile1: biom.Table, infile2: biom.Table=None, name: Str=
 
     # Pass data to step 6
     PERMANOVA_results = \
-        _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_legend,
+        _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
                            name=name, detailed=detailed, verbose=verbose )
 
     # Pass data to steps 7 to 9
