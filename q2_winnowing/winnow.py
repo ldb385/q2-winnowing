@@ -68,8 +68,6 @@ def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile
         # allows for cleaner execution and use of relative paths
         dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
-    # This will then be used as part of the PERMANOVA calculation
-
     if( verbose ):
         dump.write("Beginning to convert input to dataframes.\n")
 
@@ -81,8 +79,10 @@ def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile
         dataFrame2 = infile2.to_dataframe().to_dense()
         dataFrame2.name = f"{name}_2_"
 
+    # This will be used as part of the PERMANOVA calculation
     sample_types = sample_types.to_dataframe()
 
+    # Make sure input is valid
     num_samples = len( infile1.ids( axis='observation' ) )
     try:
         num_sample_types = len( sample_types.loc[:,"Type"] )
@@ -264,7 +264,18 @@ def _winnow_permanova( df_AUC_ordering, df_abundances, df_samples,  name, detail
 
 
 
-def _winnow_sensativity():
+def _winnow_sensativity( df_metric_results, name, detailed=False, verbose=False ):
+    """
+    tested if the number of OTUs selected at each iteration influenced the results. If the results
+    were consistent. if so use  leave-one-out analysis to distribute the centrality measure among samples.
+    This is because the SEM (step10) requires a centrality measure for each sample that could link to
+    environmental variables, whereas the data until this point is centrality for each OTU.
+    :param df_metric_results:
+    :param name:
+    :param detailed:
+    :param verbose:
+    :return:
+    """
 
 
     return

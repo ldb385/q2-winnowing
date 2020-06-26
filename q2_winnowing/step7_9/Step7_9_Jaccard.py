@@ -239,8 +239,6 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
     kappa_df = pd.DataFrame(
         columns=['conditioning', 'centrality', 'correl', 'threshold', 'select_iter', 'kappa', 'agreement'])
 
-    print( df_leaveOneOut.shape )
-
     for i in range(0, df_leaveOneOut.shape[1] - 1): # iterate through columns
         if (i == j):
             j += 5
