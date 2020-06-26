@@ -49,12 +49,10 @@ def calc_auc_percentile( input_df, verbose=False, dump=None ):
     result_df = pd.DataFrame(columns=['auc', 'otu.num'])
     parameter_df = pd.DataFrame(columns=['x', 'y'])
 
-    # This will need to be refactored since it causes errors in the next step
-    # the issue is it makes it so there needs to be 100 AUC calculation and since the indexing it the next
-    # step goes off the length of AUC then if there is less samples/OTU's then 100 the program idexes out of bounds.
     for factor in np.arange(0.01, 1.00, 0.01):
         area = 0.0
         end_range = 2
+        # 1. calculate the area of each trapezoid
         while (area <= round(factor, 2) * brome_auc):
             area = raucx(brome_dg["metric"], brome_dg.index, interval=rc(1, end_range))
             end_range += 1
@@ -62,6 +60,7 @@ def calc_auc_percentile( input_df, verbose=False, dump=None ):
         if( verbose ):
             dump.write( f"The point at which we reach {str(round(factor * 100, 2))}% of the AUC is = {str(end_range)}\n" )
 
+        #2. sum trapezoid areas to get AUC
         result_df.loc[int(round(factor * 100, 2))] = ["auc" + str(int(round(factor * 100, 2)))] + [end_range]
 
     result_df.loc[100] = ["auc100"] + [len(brome_dg["metric"])]

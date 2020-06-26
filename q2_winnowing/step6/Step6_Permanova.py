@@ -183,6 +183,9 @@ def perform_permanova( df_sample, data_frame_1, data_frame_2, output_file, detai
 
     df_dg_auc = data_frame_1 # AUC curves for subsetting
     df_dg_auc100 = data_frame_2 # Abundances used for Hellinger
+    # Make sure indices begin at 0 so loop works
+    df_dg_auc.reset_index( drop=True, inplace=True )
+    df_dg_auc100.reset_index(  drop=True, inplace=True )
 
     # This is what our dataframe output should be formatted as, will need to build as each index is iterated
     df_dg_premanova = pd.DataFrame(columns=['test', 'order', 'auc','SumsOfSqs','MeanSqs','F.model','R2','Pval','N.taxa','F.model.scale'])
@@ -196,7 +199,8 @@ def perform_permanova( df_sample, data_frame_1, data_frame_2, output_file, detai
     for i in range( 0, len( df_dg_auc) ): # all auc values are used to compute
 
         # This is STEP 1
-        df_data_dg = df_dg_auc100.iloc[:, 0:int(df_dg_auc.iloc[i,2]) ] # get all columns with rows 0 to value at [i,2]
+        range_of_decay = int(df_dg_auc.iloc[i, len(df_dg_auc.columns)-1])
+        df_data_dg = df_dg_auc100.iloc[:, 0:range_of_decay ] # get all rows with columns 0 to value at [i,2]
         rdf_data_dg = pandas2ri.py2rpy(df_data_dg)
 
         # This is STEP 2
@@ -252,7 +256,6 @@ def main( dataFrame1, dataFrame2, sampleDataframe,  name, detailed=False, verbos
     if( detailed ):
         outFile = f"{outDir}/{name}_PERMANOVA_result.csv"
         # Create new files for output
-        outFile = open(outFile, "w+", encoding="utf-8")
 
         if( verbose ):
 
@@ -291,11 +294,11 @@ def main( dataFrame1, dataFrame2, sampleDataframe,  name, detailed=False, verbos
 # test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
 # test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
 # main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
-
+#
 # test_sample = pd.read_csv( "./test_data/metadata_samples.csv" )  # AB horizon, BRA
 # test_abundance = pd.read_csv("./test_data/NoNameGiven_1_-abundances-0.csv")
 # test_AUC = pd.read_csv("./test_data/NoNameGiven_auc_result.csv")
-# main( test_abundance, test_AUC, test_sample, "Test_Step6", True, True)
+# main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
 
 
 
