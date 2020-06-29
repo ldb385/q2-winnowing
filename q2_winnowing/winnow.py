@@ -120,7 +120,7 @@ def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile
     # Pass data to step 6
     PERMANOVA_results = \
         _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
-                           name=name, detailed=detailed, verbose=verbose )
+                           centralityType=centrality_type, name=name, detailed=detailed, verbose=verbose )
 
     if( verbose ):
         dump.write("Finished step 6.\nStarting steps 7 to 9\n")
@@ -240,7 +240,7 @@ def _winnow_ordering( dataframe, name, detailed: Bool=False, verbose: Bool=False
     return ( auc_result, auc_param )
 
 
-def _winnow_permanova( df_AUC_ordering, df_abundances, df_samples,  name, detailed=False, verbose=False ):
+def _winnow_permanova( df_AUC_ordering, df_abundances, df_samples, centralityType, name, detailed=False, verbose=False ):
     """
     100 Permanovas are ran, Each time adding in more OTUs at a 1% interval according to their order in step 5
     Essentially a sweet spot of additions will be reached and the most influential OTUs will be identified based off
@@ -258,7 +258,8 @@ def _winnow_permanova( df_AUC_ordering, df_abundances, df_samples,  name, detail
     """
 
     # Permanova results are generated here
-    permanova_result = step6_main( df_AUC_ordering, df_abundances, df_samples, name, detailed=detailed, verbose=verbose)
+    permanova_result = step6_main( df_AUC_ordering, df_abundances, df_samples, centralityType, name=name,
+                                   detailed=detailed, verbose=verbose)
 
     return permanova_result
 

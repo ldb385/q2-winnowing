@@ -46,7 +46,7 @@ rplot = r['plot']
 
 # <><><> DEFINE FUNCTIONS <><><>
 
-def _generate_figures( dataFrame_permanova, outdir ):
+def _generate_figures( dataFrame_permanova, cent_type, outdir ):
 
     dataFrame_permanova.loc[0] = ["auc0"]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]
     dataFrame_permanova.sort_index(axis=0,inplace=True)
@@ -54,97 +54,101 @@ def _generate_figures( dataFrame_permanova, outdir ):
     rf_model_scale = pandas2ri.py2rpy(dataFrame_permanova["F.model.scale"])
     sliding_sd = rzoo.rollapply(rf_model_scale, width=5, FUN=rstats.sd, fill='NA')
 
-    # <><> PLOTTING DEGREE <><>
-    plt.figure()
-    plt.axis([0, 100, 0.0, 1.0])
-    plt.xlabel('AUC%')
-    plt.ylabel('F-Score(scaled)')
-    plt.plot(
-        dataFrame_permanova.iloc[[x for x in range(39, 45)] + [y for y in range(45, 101, 5)], [2]].values.tolist(),
-        dataFrame_permanova.iloc[[x for x in range(39, 45)] + [y for y in range(45, 101, 5)], [9]].values.tolist(),
-        'ro', color="black")
-    plt.plot(dataFrame_permanova.iloc[[x for x in range(0, 36, 5)] + [37, 38, 39], [2]].values.tolist(),
-             dataFrame_permanova.iloc[[x for x in range(0, 36, 5)] + [36, 37, 38], [9]].values.tolist(), 'ro',
-             color="red")
-    spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
-                           dataFrame_permanova["F.model.scale"].values.tolist())
-    xs = np.linspace(0, 100, 10)
-    plt.plot(xs, spl(xs), 'g', lw=1)
-    # plt.plot(brome_permanova["auc"].values.tolist(),brome_permanova["F.model.scale"],color="green")
-    plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
-    plt.plot(dataFrame_permanova.iloc[36, 2], dataFrame_permanova.iloc[36, 9], 'ro', color="blue")
-    plt.text(dataFrame_permanova.iloc[36, 2] + 40, dataFrame_permanova.iloc[36, 9],
-             str(dataFrame_permanova.iloc[36, 8]) + " OTUs", color="blue")
-    plt.legend(loc=1, labels="E")
-    plt.savefig( os.path.join( outdir,"F-Score_AUC_degree.png"))
+    if( cent_type == "degree" ):
+        # <><> PLOTTING DEGREE <><>
+        plt.figure()
+        plt.axis([0, 100, 0.0, 1.0])
+        plt.xlabel('AUC%')
+        plt.ylabel('F-Score(scaled)')
+        plt.plot(
+            dataFrame_permanova.iloc[[x for x in range(39, 45)] + [y for y in range(45, 101, 5)], [2]].values.tolist(),
+            dataFrame_permanova.iloc[[x for x in range(39, 45)] + [y for y in range(45, 101, 5)], [9]].values.tolist(),
+            'ro', color="black")
+        plt.plot(dataFrame_permanova.iloc[[x for x in range(0, 36, 5)] + [37, 38, 39], [2]].values.tolist(),
+                 dataFrame_permanova.iloc[[x for x in range(0, 36, 5)] + [36, 37, 38], [9]].values.tolist(), 'ro',
+                 color="red")
+        spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
+                               dataFrame_permanova["F.model.scale"].values.tolist())
+        xs = np.linspace(0, 100, 10)
+        plt.plot(xs, spl(xs), 'g', lw=1)
+        # plt.plot(brome_permanova["auc"].values.tolist(),brome_permanova["F.model.scale"],color="green")
+        plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
+        plt.plot(dataFrame_permanova.iloc[36, 2], dataFrame_permanova.iloc[36, 9], 'ro', color="blue")
+        plt.text(dataFrame_permanova.iloc[36, 2] + 40, dataFrame_permanova.iloc[36, 9],
+                 str(dataFrame_permanova.iloc[36, 8]) + " OTUs", color="blue")
+        plt.legend(loc=1, labels="E")
+        plt.savefig( os.path.join( outdir,"F-Score_AUC_degree.png"))
 
-    # <><> PLOTTING CLOSENESS <><>
-    plt.figure()
-    plt.axis([0, 100, 0.0, 1.1])
-    plt.xlabel('AUC%')
-    plt.ylabel('F-Score(scaled)')
-    plt.plot(dataFrame_permanova.iloc[[8, 9, 10] + [x for x in range(11, 101, 5)], [2]].values.tolist(),
-             dataFrame_permanova.iloc[[8, 9, 10] + [x for x in range(11, 101, 5)], [9]].values.tolist(), 'ro',
-             color="black")
-    plt.plot(dataFrame_permanova.iloc[[x for x in range(1, 7)], [2]].values.tolist(),
-             dataFrame_permanova.iloc[[x for x in range(1, 7)], [9]].values.tolist(), 'ro', color="red")
-    spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
-                           dataFrame_permanova["F.model.scale"].values.tolist())
-    xs = np.linspace(0, 101, 10)
-    plt.plot(xs, spl(xs), 'g', lw=1)
-    plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
-    plt.plot(dataFrame_permanova.iloc[4, 2], dataFrame_permanova.iloc[4, 9], 'ro', color="blue")
-    plt.text(dataFrame_permanova.iloc[4, 2] + 40, dataFrame_permanova.iloc[4, 9],
-             str(dataFrame_permanova.iloc[4, 8]) + " OTUs", color="blue")
-    plt.legend(loc=1, labels="F")
-    plt.savefig( os.path.join( outdir,"F-Score_AUC_closeness.png"))
+    elif( cent_type == "closeness" ):
+        # <><> PLOTTING CLOSENESS <><>
+        plt.figure()
+        plt.axis([0, 100, 0.0, 1.1])
+        plt.xlabel('AUC%')
+        plt.ylabel('F-Score(scaled)')
+        plt.plot(dataFrame_permanova.iloc[[8, 9, 10] + [x for x in range(11, 101, 5)], [2]].values.tolist(),
+                 dataFrame_permanova.iloc[[8, 9, 10] + [x for x in range(11, 101, 5)], [9]].values.tolist(), 'ro',
+                 color="black")
+        plt.plot(dataFrame_permanova.iloc[[x for x in range(1, 7)], [2]].values.tolist(),
+                 dataFrame_permanova.iloc[[x for x in range(1, 7)], [9]].values.tolist(), 'ro', color="red")
+        spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
+                               dataFrame_permanova["F.model.scale"].values.tolist())
+        xs = np.linspace(0, 101, 10)
+        plt.plot(xs, spl(xs), 'g', lw=1)
+        plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
+        plt.plot(dataFrame_permanova.iloc[4, 2], dataFrame_permanova.iloc[4, 9], 'ro', color="blue")
+        plt.text(dataFrame_permanova.iloc[4, 2] + 40, dataFrame_permanova.iloc[4, 9],
+                 str(dataFrame_permanova.iloc[4, 8]) + " OTUs", color="blue")
+        plt.legend(loc=1, labels="F")
+        plt.savefig( os.path.join( outdir,"F-Score_AUC_closeness.png"))
 
-    # <><> PLOTTING BETWEENESS <><>
-    plt.figure()
-    plt.axis([0, 100, 0.0, 1.0])
-    plt.xlabel('AUC%')
-    plt.ylabel('F-Score(scaled)')
-    plt.plot(
-        dataFrame_permanova.iloc[[x for x in range(36, 40)] + [y for y in range(40, 101, 5)], [2]].values.tolist(),
-        dataFrame_permanova.iloc[[x for x in range(36, 40)] + [y for y in range(40, 101, 5)], [9]].values.tolist(),
-        'ro', color="black")
-    plt.plot(dataFrame_permanova.iloc[[x for x in range(0, 31, 5)] + [32, 33, 34, 35], [2]].values.tolist(),
-             dataFrame_permanova.iloc[[x for x in range(0, 31, 5)] + [32, 33, 34, 35], [9]].values.tolist(), 'ro',
-             color="red")
-    spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
-                           dataFrame_permanova["F.model.scale"].values.tolist())
-    xs = np.linspace(0, 100, 10)
-    plt.plot(xs, spl(xs), 'g', lw=1)
-    plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
-    plt.plot(dataFrame_permanova.iloc[35, 2], dataFrame_permanova.iloc[35, 9], 'ro', color="blue")
-    plt.text(dataFrame_permanova.iloc[35, 2] + 40, dataFrame_permanova.iloc[35, 9] + 0.05,
-             str(dataFrame_permanova.iloc[35, 8]) + " OTUs", color="blue")
-    plt.legend(loc=1, labels="G")
-    plt.savefig( os.path.join( outdir,"F-Score_AUC_betweeness.png") )
+    elif( cent_type == "betweenness" ):
+        # <><> PLOTTING BETWEENESS <><>
+        plt.figure()
+        plt.axis([0, 100, 0.0, 1.0])
+        plt.xlabel('AUC%')
+        plt.ylabel('F-Score(scaled)')
+        plt.plot(
+            dataFrame_permanova.iloc[[x for x in range(36, 40)] + [y for y in range(40, 101, 5)], [2]].values.tolist(),
+            dataFrame_permanova.iloc[[x for x in range(36, 40)] + [y for y in range(40, 101, 5)], [9]].values.tolist(),
+            'ro', color="black")
+        plt.plot(dataFrame_permanova.iloc[[x for x in range(0, 31, 5)] + [32, 33, 34, 35], [2]].values.tolist(),
+                 dataFrame_permanova.iloc[[x for x in range(0, 31, 5)] + [32, 33, 34, 35], [9]].values.tolist(), 'ro',
+                 color="red")
+        spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
+                               dataFrame_permanova["F.model.scale"].values.tolist())
+        xs = np.linspace(0, 100, 10)
+        plt.plot(xs, spl(xs), 'g', lw=1)
+        plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
+        plt.plot(dataFrame_permanova.iloc[35, 2], dataFrame_permanova.iloc[35, 9], 'ro', color="blue")
+        plt.text(dataFrame_permanova.iloc[35, 2] + 40, dataFrame_permanova.iloc[35, 9] + 0.05,
+                 str(dataFrame_permanova.iloc[35, 8]) + " OTUs", color="blue")
+        plt.legend(loc=1, labels="G")
+        plt.savefig( os.path.join( outdir,"F-Score_AUC_betweeness.png") )
 
+    elif( cent_type == "eigenvector"):
+        # <><> PLOTTING EIGENVECTOR <><>
+        plt.figure()
+        plt.axis([0, 100, 0.0, 1.0])
+        plt.xlabel('AUC%')
+        plt.ylabel('F-Score(scaled)')
+        plt.plot(
+            dataFrame_permanova.iloc[[x for x in range(26, 31)] + [y for y in range(30, 101, 5)], [2]].values.tolist(),
+            dataFrame_permanova.iloc[[x for x in range(26, 31)] + [y for y in range(30, 101, 5)], [9]].values.tolist(),
+            'ro', color="black")
+        plt.plot(dataFrame_permanova.iloc[[x for x in range(0, 21, 5)] + [22, 23], [2]].values.tolist(),
+                 dataFrame_permanova.iloc[[x for x in range(0, 21, 5)] + [22, 23], [9]].values.tolist(), 'ro',
+                 color="red")
+        spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
+                               dataFrame_permanova["F.model.scale"].values.tolist())
+        xs = np.linspace(0, 100, 5)
+        plt.plot(xs, spl(xs), 'g', lw=1)
+        plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
+        plt.plot(dataFrame_permanova.iloc[21, 2], dataFrame_permanova.iloc[21, 9], 'ro', color="blue")
+        plt.text(dataFrame_permanova.iloc[21, 2] + 40, dataFrame_permanova.iloc[21, 9],
+                 str(dataFrame_permanova.iloc[21, 8]) + " OTUs", color="blue")
+        plt.legend(loc=1, labels="H")
+        plt.savefig( os.path.join( outdir,"F-Score_AUC_eigenvector.png") )
 
-    # <><> PLOTTING EIGENVECTOR <><>
-    plt.figure()
-    plt.axis([0, 100, 0.0, 1.0])
-    plt.xlabel('AUC%')
-    plt.ylabel('F-Score(scaled)')
-    plt.plot(
-        dataFrame_permanova.iloc[[x for x in range(26, 31)] + [y for y in range(30, 101, 5)], [2]].values.tolist(),
-        dataFrame_permanova.iloc[[x for x in range(26, 31)] + [y for y in range(30, 101, 5)], [9]].values.tolist(),
-        'ro', color="black")
-    plt.plot(dataFrame_permanova.iloc[[x for x in range(0, 21, 5)] + [22, 23], [2]].values.tolist(),
-             dataFrame_permanova.iloc[[x for x in range(0, 21, 5)] + [22, 23], [9]].values.tolist(), 'ro',
-             color="red")
-    spl = UnivariateSpline(dataFrame_permanova["auc"].values.tolist(),
-                           dataFrame_permanova["F.model.scale"].values.tolist())
-    xs = np.linspace(0, 100, 5)
-    plt.plot(xs, spl(xs), 'g', lw=1)
-    plt.plot([x for x in range(0, 101)], sliding_sd, color="red")
-    plt.plot(dataFrame_permanova.iloc[21, 2], dataFrame_permanova.iloc[21, 9], 'ro', color="blue")
-    plt.text(dataFrame_permanova.iloc[21, 2] + 40, dataFrame_permanova.iloc[21, 9],
-             str(dataFrame_permanova.iloc[21, 8]) + " OTUs", color="blue")
-    plt.legend(loc=1, labels="H")
-    plt.savefig( os.path.join( outdir,"F-Score_AUC_eigenvector.png") )
 
     return #Nothing is returned this states end of function
 
@@ -248,7 +252,7 @@ def perform_permanova( df_sample, data_frame_1, data_frame_2, output_file, detai
 
 
 # <><><> DEFINE EXECUTION FUNCTION <><><>
-def main( dataFrame1, dataFrame2, sampleDataframe,  name, detailed=False, verbose=False):
+def main( dataFrame1, dataFrame2, sampleDataframe, centralityType, name, detailed=False, verbose=False):
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
@@ -271,7 +275,7 @@ def main( dataFrame1, dataFrame2, sampleDataframe,  name, detailed=False, verbos
             df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, outFile, detailed )
 
         # Since this is detailed must generate plots
-        _generate_figures( df_permanova, outDir )
+        _generate_figures( df_permanova, centralityType, outDir )
 
     elif( verbose ):
 
