@@ -63,7 +63,7 @@ plugin.methods.register_function(
         "min_count": qiime2.plugin.Int,
         "c_type": qiime2.plugin.Str % qiime2.plugin.Choices(_CONDITIONING_TYPES_),
         "total_select": qiime2.plugin.Str,
-        "iteration_select": qiime2.plugin.Str,
+        "iteration_select": qiime2.plugin.Set,
         "pca_components": qiime2.plugin.Int,
         "smooth_type": qiime2.plugin.Str % qiime2.plugin.Choices(_SMOOTHING_TYPES_),
         "window_size": qiime2.plugin.Int,
@@ -95,8 +95,10 @@ plugin.methods.register_function(
         "total_select": ("Number of features to select in total."
                          "Possible selections are:"
                          f"\t {_ALL_OR_INT_}"),
-        "iteration_select": ("Number of features to select for each time the metric is called."
-                             "Possible selections are:"
+        "iteration_select": ("Number of features to select for each time the metric is called. "
+                             "Note: a set of values must be given to be later used in a kappa calcultaion "
+                             "\tAn example of an input could be [1, 4, 16, 64, 128]"
+                             "Possible values are:"
                              f"\t {_ALL_OR_INT_}"),
         "pca_components": ("Number of pca components to find"),
         "smooth_type": ("Type of Smoothing to be used to remove noise."),

@@ -870,7 +870,6 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     # add the metric information to the important features and append to the metric results dataframe
     feature_row = metric_params + important_feature_list
 
-    print( feature_row )
     if( detailed ):
         with open( os.path.join( outdir, 'metric_results.csv'), 'a') as f:
             writer = csv.writer(f)
