@@ -765,6 +765,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     global outdir
     outdir = f"{os.path.dirname(os.path.realpath(__file__))}/output/{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}"
+    resultsOutdir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
     os.makedirs(outdir, exist_ok=True)
 
@@ -773,10 +774,13 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     # set up the metric variables and the file names
     if ab_comp:
+        metric_header = ["ab_comp", "dataframe1", "dataframe2", "metric", "centrality", "total select", "iteration select",
+                         "min count", "smooth type", "conditioning", "keep threshold", "correlation",
+                         "weighted", "correlation property", "min connected", "run time" ]
+
         metric_params = [ab_comp, dataframe1.name, dataframe2.name, metric_name, centrality_type, total_select,
-                         iteration_select,
-                         min_count, smooth_type, c_type, keep_threshold, correlation, weighted, corr_prop,
-                         min_connected]
+                         iteration_select, min_count, smooth_type, c_type, keep_threshold, correlation,
+                         weighted, corr_prop, min_connected]
         eval_params = [ab_comp, dataframe1.name, dataframe2.name, evaluation, c_type, total_select, iteration_select]
 
         dataframe2.fillna(0, inplace=True)
@@ -788,6 +792,10 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
             abundance_filename = f"{dataframe1.name}-{dataframe2.name}-abundances-{process_id}.csv"
 
     else:
+        metric_header = ["ab_comp", "dataframe1", "metric", "centrality", "total select", "iteration select",
+                         "min count", "smooth type", "conditioning", "keep threshold", "correlation",
+                         "weighted", "correlation property", "run time" ]
+
         metric_params = [ab_comp, dataframe1.name, metric_name, centrality_type, total_select,
                          iteration_select, min_count, smooth_type, c_type, keep_threshold, correlation, weighted,
                          corr_prop]
@@ -861,11 +869,18 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     # add the metric information to the important features and append to the metric results dataframe
     feature_row = metric_params + important_feature_list
+
+    print( feature_row )
     if( detailed ):
         with open( os.path.join( outdir, 'metric_results.csv'), 'a') as f:
             writer = csv.writer(f)
             writer.writerow(feature_row)
+        with open( os.path.join( resultsOutdir, 'combined_metric_results.csv'), 'a' ) as f:
+            writer = csv.writer(f)
+            writer.writerow(feature_row)
 
+    metric_header.extend( range( 1, abs( len(feature_row) - len(metric_header) ) +1 ))
+    feature_df = pd.DataFrame( [feature_row], columns=metric_header) # format list into data frame before output
 
     # get the abundances for each of the important features and write those to a new file
     # print('final important features', important_features)
@@ -902,7 +917,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
         param_filename = f'parameter_list-{process_id}.csv'
         parameter_df.to_csv(os.path.join(outdir, param_filename))
 
-    return ( feature_row, important_features, feature_abundances )
+    return ( feature_df, important_features, feature_abundances )
 
 # graph information loss, kl outlier divergence.
 # % of total information loss since removal has occurred. or look at inflection point and how far away your N otus are from that.
