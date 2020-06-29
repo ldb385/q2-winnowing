@@ -42,10 +42,9 @@ rc = r['c']
 
 
 def calc_auc_percentile( input_df, verbose=False, dump=None ):
-    brome_dg = input_df
-    brome_dg = brome_dg.sort_values("metric", axis=0, ascending=False)
-    brome_dg.index = range(1, len(brome_dg) + 1)
-    brome_auc = raucx(brome_dg["metric"], brome_dg.index, interval=rc(1, len(brome_dg["metric"])))
+    input_df = input_df.sort_values("metric", axis=0, ascending=False)
+    input_df.index = range(1, len(input_df) + 1)
+    input_auc = raucx(input_df["metric"], input_df.index, interval=rc(1, len(input_df["metric"])))
     result_df = pd.DataFrame(columns=['auc', 'otu.num'])
     parameter_df = pd.DataFrame(columns=['x', 'y'])
 
@@ -53,8 +52,8 @@ def calc_auc_percentile( input_df, verbose=False, dump=None ):
         area = 0.0
         end_range = 2
         # 1. calculate the area of each trapezoid
-        while (area <= round(factor, 2) * brome_auc):
-            area = raucx(brome_dg["metric"], brome_dg.index, interval=rc(1, end_range))
+        while (area <= round(factor, 2) * input_auc):
+            area = raucx(input_df["metric"], input_df.index, interval=rc(1, end_range))
             end_range += 1
 
         if( verbose ):
@@ -63,10 +62,10 @@ def calc_auc_percentile( input_df, verbose=False, dump=None ):
         #2. sum trapezoid areas to get AUC
         result_df.loc[int(round(factor * 100, 2))] = ["auc" + str(int(round(factor * 100, 2)))] + [end_range]
 
-    result_df.loc[100] = ["auc100"] + [len(brome_dg["metric"])]
-    parameter_df['x'] = brome_dg.index - 1
-    parameter_df['y'] = brome_dg["metric"]
-    parameter_df.loc[len(brome_dg)] = [len(brome_dg)] + [parameter_df.iloc[len(brome_dg) - 1, 1]]
+    result_df.loc[100] = ["auc100"] + [len(input_df["metric"])]
+    parameter_df['x'] = input_df.index - 1
+    parameter_df['y'] = input_df["metric"]
+    parameter_df.loc[len(input_df)] = [len(input_df)] + [parameter_df.iloc[len(input_df) - 1, 1]]
 
     return result_df, parameter_df.iloc[1:, :]
 
