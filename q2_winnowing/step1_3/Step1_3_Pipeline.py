@@ -551,18 +551,18 @@ def kl_divergence(A, B, features, select_per_iter, cond_type):
     return diverge_vals
 
 
-def create_pca_plot(features, name ):
+def create_pca_plot(features ):
     data = features.copy()
     plt.scatter(data['pca1'], data['pca2'])
     plt.xlabel('Principle Component 1')
     plt.ylabel('Principle Component 2')
     plt.title('Scatter Plot of Principle Components 1 and 2')
     plt.tight_layout()
-    plt.savefig(os.path.join(outdir, f"{name}_pca_scatter.png"))
+    plt.savefig(os.path.join(outdir, "pca_scatter.png"))
     # plt.show()
 
 
-def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh, weighted, name ):
+def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh, weighted ):
     data = features.copy()
     # create a graph of the edges/nodes using the same centrality type as used to select the features
     # this is the top25 file stuff
@@ -592,15 +592,15 @@ def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh,
     df_b = df_b.loc[((df_b[attr] <= 1 - keep_thresh) & (df_b[attr] > 0.0)),
            :]  # take only those edge pairs that made the cut
     df_g = networkx.from_pandas_edgelist(df_b, 'var1', 'var2', attr)  # takes a list of valid edges
-    networkx.write_graphml(df_g, f'{name}_graph_network.graphml')
+    networkx.write_graphml(df_g, os.path.join(outdir, "graph_network.graphml") )
     networkx.draw(df_g, node_color='dodgerblue', edge_color='dimgrey', with_labels=True)
 
-    plt.savefig(os.path.join(outdir, f"{name}_graph_network.png"))
-    create_ecological_network(df_b.copy(), data.copy(), name)
+    plt.savefig(os.path.join(outdir, f"graph_network.png"))
+    create_ecological_network(df_b.copy(), data.copy())
     # plt.show()
 
 
-def create_ecological_network(df, data, name):
+def create_ecological_network(df, data ):
     feature_names = data.columns
     metric_matrix = pd.DataFrame(columns=feature_names, index=feature_names, dtype='float64')
     metric_matrix.fillna(value=0.0, inplace=True)
@@ -617,11 +617,11 @@ def create_ecological_network(df, data, name):
         plt.title("Feature Metric Heatmap")
         plt.tight_layout()
         sb.heatmap(metric_matrix, annot=True, cmap=['Grey', 'Blue'], cbar=False)
-        plt.savefig(fname=os.path.join(outdir, f"{name}_metric_network.png"), format='png', dpi=600, bbox_inches='tight',
+        plt.savefig(fname=os.path.join(outdir, "metric_network.png"), format='png', dpi=600, bbox_inches='tight',
                     papertype='ledger')
 
 
-def plot_feature_metric(features, name ):
+def plot_feature_metric(features ):
     # x-axis is the OTU (feature) in ranked order
     # y-axis is the metric value
     data = features.copy()
@@ -631,7 +631,7 @@ def plot_feature_metric(features, name ):
     plt.ylabel('Metric Value')
     plt.title('Metric Value Per Feature')
     plt.tight_layout()
-    plt.savefig(os.path.join(outdir, f"{name}_metric_value.png"))
+    plt.savefig(os.path.join(outdir, "metric_value.png"))
     # plt.show()
 
 
@@ -857,11 +857,11 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     # Create graphs if wanted
     if plot_metric:
-        plot_feature_metric(important_features, dataframe1.name )
+        plot_feature_metric(important_features )
     if plot_pca and (metric == pca_importance or metric == pca_abundance):
-        create_pca_plot(important_features, dataframe1.name )
+        create_pca_plot(important_features )
     if create_graph and metric == graph_centrality:
-        plot_graph_centrality(feature_abundances, c_type, correlation, corr_prop, keep_threshold, weighted, dataframe1.name)
+        plot_graph_centrality(feature_abundances, c_type, correlation, corr_prop, keep_threshold, weighted )
 
     #
     # create csv files for all the outputs.
@@ -871,7 +871,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     feature_row = metric_params + important_feature_list
 
     if( detailed ):
-        with open( os.path.join( outdir, f"{dataframe1.name}_{process_id}_metric_results.csv"), 'a') as f:
+        with open( os.path.join( outdir, f"metric_results-{process_id}.csv"), 'a') as f:
             writer = csv.writer(f)
             writer.writerow(feature_row)
         with open( os.path.join( resultsOutdir, 'combined_metric_results.csv'), 'a' ) as f:
