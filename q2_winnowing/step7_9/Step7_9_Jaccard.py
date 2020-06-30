@@ -47,12 +47,24 @@ rsummary = r['summary']
 def _print_summaries( df_kappa, dump ):
 
     df_kappa['select_iter'] = df_kappa['select_iter'].astype('int')
+    # <><><> OUTPUT TABLE <><><>
+    dump.write( str( df_kappa ) + "\n\n")
 
     # <><><> PRINTS STATS OF COLUMNS <><><>
-    dump.write( str( df_kappa ) + "\n\n")
     dump.write(str( df_kappa.groupby(['conditioning', 'centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
     dump.write(str( df_kappa.loc[( df_kappa["conditioning"] == "Add1") & ( df_kappa["correl"] == "MIC")].groupby(
         ['centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
+
+    # <><><> GLOBAL ANOVA <><><>
+
+
+    # <><><> COMPARE BETWEEN CONDITIONING TYPES <><><>
+
+
+    # <><><> COMPATE WITHIN EACH THRESHOLD <><><>
+
+
+    # <><><> FIND: NO INTERACTION / SIG INTERACTION
 
     return # Nothing returned this just write to a dump file
 
@@ -113,7 +125,7 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
     if( verbose ):
         # write all summaries to dump file
         dump = open( f"{outDir}/step7_9_dump.txt", "w", encoding="utf-8" )
-        _print_summaries( kappa_df, dump )
+        # _print_summaries( kappa_df, dump )
         dump.close()
 
     return kappa_df
@@ -125,9 +137,9 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 # bfa = pd.read_csv("./test_data/arc_bac_fun_abundances.csv") # Hmmmmmmm
 # bfa.rename(columns={'hor.plot': 'OTUid'}, inplace=True)  # Hmmmmmmm
 #
-loo = pd.read_csv("./test_data/dataFromStep1.csv")
-
-main( loo, "test_results", True, True )
+# loo = pd.read_csv("./test_data/dataFromStep1.csv")
+#
+# main( loo, "test_results", True, True )
 
 
 

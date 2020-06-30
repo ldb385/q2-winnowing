@@ -70,7 +70,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     if( verbose ):
         outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
         # allows for cleaner execution and use of relative paths
-        dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
+        dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8")
 
     if( verbose ):
         dump.write("Beginning to convert input to dataframes.\n")
@@ -92,7 +92,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     # outputOfSteps = pd.DataFrame(columns=["Metric Results","Abundances","AUC","PERMANOVA","name"])
     metricOutput = pd.DataFrame()
     # Pass data to steps 1 to 3
-    for iteration_selected in iteration_select:
+    for iteration_selected in sorted( iteration_select ):
 
         # Convert input to dataframes
         dataFrame1 = infile1.to_dataframe().to_dense()
@@ -117,7 +117,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         if( metricOutput.empty ): # create a dataframe of import OTU's for jaccard step
             metricOutput = metric_result
         else:
-            metricOutput.append(metric_result, ignore_index=True )
+            metricOutput = metricOutput.append(metric_result, ignore_index=True ) # assign back since does not perform in place
 
         if( verbose ):
             dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
@@ -138,7 +138,6 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
         # outputOfSteps.append({"Metric Results": metric_result, "Abundances": abundances, "AUC": AUC_results,
         #                       "PERMANOVA": PERMANOVA_results }) # store values to be later used in Jaccard step
-
 
 
     # Pass data to steps 7 to 9
