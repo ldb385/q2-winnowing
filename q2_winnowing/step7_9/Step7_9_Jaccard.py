@@ -138,8 +138,11 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 # bfa.rename(columns={'hor.plot': 'OTUid'}, inplace=True)  # Hmmmmmmm
 #
 # loo = pd.read_csv("./test_data/dataFromStep1.csv")
-#
 # main( loo, "test_results", True, True )
+
+#
+# loo = pd.read_csv("./test_data/firstValues.csv")
+# main( loo, "test_firstValues", True, True )
 
 
 
