@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn
+from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
 
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
@@ -54,15 +54,19 @@ def _assemble_biom_table_from_SEM_data( dataframe ):
     return table
 
 
-def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
-                       name: Str="NoNameGiven", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
-                       min_count: Int=3, total_select: Str="all", iteration_select: Str="all", pca_components: Int=4,
-                       smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
-                       keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
-                       evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False,
-                       plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
-                       detailed: Bool=False, verbose: Bool=False
-                 ) -> biom.Table:
+def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
+                      name: Str="NoNameGiven", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
+                      min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
+                      smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
+                      keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
+                      evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False,
+                      plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
+                      detailed: Bool=False, verbose: Bool=False
+                      ) -> biom.Table:
+
+    if iteration_select is None: # Since default parameter can't have set function call
+        iteration_select = {1, 4, 16, 64}
+
     if( verbose ):
         outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
         # allows for cleaner execution and use of relative paths
@@ -71,62 +75,74 @@ def winnow_processing( infile1: biom.Table, sample_types: MetadataColumn, infile
     if( verbose ):
         dump.write("Beginning to convert input to dataframes.\n")
 
-    # Convert input to dataframes
-    dataFrame1 = infile1.to_dataframe().to_dense()
-    dataFrame1.name = f"{name}_1_"
-    dataFrame2 = None
-    if( ab_comp ):
-        dataFrame2 = infile2.to_dataframe().to_dense()
-        dataFrame2.name = f"{name}_2_"
-
     # This will be used as part of the PERMANOVA calculation
     sample_types = sample_types.to_dataframe()
-
     # Make sure input is valid
     num_samples = len( infile1.ids( axis='observation' ) )
     try:
         num_sample_types = len( sample_types.loc[:,"Type"] )
     except:
         raise Exception( "Error: sample metadata must include a column titled Type.")
-
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
 
     if( verbose ):
         dump.write("Finished converting input to dataframes.\nStarting steps 1 to 3\n")
 
+    # outputOfSteps = pd.DataFrame(columns=["Metric Results","Abundances","AUC","PERMANOVA","name"])
+    metricOutput = pd.DataFrame()
     # Pass data to steps 1 to 3
-    metric_result, important_features, abundances = \
-        _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
-                          c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_select,
-                          pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
-                          centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
-                          weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
-                          create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
-                          min_connected=min_connected, detailed=detailed, verbose=verbose)
-    # these are used in: Step7_9, Step4_5, Step6
+    for iteration_selected in iteration_select:
 
-    if( verbose ):
-        dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
+        # Convert input to dataframes
+        dataFrame1 = infile1.to_dataframe().to_dense()
+        dataFrame1.name = f"{name}_1_{iteration_selected}_"
+        dataFrame2 = None
+        if (ab_comp):
+            dataFrame2 = infile2.to_dataframe().to_dense()
+            dataFrame2.name = f"{name}_2_{iteration_selected}_"
 
-    # Pass data to steps 4 to 5
-    AUC_results, AUC_parameters = \
-        _winnow_ordering( dataframe=important_features, name=name, detailed=detailed, verbose=verbose)
-    # these are used in: Step6, None
+        newName = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
-    if( verbose ):
-        dump.write("Finished steps 4 to 5.\nStarting step 6\n")
+        metric_result, important_features, abundances = \
+            _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
+                              c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
+                              pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
+                              centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
+                              weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
+                              create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
+                              min_connected=min_connected, detailed=detailed, verbose=verbose)
+        # these are used in: Step7_9, Step4_5, Step6
 
-    # Pass data to step 6
-    PERMANOVA_results = \
-        _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
-                           centralityType=centrality_type, name=name, detailed=detailed, verbose=verbose )
+        if( metricOutput.empty ): # create a dataframe of import OTU's for jaccard step
+            metricOutput = metric_result
+        else:
+            metricOutput.append(metric_result, ignore_index=True )
 
-    if( verbose ):
-        dump.write("Finished step 6.\nStarting steps 7 to 9\n")
+        if( verbose ):
+            dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
+
+        # Pass data to steps 4 to 5
+        AUC_results, AUC_parameters = \
+            _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
+        # these are used in: Step6, None
+        if( verbose ):
+            dump.write("Finished steps 4 to 5.\nStarting step 6\n")
+
+        # Pass data to step 6
+        PERMANOVA_results = \
+            _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
+                               centralityType=centrality_type, name=newName, detailed=detailed, verbose=verbose )
+        if( verbose ):
+            dump.write("Finished step 6.\nStarting steps 7 to 9\n")
+
+        # outputOfSteps.append({"Metric Results": metric_result, "Abundances": abundances, "AUC": AUC_results,
+        #                       "PERMANOVA": PERMANOVA_results }) # store values to be later used in Jaccard step
+
+
 
     # Pass data to steps 7 to 9
-    Jaccard_results = _winnow_sensativity( metric_result, name=name, detailed=detailed, verbose=verbose )
+    Jaccard_results = _winnow_sensativity( metricOutput, name=name, detailed=detailed, verbose=verbose )
 
     print( Jaccard_results )
 

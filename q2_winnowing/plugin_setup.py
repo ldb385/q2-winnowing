@@ -63,7 +63,7 @@ plugin.methods.register_function(
         "min_count": qiime2.plugin.Int,
         "c_type": qiime2.plugin.Str % qiime2.plugin.Choices(_CONDITIONING_TYPES_),
         "total_select": qiime2.plugin.Str,
-        "iteration_select": qiime2.plugin.Set,
+        "iteration_select": qiime2.plugin.Set[ qiime2.plugin.Int ],
         "pca_components": qiime2.plugin.Int,
         "smooth_type": qiime2.plugin.Str % qiime2.plugin.Choices(_SMOOTHING_TYPES_),
         "window_size": qiime2.plugin.Int,
@@ -92,13 +92,13 @@ plugin.methods.register_function(
         "evaluation_type": ("This is the evaluation type to use."),
         "min_count": ("Features with counts below this number will be removed."),
         "c_type": ("Conditioning type to use on the data."),
-        "total_select": ("Number of features to select in total."
-                         "Possible selections are:"
+        "total_select": ("Number of features to select in total.\n"
+                         "Possible selections are:\n"
                          f"\t {_ALL_OR_INT_}"),
-        "iteration_select": ("Number of features to select for each time the metric is called. "
-                             "Note: a set of values must be given to be later used in a kappa calcultaion "
-                             "\tAn example of an input could be [1, 4, 16, 64, 128]"
-                             "Possible values are:"
+        "iteration_select": ("Number of features to select for each time the metric is called. \n"
+                             "Note: a set of values must be given to be later used in a kappa calcultaion \n"
+                             "\tAn example of an input could be [1, 4, 16, 64, 128]\n"
+                             "Possible values are:\n"
                              f"\t {_ALL_OR_INT_}"),
         "pca_components": ("Number of pca components to find"),
         "smooth_type": ("Type of Smoothing to be used to remove noise."),

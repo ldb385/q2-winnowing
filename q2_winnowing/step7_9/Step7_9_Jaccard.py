@@ -49,64 +49,10 @@ def _print_summaries( df_kappa, dump ):
     df_kappa['select_iter'] = df_kappa['select_iter'].astype('int')
 
     # <><><> PRINTS STATS OF COLUMNS <><><>
+    dump.write( str( df_kappa ) + "\n\n")
     dump.write(str( df_kappa.groupby(['conditioning', 'centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
     dump.write(str( df_kappa.loc[( df_kappa["conditioning"] == "Add1") & ( df_kappa["correl"] == "MIC")].groupby(
         ['centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
-    raov = rstats.aov(Formula('agreement ~ conditioning + centrality + correl + as.factor(threshold)'), df_kappa)
-    dump.write(str( rsummary(raov) ) + "\n")
-
-    # <><><> PRINTS STATS OF COLUMNS <><><>
-    dump.write( "Conditioning" + "\n")
-    dump.write(str( rstats.TukeyHSD(raov)[0] ) + "\n")
-    dump.write( "centrality" + "\n")
-    dump.write(str( rstats.TukeyHSD(raov)[1] ) + "\n")
-    dump.write( "correl" + "\n")
-    dump.write(str( rstats.TukeyHSD(raov)[2] ) + "\n")
-    dump.write( "as.factor(threshold)" + "\n")
-    dump.write(str( rstats.TukeyHSD(raov)[1] ) + "\n")
-
-    # <><><> CREATE TEMP DFs FOR EASY OUTPUT SUMMARY OF DIFFERENT CONDITIONINGS <><><>
-    rformula = Formula('agreement ~ centrality + correl + as.factor(threshold)')
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[(df_kappa["conditioning"] == "Add1")])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[(df_kappa["conditioning"] == "Hellinger")])) ) + "\n")
-
-    # <><><> SEARCH THROUGH DF FOR DIFFERENT MIC VALUES <><><>
-
-    # MIC > 0.2
-    rformula_1 = Formula('agreement ~ centrality + select_iter')
-    dump.write(str( rsummary(rstats.aov(rformula_1, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Add1") & (df_kappa["correl"] == "MIC") & (df_kappa["threshold"] == 0.2))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula_1, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Hellinger") & (df_kappa["correl"] == "MIC") & (df_kappa["threshold"] == 0.2))])) ) + "\n")
-
-    rformula = Formula('agreement ~ centrality*select_iter')
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Add1") & (df_kappa["correl"] == "Spearman") & (df_kappa["threshold"] == 0.2))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[(
-                (df_kappa["conditioning"] == "Hellinger") & (df_kappa["correl"] == "Spearman") & (
-                    df_kappa["threshold"] == 0.2))])) ) + "\n")
-
-    # MIC > 0.3
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Add1") & (df_kappa["correl"] == "MIC") & (df_kappa["threshold"] == 0.3))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula_1, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Hellinger") & (df_kappa["correl"] == "MIC") & (df_kappa["threshold"] == 0.3))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Add1") & (df_kappa["correl"] == "Spearman") & (df_kappa["threshold"] == 0.3))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[(
-                (df_kappa["conditioning"] == "Hellinger") & (df_kappa["correl"] == "Spearman") & (
-                    df_kappa["threshold"] == 0.3))])) ) + "\n")
-
-    # MIC > 0.4
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Add1") & (df_kappa["correl"] == "MIC") & (df_kappa["threshold"] == 0.4))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Hellinger") & (df_kappa["correl"] == "MIC") & (df_kappa["threshold"] == 0.4))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[
-        ((df_kappa["conditioning"] == "Add1") & (df_kappa["correl"] == "Spearman") & (df_kappa["threshold"] == 0.4))])) ) + "\n")
-    dump.write(str( rsummary(rstats.aov(rformula, df_kappa.loc[(
-                (df_kappa["conditioning"] == "Hellinger") & (df_kappa["correl"] == "Spearman") & (
-                    df_kappa["threshold"] == 0.4))])) ) + "\n")
 
     return # Nothing returned this just write to a dump file
 
@@ -121,7 +67,6 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
 
-    print( df_leaveOneOut, "\n\n\n")
     try:
         df_leaveOneOut_OTUs = df_leaveOneOut.iloc[:, df_leaveOneOut.columns.get_loc( 1 ):] # Get first OTU
     except: # if the column is not an int try using a string
@@ -130,32 +75,33 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
     # get blank cells and replace them with NA
     df_leaveOneOut_OTUs = df_leaveOneOut_OTUs.astype('str')
     df_leaveOneOut_OTUs = df_leaveOneOut_OTUs.replace("nan", np.nan)
-    print( df_leaveOneOut_OTUs, "\n\n\n")
 
     # create data frame in order to plot as well as pass data easier
     kappa_df = pd.DataFrame(
         columns=['conditioning', 'centrality', 'correl', 'threshold', 'select_iter', 'kappa', 'agreement'])
 
-    _kConditioning = df_leaveOneOut["conditioning"].iloc[0]
-    _kCentrality = df_leaveOneOut["centrality"].iloc[0]
-    _kCorrel = df_leaveOneOut["correlation"].iloc[0]
-    _kThreshold = df_leaveOneOut["keep threshold"].iloc[0]
-    _kSelect_iter = df_leaveOneOut["iteration select"].iloc[0]
-    _kKappa = None # DEFINED LATER
-    _kAgreement = None # DEFINED LATER
+    j = df_leaveOneOut_OTUs.shape[1] -1 # index of highest iteration selection
+    print( j )
+    for i in range(0, j ): # iterate through columns
 
+        _kConditioning = df_leaveOneOut["conditioning"].iloc[i]
+        _kCentrality = df_leaveOneOut["centrality"].iloc[i]
+        _kCorrel = df_leaveOneOut["correlation"].iloc[i]
+        _kThreshold = df_leaveOneOut["keep threshold"].iloc[i]
+        _kSelect_iter = df_leaveOneOut["iteration select"].iloc[i]
+        _kKappa = None  # DEFINED LATER
+        _kAgreement = None  # DEFINED LATER
 
-    if (len( df_leaveOneOut_OTUs.iloc[:, 0].dropna()) >= 1): # all rows, columns i and j
-        print( rirr.kappa2( df_leaveOneOut_OTUs.iloc[:, 0] ) )
-        _kKappa = ( rirr.kappa2( df_leaveOneOut_OTUs.iloc[:, 0] )[4][0] )
-        _kAgreement = jaccard_coefficient(df_leaveOneOut_OTUs.iloc[:, 0].dropna(), df_leaveOneOut_OTUs.iloc[:, :].dropna())
+        if (len( df_leaveOneOut_OTUs.iloc[:, [i, j]].dropna()) >= 1):
+            _kKappa = (rirr.kappa2((df_leaveOneOut_OTUs.iloc[:, [i, j]]).dropna())[4][0])
+            _kAgreement = jaccard_coefficient(df_leaveOneOut_OTUs.iloc[:, i].dropna(), df_leaveOneOut_OTUs.iloc[:, j].dropna())
 
-    elif (len( df_leaveOneOut_OTUs.iloc[:, :].dropna()) <= 0):
-        _kKappa = np.nan
-        _kAgreement = np.nan
+        elif (len( df_leaveOneOut_OTUs.iloc[:, [i, j]].dropna()) <= 0):
+            _kKappa = np.nan
+            _kAgreement = np.nan
 
-    # input kappa and agreement values
-    kappa_df.loc[1] = [_kConditioning, _kCentrality, _kCorrel, _kThreshold, _kSelect_iter, _kKappa, _kAgreement]
+        kappa_df.loc[i + 1] = [_kConditioning, _kCentrality, _kCorrel, _kThreshold, _kSelect_iter, _kKappa, _kAgreement]
+
 
     if( detailed ):
         outFile = f"{outDir}/{name}_Jaccard_result.csv"
@@ -167,7 +113,7 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
     if( verbose ):
         # write all summaries to dump file
         dump = open( f"{outDir}/step7_9_dump.txt", "w", encoding="utf-8" )
-        # _print_summaries( kappa_df, dump )
+        _print_summaries( kappa_df, dump )
         dump.close()
 
     return kappa_df
