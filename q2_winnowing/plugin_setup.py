@@ -1,8 +1,8 @@
 
 
 import qiime2.plugin
+from qiime2.plugin import Metadata, MetadataColumn, Categorical
 from q2_types.feature_table import FeatureTable, RelativeFrequency, BIOMV210DirFmt
-from q2_types.tree import Phylogeny, Rooted, Unrooted
 
 import q2_winnowing
 from q2_winnowing.winnow import winnow_processing
@@ -56,13 +56,14 @@ plugin.methods.register_function(
     },
     parameters={
         "name": qiime2.plugin.Str,
+        "sample_types": MetadataColumn[Categorical],
         "ab_comp": qiime2.plugin.Bool,
         "metric_name": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
         "evaluation_type": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
         "min_count": qiime2.plugin.Int,
         "c_type": qiime2.plugin.Str % qiime2.plugin.Choices(_CONDITIONING_TYPES_),
-        "total_select": qiime2.plugin.Metadata,
-        "iteration_select": qiime2.plugin.Metadata,
+        "total_select": qiime2.plugin.Str,
+        "iteration_select": qiime2.plugin.Set[ qiime2.plugin.Int ],
         "pca_components": qiime2.plugin.Int,
         "smooth_type": qiime2.plugin.Str % qiime2.plugin.Choices(_SMOOTHING_TYPES_),
         "window_size": qiime2.plugin.Int,
@@ -83,16 +84,21 @@ plugin.methods.register_function(
     parameter_descriptions={
         "name": ("This is the string that will be attached to output files. This is used especially in "
                  "the case of detailed."),
+        "sample_types": ("This data provides a legend for which samples are of different types. This allows for "
+                         "permutations in PERMANOVA calculations to be descriptive. Data is labelled as "
+                         "invaded and natural"),
         "ab_comp": ("Boolean representing whether to perform AB comparison on the data."),
         "metric_name": ("This is the metric to use."),
         "evaluation_type": ("This is the evaluation type to use."),
         "min_count": ("Features with counts below this number will be removed."),
         "c_type": ("Conditioning type to use on the data."),
-        "total_select": ("Number of features to select in total."
-                         "Possible selections are:"
+        "total_select": ("Number of features to select in total.\n"
+                         "Possible selections are:\n"
                          f"\t {_ALL_OR_INT_}"),
-        "iteration_select": ("Number of features to select for each time the metric is called."
-                             "Possible selections are:"
+        "iteration_select": ("Number of features to select for each time the metric is called. \n"
+                             "Note: a set of values must be given to be later used in a kappa calcultaion \n"
+                             "\tAn example of an input could be [1, 4, 16, 64, 128]\n"
+                             "Possible values are:\n"
                              f"\t {_ALL_OR_INT_}"),
         "pca_components": ("Number of pca components to find"),
         "smooth_type": ("Type of Smoothing to be used to remove noise."),
