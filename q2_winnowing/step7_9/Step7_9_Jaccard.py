@@ -127,9 +127,9 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 #
 # loo = pd.read_csv("./test_data/dataFromStep1.csv")
 # main( loo, "test_results", True, True )
-
-loo = pd.read_csv("./test_data/firstValues.csv")
-main( loo, "test_firstValues", True, True )
+#
+# loo = pd.read_csv("./test_data/firstValues.csv")
+# main( loo, "test_firstValues", True, True )
 
 
 
