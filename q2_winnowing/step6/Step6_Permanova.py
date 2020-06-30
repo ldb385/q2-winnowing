@@ -46,7 +46,7 @@ rplot = r['plot']
 
 # <><><> DEFINE FUNCTIONS <><><>
 
-def _generate_figures( dataFrame_permanova, cent_type, outdir ):
+def _generate_figures( dataFrame_permanova, cent_type, outdir, name ):
 
     dataFrame_permanova.loc[0] = ["auc0"]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]
     dataFrame_permanova.sort_index(axis=0,inplace=True)
@@ -77,7 +77,7 @@ def _generate_figures( dataFrame_permanova, cent_type, outdir ):
         plt.text(dataFrame_permanova.iloc[36, 2] + 40, dataFrame_permanova.iloc[36, 9],
                  str(dataFrame_permanova.iloc[36, 8]) + " OTUs", color="blue")
         plt.legend(loc=1, labels="E")
-        plt.savefig( os.path.join( outdir,"F-Score_AUC_degree.png"))
+        plt.savefig( os.path.join( outdir, f"{name}_F-Score_AUC_degree.png"))
 
     elif( cent_type == "closeness" ):
         # <><> PLOTTING CLOSENESS <><>
@@ -99,7 +99,7 @@ def _generate_figures( dataFrame_permanova, cent_type, outdir ):
         plt.text(dataFrame_permanova.iloc[4, 2] + 40, dataFrame_permanova.iloc[4, 9],
                  str(dataFrame_permanova.iloc[4, 8]) + " OTUs", color="blue")
         plt.legend(loc=1, labels="F")
-        plt.savefig( os.path.join( outdir,"F-Score_AUC_closeness.png"))
+        plt.savefig( os.path.join( outdir, f"{name}_F-Score_AUC_closeness.png"))
 
     elif( cent_type == "betweenness" ):
         # <><> PLOTTING BETWEENESS <><>
@@ -123,7 +123,7 @@ def _generate_figures( dataFrame_permanova, cent_type, outdir ):
         plt.text(dataFrame_permanova.iloc[35, 2] + 40, dataFrame_permanova.iloc[35, 9] + 0.05,
                  str(dataFrame_permanova.iloc[35, 8]) + " OTUs", color="blue")
         plt.legend(loc=1, labels="G")
-        plt.savefig( os.path.join( outdir,"F-Score_AUC_betweeness.png") )
+        plt.savefig( os.path.join( outdir, f"{name}_F-Score_AUC_betweeness.png") )
 
     elif( cent_type == "eigenvector"):
         # <><> PLOTTING EIGENVECTOR <><>
@@ -147,7 +147,7 @@ def _generate_figures( dataFrame_permanova, cent_type, outdir ):
         plt.text(dataFrame_permanova.iloc[21, 2] + 40, dataFrame_permanova.iloc[21, 9],
                  str(dataFrame_permanova.iloc[21, 8]) + " OTUs", color="blue")
         plt.legend(loc=1, labels="H")
-        plt.savefig( os.path.join( outdir,"F-Score_AUC_eigenvector.png") )
+        plt.savefig( os.path.join( outdir, f"{name}_F-Score_AUC_eigenvector.png") )
 
 
     return #Nothing is returned this states end of function
@@ -275,7 +275,7 @@ def main( dataFrame1, dataFrame2, sampleDataframe, centralityType, name, detaile
             df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, outFile, detailed )
 
         # Since this is detailed must generate plots
-        _generate_figures( df_permanova, centralityType, outDir )
+        _generate_figures( df_permanova, centralityType, outDir, name )
 
     elif( verbose ):
 
