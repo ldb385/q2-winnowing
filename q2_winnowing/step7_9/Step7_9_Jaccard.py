@@ -55,18 +55,7 @@ def _print_summaries( df_kappa, dump ):
     dump.write(str( df_kappa.loc[( df_kappa["conditioning"] == "Add1") & ( df_kappa["correl"] == "MIC")].groupby(
         ['centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
 
-    # <><><> GLOBAL ANOVA <><><>
-
-
-    # <><><> COMPARE BETWEEN CONDITIONING TYPES <><><>
-
-
-    # <><><> COMPATE WITHIN EACH THRESHOLD <><><>
-
-
-    # <><><> FIND: NO INTERACTION / SIG INTERACTION
-
-    return # Nothing returned this just write to a dump file
+    return  # finished print
 
 
 
@@ -93,7 +82,6 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
         columns=['conditioning', 'centrality', 'correl', 'threshold', 'select_iter', 'kappa', 'agreement'])
 
     j = df_leaveOneOut_OTUs.shape[1] -1 # index of highest iteration selection
-    print( j )
     for i in range(0, j ): # iterate through columns
 
         _kConditioning = df_leaveOneOut["conditioning"].iloc[i]
@@ -125,7 +113,7 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
     if( verbose ):
         # write all summaries to dump file
         dump = open( f"{outDir}/step7_9_dump.txt", "w", encoding="utf-8" )
-        # _print_summaries( kappa_df, dump )
+        _print_summaries( kappa_df, dump )
         dump.close()
 
     return kappa_df
@@ -140,9 +128,8 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 # loo = pd.read_csv("./test_data/dataFromStep1.csv")
 # main( loo, "test_results", True, True )
 
-#
-# loo = pd.read_csv("./test_data/firstValues.csv")
-# main( loo, "test_firstValues", True, True )
+loo = pd.read_csv("./test_data/firstValues.csv")
+main( loo, "test_firstValues", True, True )
 
 
 
