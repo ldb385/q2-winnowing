@@ -15,6 +15,7 @@ from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
 # from q2_winnowing.step10.Step10_SEM import main as step10_main
 
 def _dummy_biom_table():
+    # from https://biom-format.org/documentation/table_objects.html
     data = np.arange(40).reshape(10, 4)
     sample_ids = ['S%d' % i for i in range(4)]
     observ_ids = ['O%d' % i for i in range(10)]
@@ -143,7 +144,6 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     # Pass data to steps 7 to 9
     Jaccard_results = _winnow_sensativity( metricOutput, name=name, detailed=detailed, verbose=verbose )
 
-    print( Jaccard_results )
 
     dump.close()
 
@@ -298,7 +298,7 @@ def _winnow_sensativity( df_metric_results, name, detailed=False, verbose=False 
 
     jaccard_result = step7_9_main( df_metric_results, name=name, detailed=detailed, verbose=verbose )
 
-    return jaccard_result
+    return jaccard_result # Dataframe with Kappa and Agreement values
 
 
 
