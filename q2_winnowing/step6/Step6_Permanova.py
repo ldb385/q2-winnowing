@@ -299,7 +299,7 @@ def main( dataFrame1, dataFrame2, sampleDataframe, centralityType, name, detaile
 # test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
 # main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
 #
-# test_sample = pd.read_csv( "./test_data/metadata_samples.csv" )  # AB horizon, BRA
+# test_sample = pd.read_csv( "./test_data/test_samples.csv" )  # AB horizon, BRA
 # test_abundance = pd.read_csv("./test_data/NoNameGiven_1_-abundances-0.csv")
 # test_AUC = pd.read_csv("./test_data/NoNameGiven_auc_result.csv")
 # main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
