@@ -145,6 +145,12 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     Jaccard_results = _winnow_sensativity( metricOutput, name=name, detailed=detailed, verbose=verbose )
 
 
+
+    # Notify user of output path
+    dump.write("Output for each winnowing step is written to the respective output folder within each step folder \n"
+               "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
+               "\tThis applies for each step.")
+    dump.write("Winnow processing finished.")
     dump.close()
 
     return _dummy_biom_table()

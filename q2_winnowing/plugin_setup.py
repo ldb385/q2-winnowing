@@ -12,7 +12,7 @@ from q2_winnowing.winnow import winnow_processing
 
 # Setup Choice lists for easy accessibility
 # <><><> NOTE: THESE ARE FOR STEPS 1-3 <><><>
-_METRIC_TYPES_ = ["graph_centrality", "pca_importance"]
+_METRIC_TYPES_ = ["graph_centrality", "pca_importance", "log_transform", "abundance"]
 _CONDITIONING_TYPES_ = ["add_one", "hellinger"]
 _EVALUATION_TYPES_ = ["kl_divergence"]
 _CENTRALITY_TYPES_ = ["betweenness", "closeness", "degree", "eigenvector"]
