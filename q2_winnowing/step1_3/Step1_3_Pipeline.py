@@ -198,9 +198,19 @@ def pca_importance(df, num_pca_components=4, cond_type='hellinger'):
 
     # order the features from largest to smallest to return as our sorted dataframe
     ordered_features = variance.sort_values(by='metric', ascending=0)
-    # print('ordered_features columns', ordered_features.index.values)
-    return ordered_features
+    # print('ordered_features columns', ordered_features.index.values[0])
 
+    if( type( ordered_features.index.values[0] ) is tuple ):
+        # this means that a function has covereted indecis to sparse series, must convert this back to
+        # a dense dataframe. This should be able to be removed after Qiime updates
+        ordered_feature = pd.DataFrame(columns=["OTU","metric","pca1","pca2"])
+        for index, row in ordered_features.iterrows():
+            ordered_feature = ordered_feature.append( {"OTU": index[0], "metric": row["metric"],
+                                     "pca1": row["pca1"], "pca2": row["pca2"] }, ignore_index=True )
+        ordered_feature = ordered_feature.set_index("OTU")
+        return ordered_feature
+    else:
+        return ordered_features
 
 def pca_legendre(df, num_pca_components, cond_type='hellinger'):
     return 0
@@ -395,12 +405,14 @@ def selection(func, s_total, s_per_iter, df, *args):
     for i in range(0, math.ceil(select_total / select_per_iter)):
         # call the metric with the current data
         sorted_df = func(data, *args)
+        print( sorted_df )
 
         if not sorted_df.empty:
             if ((i + 1) * select_per_iter > select_total):
                 select = select_total % selected
             # take the top n features returned by the metric
             top_features = sorted_df.iloc[:select].index.values
+            print( top_features.tolist() )
 
             selected_df = selected_df.append(sorted_df.iloc[:select])
             selected += select
@@ -625,6 +637,7 @@ def plot_feature_metric(features ):
     # x-axis is the OTU (feature) in ranked order
     # y-axis is the metric value
     data = features.copy()
+    print(data)
     data['metric'].plot(style='.-')
     plt.xticks(np.arange(0, len(data['metric'])), data.index.values, rotation=45, ha='center')
     plt.xlabel('Feature Label')

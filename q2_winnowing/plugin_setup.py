@@ -10,7 +10,7 @@ from q2_winnowing.winnow import winnow_processing
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
 # Note: this can be replaced with a bibliography when the thesis is completed.
 
-# Setup Choice lists for easy accesability
+# Setup Choice lists for easy accessibility
 # <><><> NOTE: THESE ARE FOR STEPS 1-3 <><><>
 _METRIC_TYPES_ = ["graph_centrality", "pca_importance"]
 _CONDITIONING_TYPES_ = ["add_one", "hellinger"]
