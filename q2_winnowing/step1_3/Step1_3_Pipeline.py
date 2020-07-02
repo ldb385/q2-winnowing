@@ -565,6 +565,7 @@ def kl_divergence(A, B, features, select_per_iter, cond_type):
 
 def create_pca_plot(features ):
     data = features.copy()
+    plt.figure()
     plt.scatter(data['pca1'], data['pca2'])
     plt.xlabel('Principle Component 1')
     plt.ylabel('Principle Component 2')
@@ -576,6 +577,7 @@ def create_pca_plot(features ):
 
 def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh, weighted ):
     data = features.copy()
+    plt.figure()
     # create a graph of the edges/nodes using the same centrality type as used to select the features
     # this is the top25 file stuff
 
@@ -637,7 +639,7 @@ def plot_feature_metric(features ):
     # x-axis is the OTU (feature) in ranked order
     # y-axis is the metric value
     data = features.copy()
-    print(data)
+    plt.figure()
     data['metric'].plot(style='.-')
     plt.xticks(np.arange(0, len(data['metric'])), data.index.values, rotation=45, ha='center')
     plt.xlabel('Feature Label')
