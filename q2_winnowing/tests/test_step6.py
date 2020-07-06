@@ -1,17 +1,18 @@
 
 from unittest import TestCase, main as unittest_main
 import pandas as pd
+import os
 
 from q2_winnowing.step6.Step6_Permanova import main as step6_main
 
 class Step6Tests( TestCase ):
 
     # <><> read input values for testing <><>
-    auc_df_in = pd.read_csv("./sample_data/step6/test_in_AUCs.csv")
-    abundances_df_in = pd.read_csv("./sample_data/step6/test_in_abundances.csv")
-    samples_df_in = pd.read_csv("./sample_data/step6/test_in_samples.csv")
+    auc_df_in = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step6/test_in_AUCs.csv")
+    abundances_df_in = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step6/test_in_abundances.csv")
+    samples_df_in = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step6/test_in_samples.csv")
     # <><> read output values for comparison <><>
-    permanova_df_out = pd.read_csv("./sample_data/step6/test_out_PERMANOVA.csv", index_col=0 )
+    permanova_df_out = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step6/test_out_PERMANOVA.csv", index_col=0 )
 
     def test_step6_main(self):
 
