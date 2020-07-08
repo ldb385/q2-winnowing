@@ -314,10 +314,10 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     num_subgraphs = networkx.number_connected_components(df_g)
     total_nodes = networkx.number_of_nodes(df_g)
     subgraphs = [ df_g.subgraph(c) for c in networkx.connected_components( df_g ) ]
-    if( len(subgraphs) <= 0 ): # Since there are no subgraphs the empty graph is under min connectedness
-        print('graph under min connectedness... returning')
-        disjoint = True
-        return pd.DataFrame()
+    # if( len(subgraphs) <= 0 ): # Since there are no subgraphs the empty graph is under min connectedness
+    #     print('graph under min connectedness... returning')
+    #     disjoint = True
+    #     return pd.DataFrame()
     largest_subgraph = max( subgraphs, key=len )
     # largest_subgraph = max( networkx.connected_component_subgraphs(df_g), key=len ) #Deprecated
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
@@ -410,14 +410,12 @@ def selection(func, s_total, s_per_iter, df, *args):
     for i in range(0, math.ceil(select_total / select_per_iter)):
         # call the metric with the current data
         sorted_df = func(data, *args)
-        print( sorted_df )
 
         if not sorted_df.empty:
             if ((i + 1) * select_per_iter > select_total):
                 select = select_total % selected
             # take the top n features returned by the metric
             top_features = sorted_df.iloc[:select].index.values
-            print( top_features.tolist() )
 
             selected_df = selected_df.append(sorted_df.iloc[:select])
             selected += select
@@ -890,20 +888,28 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     # add the metric information to the important features and append to the metric results dataframe
     feature_row = metric_params + important_feature_list
 
-    if( detailed ):
-        with open( os.path.join( outdir, f"metric_results-{process_id}.csv"), 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow(feature_row)
-        with open( os.path.join( resultsOutdir, 'combined_metric_results.csv'), 'a' ) as f:
-            writer = csv.writer(f)
-            writer.writerow(feature_row)
-
     metric_header.extend( range( 1, abs( len(feature_row) - len(metric_header) ) +1 ))
     feature_df = pd.DataFrame( [feature_row], columns=metric_header) # format list into data frame before output
 
     # get the abundances for each of the important features and write those to a new file
     # print('final important features', important_features)
     if( detailed ):
+        # if files exist just append row to them, else want to keep the headers
+        metric_path = os.path.join(outdir, f"metric_results.csv")
+        if( os.path.exists( metric_path )):
+            with open( metric_path, 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow(feature_row)
+        else:
+            feature_df.to_csv( metric_path )
+        combined_metric_path = os.path.join( resultsOutdir, 'combined_metric_results.csv')
+        if( os.path.exists( combined_metric_path )):
+            with open( combined_metric_path, 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow(feature_row)
+        else:
+            feature_df.to_csv( combined_metric_path, index=False )
+        # rewrite these since it's entire output
         important_features.to_csv(os.path.join(outdir, metric_filename))
         feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
 
