@@ -102,6 +102,7 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
 
         kappa_df.loc[i + 1] = [_kConditioning, _kCentrality, _kCorrel, _kThreshold, _kSelect_iter, _kKappa, _kAgreement]
 
+    kappa_df.reset_index( drop=True, inplace=True ) # index should start at 0 for consistency
 
     if( detailed ):
         outFile = f"{outDir}/{name}_Jaccard_result.csv"
