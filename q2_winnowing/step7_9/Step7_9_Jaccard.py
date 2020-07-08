@@ -82,7 +82,7 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
         columns=['conditioning', 'centrality', 'correl', 'threshold', 'select_iter', 'kappa', 'agreement'])
 
     j = df_leaveOneOut_OTUs.shape[1] -1 # index of highest iteration selection
-    for i in range(0, j ): # iterate through columns
+    for i in range(0, j): # iterate through columns
 
         _kConditioning = df_leaveOneOut["conditioning"].iloc[i]
         _kCentrality = df_leaveOneOut["centrality"].iloc[i]
@@ -101,6 +101,10 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
             _kAgreement = np.nan
 
         kappa_df.loc[i + 1] = [_kConditioning, _kCentrality, _kCorrel, _kThreshold, _kSelect_iter, _kKappa, _kAgreement]
+    # It should be evident which result the kappa and agreement are being compared to
+    kappa_df.loc[j+1] = [ df_leaveOneOut["conditioning"].iloc[j],df_leaveOneOut["centrality"].iloc[j],
+                       df_leaveOneOut["correlation"].iloc[j],df_leaveOneOut["keep threshold"].iloc[j],
+                       df_leaveOneOut["iteration select"].iloc[j], 1.0, 1.0 ]
 
     kappa_df.reset_index( drop=True, inplace=True ) # index should start at 0 for consistency
 
