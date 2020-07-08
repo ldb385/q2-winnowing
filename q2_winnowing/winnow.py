@@ -15,6 +15,10 @@ from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
 # from q2_winnowing.step10.Step10_SEM import main as step10_main
 
 def _dummy_biom_table():
+    """
+    this was used as a placeholder of output while testing functionality of parts
+    :return: created biom table
+    """
     # from https://biom-format.org/documentation/table_objects.html
     data = np.arange(40).reshape(10, 4)
     sample_ids = ['S%d' % i for i in range(4)]
@@ -37,21 +41,44 @@ def _dummy_biom_table():
     return table
 
 
-def _assemble_biom_table_from_SEM_data( dataframe ):
+def _assemble_artifact_output( combined_metric_df, auc_list_df, permanova_list_df, jaccard_df ):
+    # each output is generated for each iteration selection so it will be used as row index
+    row_ids = combined_metric_df.loc[:,"iteration select"]
+    combined_metric_df.drop("iteration select", axis=1, inplace=True ) # remove since it is index
 
-    num_rows = len( dataframe )
-    num_columns = len( dataframe.columns )
+    # Precautionary reset index of dataframes to be joined
+    combined_metric_df.reset_index( drop=True, inplace=True )
+    jaccard_df.reset_index( drop=True, inplace=True )
+    print(jaccard_df)
+    jaccard_kappa = jaccard_df.loc[:,"kappa"] # only new info
+    jaccard_agreement = jaccard_df.loc[:,"agreement"] # only new info
+    try: # cautionary int index
+        instertion_spot = combined_metric_df.columns.get_loc("1")
+    except:
+        # check for int instead of string value
+        instertion_spot = combined_metric_df.columns.get_loc(1)
 
-    sample_ids = ["S%d" % i for i in range( num_rows )]
-    observation_ids = ["O%d" % i for i in range( num_columns )]
+    # insert jaccard values into dataframe
+    combined_metric_df.insert( instertion_spot, "agreement", jaccard_agreement )
+    combined_metric_df.insert( instertion_spot, "kappa", jaccard_kappa )
 
-    sample_metadata = dataframe[dataframe.columns[0]]
-    observations_tested_metadata = dataframe.iloc[0]
+    # get column headers for atrifact
+    col_ids = combined_metric_df.columns
 
-    data = np.array( dataframe.to_csv( header=None, Index=None ) )
+    # attach AUC and PERMANOVA calculations as metadata
+    row_metadata = []
+    for idx in range( 0, len(row_ids) ):
+        # insert each iteration select metadata
+        row_metadata.append({
+            "AUC": auc_list_df[idx],
+            "PERMANOVA": permanova_list_df[idx]
+        })
 
-    table = biom.Table( data, observation_ids, sample_ids, observations_tested_metadata,
-                        sample_metadata, table_id="Winnowed Interaction Table of Taxon")
+    # assemble biom table
+    values = combined_metric_df.values.astype(type(""))
+    table = biom.Table( values, col_ids, row_ids,
+                        sample_metadata=row_metadata, table_id="Winnowed feature measures of Taxon")
+
     return table
 
 
@@ -92,7 +119,7 @@ def _write_to_dump( verbose, dump, step ):
 
 
 def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
-                      name: Str="", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
+                      name: Str="-name-", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
                       min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
                       smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                       keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
@@ -121,8 +148,9 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
 
-    # outputOfSteps = pd.DataFrame(columns=["Metric Results","Abundances","AUC","PERMANOVA","name"])
-    metricOutput = pd.DataFrame()
+    metricOutput = pd.DataFrame() # dataframe to write metrics new
+    aucOutput = [] # list to write AUC values to
+    permanovaOutput = [] # list to write PERMANOVA values to
     _write_to_dump( verbose, dump, step=0.5 )
 
     for iteration_selected in sorted( iteration_select ):
@@ -152,6 +180,8 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         if( metricOutput.empty ): # create a dataframe of import OTU's for jaccard step
             metricOutput = metric_result
         else:
+            if( len(metricOutput.columns) < len(metric_result.columns) ):
+                metricOutput.columns = metric_result.columns # this accounts for differing # of OTUs
             metricOutput = metricOutput.append(metric_result, ignore_index=True ) # assign back since does not perform in place
 
         # <><><> Pass data to steps 4 to 5 <><><>
@@ -159,12 +189,14 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         AUC_results, AUC_parameters = \
             _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
+        aucOutput.append( AUC_results )
 
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )
         PERMANOVA_results = \
             _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
                                centralityType=centrality_type, name=newName, detailed=detailed, verbose=verbose )
+        permanovaOutput.append( PERMANOVA_results )
         _write_to_dump( verbose, dump, step=6.5 )
 
 
@@ -174,13 +206,13 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         metricOutput, name=f"{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}_{name}",
         detailed=detailed, verbose=verbose )
 
-
     # Notify user of output path
     _write_to_dump( verbose, dump, step=10 )
-
     dump.close()
 
-    return _dummy_biom_table()
+    # assemble biom table and return as artifact
+    biom_table = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
+    return biom_table
 
 
 def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: Str=None,
