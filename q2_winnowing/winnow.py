@@ -55,6 +55,42 @@ def _assemble_biom_table_from_SEM_data( dataframe ):
     return table
 
 
+def _write_to_dump( verbose, dump, step ):
+    """
+    this is simply to write to a dump file if verbose is selected.
+    by using this in function it improves readability and removes clutterness of code
+    with multiple verbose checks
+    :param verbose: if selected will write to dump file
+    :param dump: the file that is being written to
+    :param step: this is which step the program is on, each step corresponds to script ran
+    :return: nothing is returned program functions as simple printing function
+    """
+
+    if( verbose ):
+        if( step == 0 ):
+            dump.write("Beginning to convert input to dataframes.\n")
+        elif( step == 0.5 ):
+            dump.write("Finished converting input to dataframes.\n")
+        elif( step == 1 ):
+            dump.write("Starting steps 1 to 3\n")
+        elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
+            dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
+        elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
+            dump.write("Finished steps 4 to 5.\nStarting step 6\n")
+        elif( step == 6.5 ):
+            dump.write("Finished step 6.\n")
+        elif( step == 7 ):
+            dump.write("\nStarting steps 7 to 9\n")
+        elif( step == 10 ):
+            dump.write(
+                "Output for each winnowing step is written to the respective output folder within each step folder \n"
+                "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
+                "\tThis applies for each step.")
+            dump.write("Winnow processing finished.")
+
+    return # Nothing just signifies termination of function
+
+
 def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
                       name: Str="", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
                       min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
@@ -68,13 +104,11 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     if iteration_select is None: # Since default parameter can't have set function call
         iteration_select = {1, 4, 16, 64}
 
-    if( verbose ):
-        outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
-        # allows for cleaner execution and use of relative paths
-        dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8")
+    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    # allows for cleaner execution and use of relative paths
+    dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8")
 
-    if( verbose ):
-        dump.write("Beginning to convert input to dataframes.\n")
+    _write_to_dump( verbose, dump, step=0)
 
     # This will be used as part of the PERMANOVA calculation
     sample_types = sample_types.to_dataframe()
@@ -87,12 +121,10 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
 
-    if( verbose ):
-        dump.write("Finished converting input to dataframes.\nStarting steps 1 to 3\n")
-
     # outputOfSteps = pd.DataFrame(columns=["Metric Results","Abundances","AUC","PERMANOVA","name"])
     metricOutput = pd.DataFrame()
-    # Pass data to steps 1 to 3
+    _write_to_dump( verbose, dump, step=0.5 )
+
     for iteration_selected in sorted( iteration_select ):
 
         # Convert input to dataframes
@@ -105,6 +137,8 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
         newName = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
+        # <><><> Pass data to steps 1 to 3 <><><>
+        _write_to_dump(verbose, dump, step=1)
         metric_result, important_features, abundances = \
             _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
                               c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
@@ -120,36 +154,30 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         else:
             metricOutput = metricOutput.append(metric_result, ignore_index=True ) # assign back since does not perform in place
 
-        if( verbose ):
-            dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
-
-        # Pass data to steps 4 to 5
+        # <><><> Pass data to steps 4 to 5 <><><>
+        _write_to_dump( verbose, dump, step=4 )
         AUC_results, AUC_parameters = \
             _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
-        if( verbose ):
-            dump.write("Finished steps 4 to 5.\nStarting step 6\n")
 
-        # Pass data to step 6
+        # <><><> Pass data to step 6 <><><>
+        _write_to_dump( verbose, dump, step=6 )
         PERMANOVA_results = \
             _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
                                centralityType=centrality_type, name=newName, detailed=detailed, verbose=verbose )
-        if( verbose ):
-            dump.write("Finished step 6.\nStarting steps 7 to 9\n")
+        _write_to_dump( verbose, dump, step=6.5 )
 
 
-    # Pass data to steps 7 to 9
+    # <><><>  Pass data to steps 7 to 9 <><><>
+    _write_to_dump( verbose, dump, step=7 )
     Jaccard_results = _winnow_sensativity(
         metricOutput, name=f"{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}_{name}",
         detailed=detailed, verbose=verbose )
 
 
-
     # Notify user of output path
-    dump.write("Output for each winnowing step is written to the respective output folder within each step folder \n"
-               "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
-               "\tThis applies for each step.")
-    dump.write("Winnow processing finished.")
+    _write_to_dump( verbose, dump, step=10 )
+
     dump.close()
 
     return _dummy_biom_table()
