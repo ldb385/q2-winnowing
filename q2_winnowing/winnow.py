@@ -56,7 +56,7 @@ def _assemble_biom_table_from_SEM_data( dataframe ):
 
 
 def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
-                      name: Str="NoNameGiven", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
+                      name: Str="", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
                       min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
                       smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                       keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
@@ -137,14 +137,19 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         if( verbose ):
             dump.write("Finished step 6.\nStarting steps 7 to 9\n")
 
-        # outputOfSteps.append({"Metric Results": metric_result, "Abundances": abundances, "AUC": AUC_results,
-        #                       "PERMANOVA": PERMANOVA_results }) # store values to be later used in Jaccard step
-
 
     # Pass data to steps 7 to 9
-    Jaccard_results = _winnow_sensativity( metricOutput, name=name, detailed=detailed, verbose=verbose )
+    Jaccard_results = _winnow_sensativity(
+        metricOutput, name=f"{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}_{name}",
+        detailed=detailed, verbose=verbose )
 
 
+
+    # Notify user of output path
+    dump.write("Output for each winnowing step is written to the respective output folder within each step folder \n"
+               "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
+               "\tThis applies for each step.")
+    dump.write("Winnow processing finished.")
     dump.close()
 
     return _dummy_biom_table()
@@ -303,6 +308,7 @@ def _winnow_sensativity( df_metric_results, name, detailed=False, verbose=False 
 
 
 def _winnow_network_connectivity():
+
 
 
     return

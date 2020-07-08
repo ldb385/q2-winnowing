@@ -198,9 +198,19 @@ def pca_importance(df, num_pca_components=4, cond_type='hellinger'):
 
     # order the features from largest to smallest to return as our sorted dataframe
     ordered_features = variance.sort_values(by='metric', ascending=0)
-    # print('ordered_features columns', ordered_features.index.values)
-    return ordered_features
+    # print('ordered_features columns', ordered_features.index.values[0])
 
+    if( type( ordered_features.index.values[0] ) is tuple ):
+        # this means that a function has covereted indecis to sparse series, must convert this back to
+        # a dense dataframe. This should be able to be removed after Qiime updates
+        ordered_feature = pd.DataFrame(columns=["OTU","metric","pca1","pca2"])
+        for index, row in ordered_features.iterrows():
+            ordered_feature = ordered_feature.append( {"OTU": index[0], "metric": row["metric"],
+                                     "pca1": row["pca1"], "pca2": row["pca2"] }, ignore_index=True )
+        ordered_feature = ordered_feature.set_index("OTU")
+        return ordered_feature
+    else:
+        return ordered_features
 
 def pca_legendre(df, num_pca_components, cond_type='hellinger'):
     return 0
@@ -303,7 +313,12 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
 
     num_subgraphs = networkx.number_connected_components(df_g)
     total_nodes = networkx.number_of_nodes(df_g)
-    largest_subgraph = max( (df_g.subgraph(c) for c in networkx.connected_components( df_g ) ), key=len )
+    subgraphs = [ df_g.subgraph(c) for c in networkx.connected_components( df_g ) ]
+    # if( len(subgraphs) <= 0 ): # Since there are no subgraphs the empty graph is under min connectedness
+    #     print('graph under min connectedness... returning')
+    #     disjoint = True
+    #     return pd.DataFrame()
+    largest_subgraph = max( subgraphs, key=len )
     # largest_subgraph = max( networkx.connected_component_subgraphs(df_g), key=len ) #Deprecated
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
 
@@ -553,6 +568,7 @@ def kl_divergence(A, B, features, select_per_iter, cond_type):
 
 def create_pca_plot(features ):
     data = features.copy()
+    plt.figure()
     plt.scatter(data['pca1'], data['pca2'])
     plt.xlabel('Principle Component 1')
     plt.ylabel('Principle Component 2')
@@ -564,6 +580,7 @@ def create_pca_plot(features ):
 
 def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh, weighted ):
     data = features.copy()
+    plt.figure()
     # create a graph of the edges/nodes using the same centrality type as used to select the features
     # this is the top25 file stuff
 
@@ -625,6 +642,7 @@ def plot_feature_metric(features ):
     # x-axis is the OTU (feature) in ranked order
     # y-axis is the metric value
     data = features.copy()
+    plt.figure()
     data['metric'].plot(style='.-')
     plt.xticks(np.arange(0, len(data['metric'])), data.index.values, rotation=45, ha='center')
     plt.xlabel('Feature Label')
@@ -870,20 +888,28 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     # add the metric information to the important features and append to the metric results dataframe
     feature_row = metric_params + important_feature_list
 
-    if( detailed ):
-        with open( os.path.join( outdir, f"metric_results-{process_id}.csv"), 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow(feature_row)
-        with open( os.path.join( resultsOutdir, 'combined_metric_results.csv'), 'a' ) as f:
-            writer = csv.writer(f)
-            writer.writerow(feature_row)
-
     metric_header.extend( range( 1, abs( len(feature_row) - len(metric_header) ) +1 ))
     feature_df = pd.DataFrame( [feature_row], columns=metric_header) # format list into data frame before output
 
     # get the abundances for each of the important features and write those to a new file
     # print('final important features', important_features)
     if( detailed ):
+        # if files exist just append row to them, else want to keep the headers
+        metric_path = os.path.join(outdir, f"metric_results.csv")
+        if( os.path.exists( metric_path )):
+            with open( metric_path, 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow(feature_row)
+        else:
+            feature_df.to_csv( metric_path )
+        combined_metric_path = os.path.join( resultsOutdir, 'combined_metric_results.csv')
+        if( os.path.exists( combined_metric_path )):
+            with open( combined_metric_path, 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow(feature_row)
+        else:
+            feature_df.to_csv( combined_metric_path, index=False )
+        # rewrite these since it's entire output
         important_features.to_csv(os.path.join(outdir, metric_filename))
         feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
 

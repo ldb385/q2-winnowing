@@ -51,7 +51,7 @@ def string_find_replace(str_returned):
 
 
 
-def main():
+def main( sem_data ):
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
@@ -284,4 +284,5 @@ def main():
 
 # <><><> TEST <><><>
 
-sem_data = pd.read_csv("Brome.SEM.data.csv")
+sem_df = pd.read_csv("./test_data/Brome.SEM.data.csv")
+main( sem_df )
