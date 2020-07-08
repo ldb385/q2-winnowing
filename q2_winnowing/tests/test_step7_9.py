@@ -13,26 +13,26 @@ class Step7_9Tests( TestCase ):
     testing_data = []
     testing_data.append((
         pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_spearman_0.5_bw.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_spearman_0.5_bw", index_col=0 )
+        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_spearman_0.5_bw.csv", index_col=0 )
     ))
     testing_data.append((
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_log_MIC_0.6_dg.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_log_MIC_0.6_dg.csv", index_col=0 )
+        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_spearman_0.5_ei.csv"),
+        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_spearman_0.5_ei.csv", index_col=0 )
     ))
     testing_data.append((
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_pca_MIC_0.5_bw.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_pca_MIC_0.5_bw.csv", index_col=0 )
+        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_MIC_0.5_cl.csv"),
+        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_MIC_0.5_cl.csv", index_col=0 )
     ))
     testing_data.append((
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_pca_spearman_0.5_bw.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_pca_spearman_0.5_bw.csv", index_col=0 )
+        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_MIC_0.5_dg.csv"),
+        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_MIC_0.5_dg.csv", index_col=0 )
     ))
 
 
     def test_jaccard_coefficient(self):
         a = (0,1,2,5,6)
         b = (0,2,3,4,5,7,9)
-        out = 0.3333333
+        out = 0.3333333 # this is repeating
         jaccard_coefficient_result = jaccard_coefficient(a,b)
         np.testing.assert_almost_equal(
             jaccard_coefficient_result,
