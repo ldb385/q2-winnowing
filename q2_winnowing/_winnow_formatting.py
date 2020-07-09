@@ -71,6 +71,7 @@ plugin.register_semantic_type_to_format(
     # Standard to use a non-meaningful name for plugin transformer
 @plugin.register_transformer
 def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
+    # No Doc String since annotation describes functionality
     with WinnowedFile.open() as wf:
         expected_col = _EXPECTED_HEADERS_ + range(1, abs( len(_EXPECTED_HEADERS_) - max([ len(lwf) for lwf in wf ]) ))
         orderedFeatures_df = pd.DataFrame( columns=expected_col )
@@ -85,7 +86,15 @@ def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
         return orderedFeatures_df
 
 
+# Define transformer to convert dataframe to file format
+    # Standard to use a non-meaningful name for plugin transformer
+@plugin.register_transformer
+def _2( data: pd.DataFrame ) -> WinnowedFeatureOrderingFormat:
+    # No Doc String since annotation describes functionality
+    wf = WinnowedFeatureOrderingFormat()
+    data.to_csv( wf, sep="\t", header=0 ) # pandas conveniantly converts to tsv
 
+    return wf
 
 
 
