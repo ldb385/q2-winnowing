@@ -15,9 +15,9 @@ class WinnowedFormatTests(unittest.TestCase):
 
     def test_data_import(self):
         fp = pkg_resources.resource_filename(
-            'q2_dummy_types.tests', 'sample_data/test_in_featureData.tsv')
+            'q2_winnowing.tests', 'sample_data/test_in_featureData.tsv')
 
-        # `Artifact.import_data` copies `mapping.tsv` into the artifact after
+        # `Artifact.import_data` copies `test_in_featureData.tsv` into the artifact after
         # performing validation on the file.
         artifact = Artifact.import_data(Winnowed, fp)
 
