@@ -76,8 +76,10 @@ def _assemble_artifact_output( combined_metric_df, auc_list_df, permanova_list_d
 
     # assemble biom table
     values = combined_metric_df.values.astype(type(""))
+    print( values, col_ids, row_ids, row_metadata, "Winnowed feature measures of Taxon" )
     table = biom.Table( values, col_ids, row_ids,
-                        sample_metadata=row_metadata, table_id="Winnowed feature measures of Taxon")
+                        sample_metadata=row_metadata, table_id="Winnowed feature measures of Taxon",
+                        type="Taxon table", matrix_type="dense", matrix_element_type="unicode" )
 
     return table
 
@@ -213,6 +215,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     # assemble biom table and return as artifact
     biom_table = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
     return biom_table
+    # return _dummy_biom_table()
 
 
 def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: Str=None,
