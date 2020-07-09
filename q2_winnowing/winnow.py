@@ -76,7 +76,9 @@ def _assemble_artifact_output( combined_metric_df, auc_list_df, permanova_list_d
 
     # assemble biom table
     values = combined_metric_df.values.astype(type(""))
-    print( values, col_ids, row_ids, row_metadata, "Winnowed feature measures of Taxon" )
+
+    combined_metric_df.to_csv("./newCsv.csv", sep="\t")
+
     table = biom.Table( values, col_ids, row_ids,
                         sample_metadata=row_metadata, table_id="Winnowed feature measures of Taxon",
                         type="Taxon table", matrix_type="dense", matrix_element_type="unicode" )
