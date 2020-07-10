@@ -6,9 +6,13 @@ import qiime2.plugin.model as model
 
 from q2_winnowing.plugin_setup import plugin
 
-_EXPECTED_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'total select', 'min count',
+# <><><> DEFINE STATIC HEADERS FOR SNIFFING <><><>
+_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'total select', 'min count',
                     'smooth type', 'conditioning', 'keep threshold', 'correlation', 'weighted',
                     'correlation property', 'run time', 'kappa', 'agreement']
+_EXPECTED_AUC_HEADERS_ = ["auc", "otu.num"]
+_EXPECTED_PERMANOVA_HEADERS_ = ["test", "order", "auc", "SumsOfSqs", "MeanSqs", "F.model", "R2", "Pval",
+                                "N.taxa", "F.model.scale"]
     # Placed here since is used in multiple places
 
 # Since type of output produced by q2_winnowing is only supported as metadata a new
@@ -33,7 +37,7 @@ class WinnowedFeatureOrderingFormat( model.TextFileFormat ):
                 delimited_line = list( line.rstrip("\n").split("\t") )
                 if( idx == 0 ):
                     # first line, verify headers
-                    for header in _EXPECTED_HEADERS_:
+                    for header in _EXPECTED_FEATURE_HEADERS_:
                         if( not delimited_line.__contains__( header ) ):
                             return False
                 # make sure following rows aren't empty
@@ -44,14 +48,58 @@ class WinnowedFeatureOrderingFormat( model.TextFileFormat ):
     # <><> END OF CLASS <><>
 
 
+# Define a file format representing the AUC ordered
+# most accurate ordering returned
+class WinnowedAucOrderingFormat( model.TextFileFormat ):
+
+    # this will just make sure that the file is in a expected format
+    def sniff(self):
+        with self.open() as file:
+            if( len(list(file)) != 101 ):
+                return False # 1% of AUC to 100%
+            for line, _ in zip( file, range(5) ):
+                delimited_line = line.rstrip('\n').split('\t')
+                if len(delimited_line) != 3:
+                    return False # file must be 3 columns
+
+            return True # Test passed
+
+    # <><> END OF CLASS <><>
+
+
+# Define a file format representing the PERMANOVA ordered
+# most accurate ordering returned
+class WinnowedPermanovaOrderingFormat(model.TextFileFormat):
+
+    # this will just make sure that the file is in a expected format
+    def sniff(self):
+        with self.open() as file:
+            if( len(list(file)) != 101 ):
+                return False  # AUC output was used {1% of AUC to 100%}
+            for line, idx in zip(file, range(3)):
+                delimited_line = list(line.rstrip("\n").split("\t"))
+                if (idx == 0):
+                    # first line, verify headers
+                    for header in _EXPECTED_PERMANOVA_HEADERS_:
+                        if (not delimited_line.__contains__(header)):
+                            return False
+                # make sure following rows aren't empty
+                if (len(delimited_line) <= 0):  # row must contain data
+                    return False
+
+            return True  # Test passed
+
+    # <><> END OF CLASS <><>
+
+
 # Define a directory format to be used
 # this is necessary since multpile files will be stored in the directory
 class WinnowedDirectoryFormat( model.DirectoryFormat ):
     # this is an example of a fixed layout since it will always include Feature ordering w/ Jaccard results
     # as well as complementary metadata files AUC values and Permanova files
     featureOrdering = model.File( r"feature_ordered.tsv", format=WinnowedFeatureOrderingFormat ) # Feature ordering w/ Jaccard
-    auc = model.File( r"auc_ordered.tsv", format=model.TextFileFormat ) # AUC values with ordering
-    permanova = model.File( r"permanova_ordered.tsv", format=model.TextFileFormat ) # PERMANOVA values with ordering
+    auc = model.File( r"auc_ordered.tsv", format=WinnowedAucOrderingFormat ) # AUC values with ordering
+    permanova = model.File( r"permanova_ordered.tsv", format=WinnowedPermanovaOrderingFormat ) # PERMANOVA values with ordering
 
     # <><> END OF CLASS <><>
 
@@ -67,18 +115,19 @@ plugin.register_semantic_type_to_format(
 
 
 # <><><> Define transformers for reading in and writing out format information <><><>
-# Define transformer to convert file format into dataframe
+# Define transformer to convert featureOrdering file format into dataframe
     # Standard to use a non-meaningful name for plugin transformer
 @plugin.register_transformer
 def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
     # No Doc String since annotation describes functionality
     with WinnowedFile.open() as wf:
-        expected_col = _EXPECTED_HEADERS_ + range(1, abs( len(_EXPECTED_HEADERS_) - max([ len(lwf) for lwf in wf ]) ))
+        expected_col = _EXPECTED_FEATURE_HEADERS_ + \
+                       range(1, abs( len(_EXPECTED_FEATURE_HEADERS_) - max([ len(lwf) for lwf in wf ]) ))
         orderedFeatures_df = pd.DataFrame( columns=expected_col )
         for line in wf:
             row = line.rstrip("\n").split("\t")
             if( len(row) > len( expected_col ) ):
-                raise ValueError( f"header does not have enough columns for row:\n\t{row}" )
+                raise ValueError( f"FeatureOrdering: header does not have enough columns for row:\n\t{row}" )
             orderedFeatures_df.append( row, ignore_index=True )
 
         # Make sure dataframe has proper index values
@@ -86,7 +135,7 @@ def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
         return orderedFeatures_df
 
 
-# Define transformer to convert dataframe to file format
+# Define transformer to convert featureOrdering dataframe to file format
     # Standard to use a non-meaningful name for plugin transformer
 @plugin.register_transformer
 def _2( data: pd.DataFrame ) -> WinnowedFeatureOrderingFormat:
@@ -97,13 +146,67 @@ def _2( data: pd.DataFrame ) -> WinnowedFeatureOrderingFormat:
     return wf
 
 
+# Define transformer to convert auc file format into dataframe
+    # Standard to use a non-meaningful name for plugin transformer
+@plugin.register_transformer
+def _3( AucFile: WinnowedAucOrderingFormat ) -> pd.DataFrame:
+    # No Doc String since annotation describes functionality
+    with AucFile.open() as wf:
+        expected_col = _EXPECTED_AUC_HEADERS_
+        auc_df = pd.DataFrame( columns=expected_col )
+        for line in wf:
+            row = line.rstrip("\n").split("\t")
+            if( len(row) > len( expected_col ) ):
+                raise ValueError( f"AUC: header does not have enough columns for row:\n\t{row}" )
+            auc_df.append( row, ignore_index=True )
+
+        # Make sure dataframe has proper index values
+        auc_df.reset_index( drop=True, inplace=True )
+        return auc_df
 
 
+# Define transformer to convert auc dataframe to file format
+    # Standard to use a non-meaningful name for plugin transformer
+@plugin.register_transformer
+def _4( data: pd.DataFrame ) -> WinnowedAucOrderingFormat:
+    # No Doc String since annotation describes functionality
+    wf = WinnowedAucOrderingFormat()
+    data.to_csv( wf, sep="\t", header=0 ) # pandas conveniantly converts to tsv
+
+    return wf
 
 
+# Define transformer to convert permanova file format into dataframe
+    # Standard to use a non-meaningful name for plugin transformer
+@plugin.register_transformer
+def _5( PermanovaFile: WinnowedPermanovaOrderingFormat ) -> pd.DataFrame:
+    # No Doc String since annotation describes functionality
+    with PermanovaFile.open() as wf:
+        expected_col = _EXPECTED_PERMANOVA_HEADERS_
+        permanova_df = pd.DataFrame( columns=expected_col )
+        for line in wf:
+            row = line.rstrip("\n").split("\t")
+            if( len(row) > len( expected_col ) ):
+                raise ValueError( f"PERMANOVA: header does not have enough columns for row:\n\t{row}" )
+            permanova_df.append( row, ignore_index=True )
+
+        # Make sure dataframe has proper index values
+        permanova_df.reset_index( drop=True, inplace=True )
+        return permanova_df
 
 
+# Define transformer to convert permanova dataframe to file format
+    # Standard to use a non-meaningful name for plugin transformer
+@plugin.register_transformer
+def _6( data: pd.DataFrame ) -> WinnowedPermanovaOrderingFormat:
+    # No Doc String since annotation describes functionality
+    wf = WinnowedPermanovaOrderingFormat()
+    data.to_csv( wf, sep="\t", header=0 ) # pandas conveniantly converts to tsv
 
+    return wf
+
+
+# <><><> Define directory transformers for reading in and writing out format information <><><>
 
 
 
