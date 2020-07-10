@@ -3,6 +3,7 @@ import pkg_resources
 import unittest
 import uuid
 
+from typing import Dict, Tuple, Sequence
 import pandas as pd
 import qiime2.core.archive as archive
 from qiime2.sdk import Artifact
@@ -42,7 +43,7 @@ class WinnowedFormatTests(unittest.TestCase):
         artifact = Artifact.import_data(Winnowed, fp)
         # `Artifact.view` invokes the transformer that handles the
         # `WinnowedFormat` -> `dataframe` transformation.
-        pd.testing.assert_frame_equal( artifact.view(pd.DataFrame), input_to_dataframe )
+        pd.testing.assert_frame_equal( artifact.view( Tuple[pd.DataFrame,pd.DataFrame,pd.DataFrame] ), input_to_dataframe )
 
 
     def test_writer_transformer(self):
