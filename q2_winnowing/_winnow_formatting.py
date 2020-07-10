@@ -4,7 +4,7 @@ import pandas as pd
 import qiime2.plugin
 import qiime2.plugin.model as model
 
-from .plugin_setup import plugin
+from q2_winnowing.plugin_setup import plugin
 
 _EXPECTED_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'total select', 'min count',
                     'smooth type', 'conditioning', 'keep threshold', 'correlation', 'weighted',
