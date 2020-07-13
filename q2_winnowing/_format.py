@@ -1,8 +1,5 @@
 
 import pandas as pd
-import shutil
-from typing import Dict, Tuple, Sequence
-import pkg_resources
 
 import qiime2.plugin
 import qiime2.plugin.model as model
@@ -127,15 +124,20 @@ def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
     # No Doc String since annotation describes functionality
     with WinnowedFile.open() as wf:
         expected_col = _EXPECTED_FEATURE_HEADERS_ + \
-                       range(1, abs( len(_EXPECTED_FEATURE_HEADERS_) - max([ len(lwf) for lwf in wf ]) ))
-        orderedFeatures_df = pd.DataFrame( columns=expected_col )
+                       list( range(1, abs( len(_EXPECTED_FEATURE_HEADERS_) - max([ len(lwf.rstrip("\n").split("\t")) for lwf in wf ]) )) )
+        wf.seek( 0 ) # Reset read cursor to start of data
+        wf.readline() # skip headers
+        orderedFeatures_df = pd.DataFrame()
         for line in wf:
             row = line.rstrip("\n").split("\t")
+            if( str(row[0]).isdigit() ):
+                row = row[1:] # index column can be removed
             if( len(row) > len( expected_col ) ):
                 raise ValueError( f"FeatureOrdering: header does not have enough columns for row:\n\t{row}" )
-            orderedFeatures_df.append( row, ignore_index=True )
+            orderedFeatures_df = orderedFeatures_df.append( [row], ignore_index=True )
 
-        # Make sure dataframe has proper index values
+        # Make sure dataframe has proper index and column values
+        orderedFeatures_df.columns = expected_col # Append changes columns so got to reset
         orderedFeatures_df.reset_index( drop=True, inplace=True )
         return orderedFeatures_df
 
@@ -158,14 +160,18 @@ def _3( AucFile: WinnowedAucOrderingFormat ) -> pd.DataFrame:
     # No Doc String since annotation describes functionality
     with AucFile.open() as wf:
         expected_col = _EXPECTED_AUC_HEADERS_
-        auc_df = pd.DataFrame( columns=expected_col )
+        auc_df = pd.DataFrame()
+        wf.readline() # skip headers
         for line in wf:
             row = line.rstrip("\n").split("\t")
+            if( str(row[0]).isdigit() ):
+                row = row[1:] # index column can be removed
             if( len(row) > len( expected_col ) ):
                 raise ValueError( f"AUC: header does not have enough columns for row:\n\t{row}" )
-            auc_df.append( row, ignore_index=True )
+            auc_df = auc_df.append( [row], ignore_index=True )
 
         # Make sure dataframe has proper index values
+        auc_df.columns = expected_col # Append changes columns so got to reset
         auc_df.reset_index( drop=True, inplace=True )
         return auc_df
 
@@ -188,14 +194,18 @@ def _5( PermanovaFile: WinnowedPermanovaOrderingFormat ) -> pd.DataFrame:
     # No Doc String since annotation describes functionality
     with PermanovaFile.open() as wf:
         expected_col = _EXPECTED_PERMANOVA_HEADERS_
-        permanova_df = pd.DataFrame( columns=expected_col )
+        permanova_df = pd.DataFrame()
+        wf.readline() # skip headers
         for line in wf:
             row = line.rstrip("\n").split("\t")
+            if( str(row[0]).isdigit() ):
+                row = row[1:] # index column can be removed
             if( len(row) > len( expected_col ) ):
                 raise ValueError( f"PERMANOVA: header does not have enough columns for row:\n\t{row}" )
-            permanova_df.append( row, ignore_index=True )
+            permanova_df = permanova_df.append( [row], ignore_index=True )
 
         # Make sure dataframe has proper index values
+        permanova_df.columns = expected_col # Append changes columns so got to reset
         permanova_df.reset_index( drop=True, inplace=True )
         return permanova_df
 
@@ -215,18 +225,18 @@ def _6( data: pd.DataFrame ) -> WinnowedPermanovaOrderingFormat:
 # Define transformer to convert permanova file format into dataframe
     # Standard to use a non-meaningful name for plugin transformer
 @plugin.register_transformer
-def _7( Dir: WinnowedDirectoryFormat ) -> Tuple[ pd.DataFrame, pd.DataFrame, pd.DataFrame ]:
+def _7( dirfmt: WinnowedDirectoryFormat ) -> tuple:
     # No Doc String since annotation describes functionality
-    root = Dir.path
+
         # Ordered feature read of Dir
-    f_orderedFeature = f"{root}/feature_ordered.tsv"
-    artifact_ordered_features = Artifact.import_data(Winnowed, f_orderedFeature)
+    artifact_ordered_features = dirfmt.featureOrdering.view( WinnowedFeatureOrderingFormat )
+    # artifact_ordered_features = Artifact.import_data(Winnowed, f_orderedFeature )
         # PERMANOVA read of Dir
-    f_permanova = f"{root}/permanova_ordered.tsv"
-    artifact_permanova = Artifact.import_data(Winnowed, f_permanova)
+    artifact_permanova = dirfmt.permanova.view( WinnowedPermanovaOrderingFormat )
+    # artifact_permanova = Artifact.import_data(Winnowed, f_permanova )
         # AUC feature read of Dir
-    f_auc = f"{root}/auc_ordered.tsv"
-    artifact_auc = Artifact.import_data(Winnowed, f_auc)
+    artifact_auc = dirfmt.auc.view( WinnowedAucOrderingFormat )
+    # artifact_auc = Artifact.import_data(Winnowed, f_auc )
 
     dirTuple = (
         artifact_ordered_features.view(pd.DataFrame),
