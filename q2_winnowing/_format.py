@@ -1,5 +1,6 @@
 
 import pandas as pd
+import shutil
 
 import qiime2.plugin
 import qiime2.plugin.model as model
@@ -58,6 +59,7 @@ class WinnowedAucOrderingFormat( model.TextFileFormat ):
         with self.open() as file:
             if( len(list(file)) != 101 ):
                 return False # 1% of AUC to 100%
+            file.readline() # ignore header
             for line, _ in zip( file, range(5) ):
                 delimited_line = line.rstrip('\n').split('\t')
                 if len(delimited_line) != 3:
@@ -148,7 +150,8 @@ def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
 def _2( data: pd.DataFrame ) -> WinnowedFeatureOrderingFormat:
     # No Doc String since annotation describes functionality
     wf = WinnowedFeatureOrderingFormat()
-    data.to_csv( wf, sep="\t", header=0 ) # pandas conveniantly converts to tsv
+    path = str( wf.path )
+    data.to_csv( path, sep="\t" ) # pandas conveniantly converts to tsv
 
     return wf
 
@@ -182,7 +185,8 @@ def _3( AucFile: WinnowedAucOrderingFormat ) -> pd.DataFrame:
 def _4( data: pd.DataFrame ) -> WinnowedAucOrderingFormat:
     # No Doc String since annotation describes functionality
     wf = WinnowedAucOrderingFormat()
-    data.to_csv( wf, sep="\t", header=0 ) # pandas conveniantly converts to tsv
+    path = str( wf.path )
+    data.to_csv( path, sep="\t" ) # pandas conveniantly converts to tsv
 
     return wf
 
@@ -216,7 +220,8 @@ def _5( PermanovaFile: WinnowedPermanovaOrderingFormat ) -> pd.DataFrame:
 def _6( data: pd.DataFrame ) -> WinnowedPermanovaOrderingFormat:
     # No Doc String since annotation describes functionality
     wf = WinnowedPermanovaOrderingFormat()
-    data.to_csv( wf, sep="\t", header=0 ) # pandas conveniantly converts to tsv
+    path = str( wf.path )
+    data.to_csv( path, sep="\t" ) # pandas conveniantly converts to tsv
 
     return wf
 
@@ -240,31 +245,32 @@ def _7( dirfmt: WinnowedDirectoryFormat ) -> tuple:
 
     dirTuple = (
         artifact_ordered_features.view(pd.DataFrame),
-        artifact_permanova.view(pd.DataFrame),
-        artifact_auc.view(pd.DataFrame)
+        artifact_auc.view(pd.DataFrame),
+        artifact_permanova.view(pd.DataFrame)
     )
 
     return dirTuple
 
 
-# # # Define transformer to convert permanova dataframe to file format
-# #     # Standard to use a non-meaningful name for plugin transformer
-# @plugin.register_transformer
-# def _8( data: Tuple[ pd.DataFrame, pd.DataFrame, pd.DataFrame ] ) -> WinnowedDirectoryFormat:
-#     # No Doc String since annotation describes functionality
-#     result = WinnowedDirectoryFormat()
-#     root = result.path
-#
-#     featureOrdering_fp = str( root / "feature_ordered.tsv")
-#     aucOrdering_fp = str( root / "auc_ordered.tsv")
-#     permanovaOrdering_fp = str( root / "permanova_ordered.tsv")
-#
-#     shutil.copyfile(str(dirfmt.forward.view(FastqGzFormat)), forward_fp)
-#     shutil.copyfile(str(dirfmt.reverse.view(FastqGzFormat)), reverse_fp)
-#     shutil.copyfile(str(dirfmt.barcodes.view(FastqGzFormat)), barcodes_fp)
-#
-#     return result
-#
+# # Define transformer to convert permanova dataframe to file format
+#     # Standard to use a non-meaningful name for plugin transformer
+@plugin.register_transformer
+def _8( data: tuple ) -> WinnowedDirectoryFormat:
+    # No Doc String since annotation describes functionality
+    result = WinnowedDirectoryFormat()
+    path = result.path
+    of, oa, op = data
+
+    features_fp = str(path / "feature_ordered.tsv")
+    permanova_fp = str(path / "permanova_ordered.tsv")
+    auc_fp = str(path / "auc_ordered.tsv")
+
+    shutil.copyfile( _2( of ).path, features_fp ) # feature ordering
+    shutil.copyfile( _4( oa ).path, auc_fp ) # AUC
+    shutil.copyfile( _6( op ).path, permanova_fp ) # PERMANOVA
+
+    return result
+
 
 
 
