@@ -142,7 +142,23 @@ class WinnowedFormatTests(unittest.TestCase):
                                        tuple, archive.ImportProvenanceCapture())
 
         # Test that the directory and file format can be read again.
-        self.assertEqual(artifact.view(tuple), (exp_featureOrdering, exp_auc, exp_permanova))
+        got_featureOrdering, got_auc, got_permanova = artifact.view(tuple)
+        pd.testing.assert_frame_equal(
+            got_featureOrdering.astype(type("")),
+            exp_featureOrdering.astype(type("")),
+            check_dtype=False
+        ) # Avoid checking values since reading df stores as objects while, hard coding in does not
+        # ex) bool(False) == Object(False) in pandas is False although the values function the same.
+        pd.testing.assert_frame_equal(
+            got_auc.astype(type("")),
+            exp_auc.astype(type("")),
+            check_dtype=False
+        )
+        pd.testing.assert_frame_equal(
+            got_permanova.astype(type("")),
+            exp_permanova.astype(type("")),
+            check_dtype=False
+        )
 
         # <><> END OF FUNCTION <><>
 
