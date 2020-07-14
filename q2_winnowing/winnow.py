@@ -153,8 +153,8 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
 
     metricOutput = pd.DataFrame() # dataframe to write metrics new
-    aucOutput = [] # list to write AUC values to
-    permanovaOutput = [] # list to write PERMANOVA values to
+    aucOutput = pd.DataFrame() # Keep most accurate AUC
+    permanovaOutput = pd.DataFrame() # Keep most accurate PERMANOVA value
     _write_to_dump( verbose, dump, step=0.5 )
 
     for iteration_selected in sorted( iteration_select ):
@@ -193,14 +193,14 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         AUC_results, AUC_parameters = \
             _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
-        aucOutput.append( AUC_results )
+        aucOutput = AUC_results
 
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )
         PERMANOVA_results = \
             _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
                                centralityType=centrality_type, name=newName, detailed=detailed, verbose=verbose )
-        permanovaOutput.append( PERMANOVA_results )
+        permanovaOutput = PERMANOVA_results
         _write_to_dump( verbose, dump, step=6.5 )
 
 
