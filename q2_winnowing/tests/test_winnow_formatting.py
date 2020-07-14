@@ -7,7 +7,11 @@ import pandas as pd
 import qiime2.core.archive as archive
 from qiime2.sdk import Artifact
 
-from q2_winnowing import Winnowed
+from q2_winnowing.plugin_setup import Winnowed
+from q2_winnowing._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
+                                   WinnowedAucOrderingFormat, WinnowedPermanovaOrderingFormat )
+import q2_winnowing._transformer
+import q2_winnowing._type
 
 exp_featureOrdering = pd.DataFrame(
     data=[[False,"-name-_1_1_","graph_centrality","betweenness",25,3,"sliding_window","add_one",0.5,"spearman",True,"both",2760.5702665330027,0.09688013136288998,0.47058823529411764,"Otu5330","Otu4626","Otu6188","Otu6434","Otu4238","Otu5737","Otu3245","Otu5484","Otu6390",'Otu6747',"Otu6264","Otu6602","Otu6306",'Otu6284','Otu5981',"Otu6671","Otu4727","Otu6326","Otu6199","Otu4164","Otu5267","Otu6344","Otu5313","Otu0728","Otu5584"],
