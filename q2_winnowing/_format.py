@@ -2,7 +2,7 @@
 import qiime2.plugin.model as model
 
 # <><><> DEFINE STATIC HEADERS <><><>
-_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'total select', 'min count',
+_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'iteration select', 'total select', 'min count',
                     'smooth type', 'conditioning', 'keep threshold', 'correlation', 'weighted',
                     'correlation property', 'run time', 'kappa', 'agreement']
 _EXPECTED_AUC_HEADERS_ = ["auc", "otu.num"]
@@ -22,7 +22,6 @@ class WinnowedFeatureOrderingFormat( model.TextFileFormat ):
         with self.open() as file:
             for line, idx in zip( file, range(2) ):
                 delimited_line = list( line.rstrip("\n").split("\t") )
-                print( delimited_line )
                 if( idx == 0 ):
                     # first line, verify headers
                     for header in _EXPECTED_FEATURE_HEADERS_:
@@ -48,7 +47,6 @@ class WinnowedAucOrderingFormat( model.TextFileFormat ):
             file.readline() # ignore header
             for line, _ in zip( file, range(5) ):
                 delimited_line = line.rstrip('\n').split('\t')
-                print( delimited_line )
                 if len(delimited_line) != 3:
                     return False # file must be 3 columns
 
@@ -68,7 +66,6 @@ class WinnowedPermanovaOrderingFormat(model.TextFileFormat):
                 return False  # AUC output was used {1% of AUC to 100%}
             for line, idx in zip(file, range(3)):
                 delimited_line = list(line.rstrip("\n").split("\t"))
-                print( delimited_line )
                 if (idx == 0):
                     # first line, verify headers
                     for header in _EXPECTED_PERMANOVA_HEADERS_:

@@ -8,7 +8,7 @@ from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
 
 
 # <><><> DEFINE STATIC HEADERS FOR SNIFFING <><><>
-_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'total select', 'min count',
+_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'iteration select', 'total select', 'min count',
                     'smooth type', 'conditioning', 'keep threshold', 'correlation', 'weighted',
                     'correlation property', 'run time', 'kappa', 'agreement']
 _EXPECTED_AUC_HEADERS_ = ["auc", "otu.num"]
@@ -156,6 +156,9 @@ def _8( data: tuple ) -> WinnowedDirectoryFormat:
     result = WinnowedDirectoryFormat()
     path = result.path
     of, oa, op = data
+    print( of )
+    print( oa )
+    print( op )
 
     features_fp = str(path / "feature_ordered.tsv")
     permanova_fp = str(path / "permanova_ordered.tsv")
