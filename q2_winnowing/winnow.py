@@ -13,7 +13,6 @@ from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
 from q2_winnowing.step6.Step6_Permanova import main as step6_main
 from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
-# from q2_winnowing.step10.Step10_SEM import main as step10_main
 
 def _dummy_biom_table():
     """
@@ -43,9 +42,6 @@ def _dummy_biom_table():
 
 
 def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard_df ):
-    # each output is generated for each iteration selection so it will be used as row index
-    row_ids = combined_metric_df.loc[:,"iteration select"]
-    combined_metric_df.drop("iteration select", axis=1, inplace=True ) # remove since it is index
 
     # Precautionary reset index of dataframes to be joined
     combined_metric_df.reset_index( drop=True, inplace=True )
@@ -351,12 +347,4 @@ def _winnow_sensativity( df_metric_results, name, detailed=False, verbose=False 
     jaccard_result = step7_9_main( df_metric_results, name=name, detailed=detailed, verbose=verbose )
 
     return jaccard_result # Dataframe with Kappa and Agreement values
-
-
-
-def _winnow_network_connectivity():
-
-
-
-    return
 
