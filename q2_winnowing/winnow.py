@@ -7,6 +7,7 @@ import pandas as pd
 import os
 
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
+from qiime2 import Artifact
 
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
@@ -41,7 +42,7 @@ def _dummy_biom_table():
     return table
 
 
-def _assemble_artifact_output( combined_metric_df, auc_list_df, permanova_list_df, jaccard_df ):
+def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard_df ):
     # each output is generated for each iteration selection so it will be used as row index
     row_ids = combined_metric_df.loc[:,"iteration select"]
     combined_metric_df.drop("iteration select", axis=1, inplace=True ) # remove since it is index
@@ -49,7 +50,7 @@ def _assemble_artifact_output( combined_metric_df, auc_list_df, permanova_list_d
     # Precautionary reset index of dataframes to be joined
     combined_metric_df.reset_index( drop=True, inplace=True )
     jaccard_df.reset_index( drop=True, inplace=True )
-    print(jaccard_df)
+
     jaccard_kappa = jaccard_df.loc[:,"kappa"] # only new info
     jaccard_agreement = jaccard_df.loc[:,"agreement"] # only new info
     try: # cautionary int index
@@ -62,28 +63,10 @@ def _assemble_artifact_output( combined_metric_df, auc_list_df, permanova_list_d
     combined_metric_df.insert( instertion_spot, "agreement", jaccard_agreement )
     combined_metric_df.insert( instertion_spot, "kappa", jaccard_kappa )
 
-    # get column headers for atrifact
-    col_ids = combined_metric_df.columns
+    # Combine output in directory format
+    artifact_winnowed = Artifact.import_data( "Winnowed", ( combined_metric_df, auc_df, permanova_df ) )
 
-    # attach AUC and PERMANOVA calculations as metadata
-    row_metadata = []
-    for idx in range( 0, len(row_ids) ):
-        # insert each iteration select metadata
-        row_metadata.append({
-            "AUC": auc_list_df[idx],
-            "PERMANOVA": permanova_list_df[idx]
-        })
-
-    # assemble biom table
-    values = combined_metric_df.values.astype(type(""))
-
-    combined_metric_df.to_csv("./newCsv.csv", sep="\t")
-
-    table = biom.Table( values, col_ids, row_ids,
-                        sample_metadata=row_metadata, table_id="Winnowed feature measures of Taxon",
-                        type="Taxon table", matrix_type="dense", matrix_element_type="unicode" )
-
-    return table
+    return artifact_winnowed
 
 
 def _write_to_dump( verbose, dump, step ):
@@ -130,7 +113,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
                       evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False,
                       plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
                       detailed: Bool=False, verbose: Bool=False
-                      ) -> biom.Table:
+                      ) -> tuple:
 
     if iteration_select is None: # Since default parameter can't have set function call
         iteration_select = {1, 4, 16, 64}
@@ -214,10 +197,9 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     _write_to_dump( verbose, dump, step=10 )
     dump.close()
 
-    # assemble biom table and return as artifact
-    biom_table = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
-    return biom_table
-    # return _dummy_biom_table()
+    # assemble output and return as artifact
+    artifact_directory = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
+    return artifact_directory
 
 
 def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: Str=None,
