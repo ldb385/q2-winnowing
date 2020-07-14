@@ -8,6 +8,8 @@ from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
 
 class Step4_5Tests( TestCase ):
 
+    package = 'q2_winnowing.tests'
+
     # <><> read input values and expected output values for testing <><>
     testing_data = []
     testing_data.append((

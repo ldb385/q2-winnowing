@@ -9,6 +9,8 @@ from q2_winnowing.step7_9.Step7_9_Jaccard import jaccard_coefficient
 
 class Step7_9Tests( TestCase ):
 
+    package = 'q2_winnowing.tests'
+
     # <><> read input values and expected output values for testing <><>
     testing_data = []
     testing_data.append((
