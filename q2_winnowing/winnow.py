@@ -60,43 +60,45 @@ def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard
     combined_metric_df.insert( instertion_spot, "kappa", jaccard_kappa )
 
     # Combine output in directory format
-    artifact_winnowed = Artifact.import_data( "Winnowed", ( combined_metric_df, auc_df, permanova_df ) )
+    # artifact_winnowed = Artifact.import_data( "Winnowed", ( combined_metric_df, auc_df, permanova_df ) )
+    artifact_winnowed = ( combined_metric_df, auc_df, permanova_df )
 
     return artifact_winnowed
 
 
-def _write_to_dump( verbose, dump, step ):
+def _write_to_dump( verbose, dump_path, step ):
     """
     this is simply to write to a dump file if verbose is selected.
     by using this in function it improves readability and removes clutterness of code
     with multiple verbose checks
     :param verbose: if selected will write to dump file
-    :param dump: the file that is being written to
+    :param dump_path: the file that is being written to
     :param step: this is which step the program is on, each step corresponds to script ran
     :return: nothing is returned program functions as simple printing function
     """
 
     if( verbose ):
-        if( step == 0 ):
-            dump.write("Beginning to convert input to dataframes.\n")
-        elif( step == 0.5 ):
-            dump.write("Finished converting input to dataframes.\n")
-        elif( step == 1 ):
-            dump.write("Starting steps 1 to 3\n")
-        elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
-            dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
-        elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
-            dump.write("Finished steps 4 to 5.\nStarting step 6\n")
-        elif( step == 6.5 ):
-            dump.write("Finished step 6.\n")
-        elif( step == 7 ):
-            dump.write("\nStarting steps 7 to 9\n")
-        elif( step == 10 ):
-            dump.write(
-                "Output for each winnowing step is written to the respective output folder within each step folder \n"
-                "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
-                "\tThis applies for each step.")
-            dump.write("Winnow processing finished.")
+        with open( dump_path, "a" ) as dump:
+            if( step == 0 ):
+                dump.write("Beginning to convert input to dataframes.\n")
+            elif( step == 0.5 ):
+                dump.write("Finished converting input to dataframes.\n")
+            elif( step == 1 ):
+                dump.write("Starting steps 1 to 3\n")
+            elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
+                dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
+            elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
+                dump.write("Finished steps 4 to 5.\nStarting step 6\n")
+            elif( step == 6.5 ):
+                dump.write("Finished step 6.\n")
+            elif( step == 7 ):
+                dump.write("\nStarting steps 7 to 9\n")
+            elif( step == 10 ):
+                dump.write(
+                    "Output for each winnowing step is written to the respective output folder within each step folder \n"
+                    "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
+                    "\tThis applies for each step.")
+                dump.write("Winnow processing finished.")
 
     return # Nothing just signifies termination of function
 
@@ -116,7 +118,9 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
-    dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8")
+    dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8") # Overwrite file to new empty
+    dump.close()
+    dump = f"{outDir}/processing_dump.txt"
 
     _write_to_dump( verbose, dump, step=0)
 
@@ -191,11 +195,10 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
     # Notify user of output path
     _write_to_dump( verbose, dump, step=10 )
-    dump.close()
 
     # assemble output and return as artifact
     artifact_directory = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
-    return artifact_directory
+    return tuple(artifact_directory)
 
 
 def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: Str=None,
