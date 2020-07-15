@@ -129,7 +129,7 @@ def _6( data: pd.DataFrame ) -> WinnowedPermanovaOrderingFormat:
 # Define transformer to convert permanova file format into dataframe
     # Standard to use a non-meaningful name for plugin transformer
 @plugin.register_transformer
-def _7( dirfmt: WinnowedDirectoryFormat ) -> tuple:
+def _7( dirfmt: WinnowedDirectoryFormat ) -> list:
     # No Doc String since annotation describes functionality
 
         # Ordered feature read of Dir
@@ -139,11 +139,11 @@ def _7( dirfmt: WinnowedDirectoryFormat ) -> tuple:
         # AUC feature read of Dir
     artifact_auc = dirfmt.auc.view( WinnowedAucOrderingFormat )
 
-    dirTuple = (
+    dirTuple = [ (
         artifact_ordered_features.view(pd.DataFrame),
         artifact_auc.view(pd.DataFrame),
         artifact_permanova.view(pd.DataFrame)
-    )
+    ) ]
 
     return dirTuple
 
@@ -151,14 +151,11 @@ def _7( dirfmt: WinnowedDirectoryFormat ) -> tuple:
 # # Define transformer to convert permanova dataframe to file format
 #     # Standard to use a non-meaningful name for plugin transformer
 @plugin.register_transformer
-def _8( data: tuple ) -> WinnowedDirectoryFormat:
+def _8( data: list ) -> WinnowedDirectoryFormat:
     # No Doc String since annotation describes functionality
     result = WinnowedDirectoryFormat()
     path = result.path
-    of, oa, op = data
-    print( of )
-    print( oa )
-    print( op )
+    of, oa, op = data[0]
 
     features_fp = str(path / "feature_ordered.tsv")
     permanova_fp = str(path / "permanova_ordered.tsv")

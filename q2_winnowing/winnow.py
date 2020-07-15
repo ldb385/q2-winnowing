@@ -60,8 +60,10 @@ def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard
     combined_metric_df.insert( instertion_spot, "kappa", jaccard_kappa )
 
     # Combine output in directory format
-    # artifact_winnowed = Artifact.import_data( "Winnowed", ( combined_metric_df, auc_df, permanova_df ) )
-    artifact_winnowed = ( combined_metric_df, auc_df, permanova_df )
+    artifact_winnowed = [ ( combined_metric_df, auc_df, permanova_df ) ]
+        # this needs to be done since qiime2 has a check for whether len( output views ) == len( semantic types )
+        # sadly this fails with tuples so as defined by qiime this is the workaround may be changed in updates
+        # len( (1, 2, 3) ) = 3, len( ( (1, 2, 3) ) ) = 3, while len( [ (1, 2, 3) ] ) = 1
 
     return artifact_winnowed
 
@@ -111,7 +113,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
                       evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False,
                       plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
                       detailed: Bool=False, verbose: Bool=False
-                      ) -> tuple:
+                      ) -> list:
 
     if iteration_select is None: # Since default parameter can't have set function call
         iteration_select = {1, 4, 16, 64}
@@ -198,7 +200,8 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
     # assemble output and return as artifact
     artifact_directory = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
-    return tuple(artifact_directory)
+    print( len( artifact_directory ) )
+    return artifact_directory
 
 
 def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: Str=None,

@@ -942,6 +942,11 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
         param_filename = f'parameter_list-{process_id}.csv'
         parameter_df.to_csv(os.path.join(outdir, param_filename))
 
+    # precautionary re-index of files
+    feature_df.reset_index( drop=True, inplace=True )
+    important_features.reset_index( drop=True, inplace=True )
+    feature_abundances.reset_index( drop=True, inplace=True )
+
     return ( feature_df, important_features, feature_abundances )
 
 # graph information loss, kl outlier divergence.
