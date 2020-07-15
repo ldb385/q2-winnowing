@@ -12,9 +12,12 @@ from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
 from q2_winnowing.step6.Step6_Permanova import main as step6_main
 from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
-# from q2_winnowing.step10.Step10_SEM import main as step10_main
 
 def _dummy_biom_table():
+    """
+    this was used as a placeholder of output while testing functionality of parts
+    :return: created biom table
+    """
     # from https://biom-format.org/documentation/table_objects.html
     data = np.arange(40).reshape(10, 4)
     sample_ids = ['S%d' % i for i in range(4)]
@@ -37,44 +40,90 @@ def _dummy_biom_table():
     return table
 
 
-def _assemble_biom_table_from_SEM_data( dataframe ):
+def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard_df ):
 
-    num_rows = len( dataframe )
-    num_columns = len( dataframe.columns )
+    # Precautionary reset index of dataframes to be joined
+    combined_metric_df.reset_index( drop=True, inplace=True )
+    jaccard_df.reset_index( drop=True, inplace=True )
 
-    sample_ids = ["S%d" % i for i in range( num_rows )]
-    observation_ids = ["O%d" % i for i in range( num_columns )]
+    jaccard_kappa = jaccard_df.loc[:,"kappa"] # only new info
+    jaccard_agreement = jaccard_df.loc[:,"agreement"] # only new info
+    try: # cautionary int index
+        instertion_spot = combined_metric_df.columns.get_loc("1")
+    except:
+        # check for int instead of string value
+        instertion_spot = combined_metric_df.columns.get_loc(1)
 
-    sample_metadata = dataframe[dataframe.columns[0]]
-    observations_tested_metadata = dataframe.iloc[0]
+    # insert jaccard values into dataframe
+    combined_metric_df.insert( instertion_spot, "agreement", jaccard_agreement )
+    combined_metric_df.insert( instertion_spot, "kappa", jaccard_kappa )
 
-    data = np.array( dataframe.to_csv( header=None, Index=None ) )
+    # Combine output in directory format
+    artifact_winnowed = [ ( combined_metric_df, auc_df, permanova_df ) ]
+        # this needs to be done since qiime2 has a check for whether len( output views ) == len( semantic types )
+        # sadly this fails with tuples so as defined by qiime this is the workaround may be changed in updates
+        # len( (1, 2, 3) ) = 3, len( ( (1, 2, 3) ) ) = 3, while len( [ (1, 2, 3) ] ) = 1
 
-    table = biom.Table( data, observation_ids, sample_ids, observations_tested_metadata,
-                        sample_metadata, table_id="Winnowed Interaction Table of Taxon")
-    return table
+    return artifact_winnowed
+
+
+def _write_to_dump( verbose, dump_path, step ):
+    """
+    this is simply to write to a dump file if verbose is selected.
+    by using this in function it improves readability and removes clutterness of code
+    with multiple verbose checks
+    :param verbose: if selected will write to dump file
+    :param dump_path: the file that is being written to
+    :param step: this is which step the program is on, each step corresponds to script ran
+    :return: nothing is returned program functions as simple printing function
+    """
+
+    if( verbose ):
+        with open( dump_path, "a" ) as dump:
+            if( step == 0 ):
+                dump.write("Beginning to convert input to dataframes.\n")
+            elif( step == 0.5 ):
+                dump.write("Finished converting input to dataframes.\n")
+            elif( step == 1 ):
+                dump.write("Starting steps 1 to 3\n")
+            elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
+                dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
+            elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
+                dump.write("Finished steps 4 to 5.\nStarting step 6\n")
+            elif( step == 6.5 ):
+                dump.write("Finished step 6.\n")
+            elif( step == 7 ):
+                dump.write("\nStarting steps 7 to 9\n")
+            elif( step == 10 ):
+                dump.write(
+                    "Output for each winnowing step is written to the respective output folder within each step folder \n"
+                    "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
+                    "\tThis applies for each step.")
+                dump.write("Winnow processing finished.")
+
+    return # Nothing just signifies termination of function
 
 
 def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
-                      name: Str="", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
+                      name: Str="-name-", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
                       min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
                       smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                       keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
                       evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False,
                       plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
                       detailed: Bool=False, verbose: Bool=False
-                      ) -> biom.Table:
+                      ) -> list:
 
     if iteration_select is None: # Since default parameter can't have set function call
         iteration_select = {1, 4, 16, 64}
 
-    if( verbose ):
-        outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
-        # allows for cleaner execution and use of relative paths
-        dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8")
+    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    # allows for cleaner execution and use of relative paths
+    dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8") # Overwrite file to new empty
+    dump.close()
+    dump = f"{outDir}/processing_dump.txt"
 
-    if( verbose ):
-        dump.write("Beginning to convert input to dataframes.\n")
+    _write_to_dump( verbose, dump, step=0)
 
     # This will be used as part of the PERMANOVA calculation
     sample_types = sample_types.to_dataframe()
@@ -87,12 +136,11 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
 
-    if( verbose ):
-        dump.write("Finished converting input to dataframes.\nStarting steps 1 to 3\n")
+    metricOutput = pd.DataFrame() # dataframe to write metrics new
+    aucOutput = pd.DataFrame() # Keep most accurate AUC
+    permanovaOutput = pd.DataFrame() # Keep most accurate PERMANOVA value
+    _write_to_dump( verbose, dump, step=0.5 )
 
-    # outputOfSteps = pd.DataFrame(columns=["Metric Results","Abundances","AUC","PERMANOVA","name"])
-    metricOutput = pd.DataFrame()
-    # Pass data to steps 1 to 3
     for iteration_selected in sorted( iteration_select ):
 
         # Convert input to dataframes
@@ -105,6 +153,8 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
         newName = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
+        # <><><> Pass data to steps 1 to 3 <><><>
+        _write_to_dump(verbose, dump, step=1)
         metric_result, important_features, abundances = \
             _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
                               c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
@@ -118,41 +168,39 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
         if( metricOutput.empty ): # create a dataframe of import OTU's for jaccard step
             metricOutput = metric_result
         else:
+            if( len(metricOutput.columns) < len(metric_result.columns) ):
+                metricOutput.columns = metric_result.columns # this accounts for differing # of OTUs
             metricOutput = metricOutput.append(metric_result, ignore_index=True ) # assign back since does not perform in place
 
-        if( verbose ):
-            dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
-
-        # Pass data to steps 4 to 5
+        # <><><> Pass data to steps 4 to 5 <><><>
+        _write_to_dump( verbose, dump, step=4 )
         AUC_results, AUC_parameters = \
             _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
-        if( verbose ):
-            dump.write("Finished steps 4 to 5.\nStarting step 6\n")
+        aucOutput = AUC_results
 
-        # Pass data to step 6
+        # <><><> Pass data to step 6 <><><>
+        _write_to_dump( verbose, dump, step=6 )
         PERMANOVA_results = \
             _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
                                centralityType=centrality_type, name=newName, detailed=detailed, verbose=verbose )
-        if( verbose ):
-            dump.write("Finished step 6.\nStarting steps 7 to 9\n")
+        permanovaOutput = PERMANOVA_results
+        _write_to_dump( verbose, dump, step=6.5 )
 
 
-    # Pass data to steps 7 to 9
+    # <><><>  Pass data to steps 7 to 9 <><><>
+    _write_to_dump( verbose, dump, step=7 )
     Jaccard_results = _winnow_sensativity(
         metricOutput, name=f"{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}_{name}",
         detailed=detailed, verbose=verbose )
 
-
-
     # Notify user of output path
-    dump.write("Output for each winnowing step is written to the respective output folder within each step folder \n"
-               "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
-               "\tThis applies for each step.")
-    dump.write("Winnow processing finished.")
-    dump.close()
+    _write_to_dump( verbose, dump, step=10 )
 
-    return _dummy_biom_table()
+    # assemble output and return as artifact
+    artifact_directory = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
+    print( len( artifact_directory ) )
+    return artifact_directory
 
 
 def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: Str=None,
@@ -304,12 +352,4 @@ def _winnow_sensativity( df_metric_results, name, detailed=False, verbose=False 
     jaccard_result = step7_9_main( df_metric_results, name=name, detailed=detailed, verbose=verbose )
 
     return jaccard_result # Dataframe with Kappa and Agreement values
-
-
-
-def _winnow_network_connectivity():
-
-
-
-    return
 

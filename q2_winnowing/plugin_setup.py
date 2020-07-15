@@ -1,10 +1,14 @@
 
+import importlib
 
 import qiime2.plugin
 from qiime2.plugin import Metadata, MetadataColumn, Categorical
 from q2_types.feature_table import FeatureTable, RelativeFrequency, BIOMV210DirFmt
 
 import q2_winnowing
+from ._type import Winnowed
+from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
+                       WinnowedAucOrderingFormat, WinnowedPermanovaOrderingFormat )
 from q2_winnowing.winnow import winnow_processing
 
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
@@ -33,6 +37,22 @@ plugin = qiime2.plugin.Plugin(
     short_description="Plugin for inferring the interaction type of microbial communities"
 )
 
+
+# <><><> Register semantic types and formats <><><>
+plugin.register_semantic_types(Winnowed)
+
+# Register the formats defined
+plugin.register_formats( WinnowedFeatureOrderingFormat, WinnowedAucOrderingFormat,
+                         WinnowedPermanovaOrderingFormat, WinnowedDirectoryFormat )
+
+# Register directory format with semantic type
+plugin.register_semantic_type_to_format(
+    Winnowed,
+    artifact_format=WinnowedDirectoryFormat
+)
+
+
+
 # <><><> Register functions <><><>
 
 # pipeline: step 1-3
@@ -46,8 +66,7 @@ plugin.methods.register_function(
         "infile2": FeatureTable[RelativeFrequency]
     },
     outputs=[
-        # TODO: Verify this is the proper output
-        ("interaction_of_taxa_result", FeatureTable[RelativeFrequency])
+        ("interaction_of_taxa_result", Winnowed )
     ],
     input_descriptions={
         "infile1": ("This is the biom file which will have OTU info extracted from and analyzed to generate "
@@ -129,11 +148,11 @@ plugin.methods.register_function(
                     "output foleders that correspond with each step.")
     },
     output_descriptions={
-        "interaction_of_taxa_result": ("This is the completed table of different taxa with their corresponding interactions"
-                                       "to other taxa in their enviroment. This was computed through the use of methods"
-                                       "such as: Abundance analysis, AUC analysis, F-Score ordering,"
-                                       "PERMANOVA calculation, Jacobian matrices, and SEM analysis ")
+        "interaction_of_taxa_result": ("This is a directory containing an feature ordering based off influential taxom."
+                                       "Feature ordering also includes kappa and agreement values of iteration selection."
+                                       "AUC and Permanova values from the highest iteration selection.")
     }
 )
 
 
+importlib.import_module('q2_winnowing._transformer') # Avoid circular dependencies

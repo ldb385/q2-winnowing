@@ -9,6 +9,8 @@ from q2_winnowing.step6.Step6_Permanova import _convert_to_dist_hel_matrix as ar
 
 class Step6Tests( TestCase ):
 
+    package = 'q2_winnowing.tests'
+
     # <><> read input values for testing <><>
     auc_df_in = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step6/test_in_AUCs.csv")
     abundances_df_in = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step6/test_in_abundances.csv")

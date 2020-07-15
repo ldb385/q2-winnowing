@@ -901,7 +901,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
                 writer = csv.writer(f)
                 writer.writerow(feature_row)
         else:
-            feature_df.to_csv( metric_path )
+            feature_df.to_csv( metric_path, index=False )
         combined_metric_path = os.path.join( resultsOutdir, 'combined_metric_results.csv')
         if( os.path.exists( combined_metric_path )):
             with open( combined_metric_path, 'a') as f:
@@ -941,6 +941,11 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
                                     columns=['Parameter', 'Values'])
         param_filename = f'parameter_list-{process_id}.csv'
         parameter_df.to_csv(os.path.join(outdir, param_filename))
+
+    # precautionary re-index of files
+    feature_df.reset_index( drop=True, inplace=True )
+    important_features.reset_index( drop=True, inplace=True )
+    feature_abundances.reset_index( drop=True, inplace=True )
 
     return ( feature_df, important_features, feature_abundances )
 

@@ -1,0 +1,5 @@
+,conditioning,centrality,correl,threshold,select_iter,kappa,agreement
+0,add_one,eigenvector,spearman,0.5,1,0.22003284072249588,0.47058823529411764
+1,add_one,eigenvector,spearman,0.5,4,0.18032786885245905,0.42857142857142855
+2,add_one,eigenvector,spearman,0.5,16,0.6305418719211823,0.47058823529411764
+3,add_one,eigenvector,spearman,0.5,64,1.0,1.0
