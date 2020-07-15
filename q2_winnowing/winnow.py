@@ -7,7 +7,6 @@ import pandas as pd
 import os
 
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
-from qiime2 import Artifact
 
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
