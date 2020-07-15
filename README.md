@@ -6,10 +6,12 @@ This plugin was developed in order integrate R and Jupyter code into Python as w
 <b> NOTE THIS IS UNFINISHED </b>
  
 # Installation
-<ul>
- <li> pip install rpy2 </li>
- <li> pip install minepy </li>
-</ul>
+1. pip install rpy2
+2. pip install minepy
+3. python setup.py install   --OR--   make install
+    * If error please run python plugin_setup.py
+    * If qiime2 does not import it is likely an issue with PYTHONPATH or conda enviroment
+    * see qiime2 documentation for more information ( https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/ )
 
 # Usage
 
