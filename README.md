@@ -11,7 +11,7 @@ This plugin was developed in order integrate R and Jupyter code into Python as w
 3. python setup.py install   --OR--   make install
     * If error please run python plugin_setup.py
     * If qiime2 does not import it is likely an issue with PYTHONPATH or conda enviroment
-    * see qiime2 documentation for more information ( https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/ )
+    * see qiime2 documentation for more information (https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/)
 
 # Usage
 
