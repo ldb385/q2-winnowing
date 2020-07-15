@@ -116,7 +116,7 @@ class WinnowedFormatTests(unittest.TestCase):
             'q2_winnowing.tests', 'sample_data/test_in_dir')
 
         artifact = Artifact.import_data(Winnowed, fp)
-        featureOrdering_df, auc_df, permanova_df = artifact.view( type((pd.DataFrame(),pd.DataFrame(),pd.DataFrame())) )
+        featureOrdering_df, auc_df, permanova_df = artifact.view( type([]) )[0]
         # `Artifact.view` invokes the transformer that handles the
         # `WinnowedFormat` -> `dataframe` transformation.
         # print( featureOrdering_df, exp_featureOrdering )
@@ -145,11 +145,11 @@ class WinnowedFormatTests(unittest.TestCase):
         # `Artifact._from_view` invokes transformer that handles `dataframe` ->
         # `WinnowedFormat`, because the `WinnowedDirectoryFormat` has
         # been registered as the directory format for the semantic type.
-        artifact = Artifact._from_view(Winnowed, (exp_featureOrdering, exp_auc, exp_permanova),
-                                       tuple, archive.ImportProvenanceCapture())
+        artifact = Artifact._from_view(Winnowed, [(exp_featureOrdering, exp_auc, exp_permanova)],
+                                       list, archive.ImportProvenanceCapture())
 
         # Test that the directory and file format can be read again.
-        got_featureOrdering, got_auc, got_permanova = artifact.view(tuple)
+        got_featureOrdering, got_auc, got_permanova = artifact.view(type([]))[0]
         pd.testing.assert_frame_equal(
             got_featureOrdering.astype(type("")),
             exp_featureOrdering.astype(type("")),
