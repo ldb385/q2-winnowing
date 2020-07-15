@@ -46,7 +46,9 @@ rplot = r['plot']
 
 # <><><> DEFINE FUNCTIONS <><><>
 
-def _generate_figures( dataFrame_permanova, cent_type, outdir, name ):
+def _generate_figures( permanova_df, cent_type, outdir, name ):
+
+    dataFrame_permanova = permanova_df.copy( deep=True ) # deep copy to avoid altering original dataframe
 
     dataFrame_permanova.loc[0] = ["auc0"]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]+[0]
     dataFrame_permanova.sort_index(axis=0,inplace=True)
@@ -288,6 +290,8 @@ def main( dataFrame1, dataFrame2, sampleDataframe, centralityType, name, detaile
     else:
         # No excess files necessary just generate dataframe to pass on
         df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, None )
+
+    df_permanova.reset_index( drop=True, inplace=True ) # reset indicis as a precautionary to make sure all df's start at index 0
 
     return df_permanova
 
