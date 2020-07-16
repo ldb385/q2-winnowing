@@ -609,8 +609,6 @@ def plot_graph_centrality(features, cond_type, corr_type, corr_dir, keep_thresh,
     df_b = df_b.loc[((df_b[attr] <= 1 - keep_thresh) & (df_b[attr] > 0.0)),
            :]  # take only those edge pairs that made the cut
     df_g = networkx.from_pandas_edgelist(df_b, 'var1', 'var2', attr)  # takes a list of valid edges
-    print( type(df_g ), df_g )
-    "".get("teri")
     networkx.write_graphml(df_g, os.path.join(outdir, "graph_network.graphml") )
     networkx.draw(df_g, node_color='dodgerblue', edge_color='dimgrey', with_labels=True)
 
