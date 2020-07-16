@@ -10,6 +10,7 @@ from ._type import Winnowed
 from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
                        WinnowedAucOrderingFormat, WinnowedPermanovaOrderingFormat )
 from q2_winnowing.winnow import winnow_processing
+from q2_winnowing._visualizer import summarize
 
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
 # Note: this can be replaced with a bibliography when the thesis is completed.
@@ -55,7 +56,6 @@ plugin.register_semantic_type_to_format(
 
 # <><><> Register functions <><><>
 
-# pipeline: step 1-3
 plugin.methods.register_function(
     name='processing',
     description=("Infer the interaction type of microbial communities through statistical analysis. "
@@ -153,6 +153,20 @@ plugin.methods.register_function(
                                        "AUC and Permanova values from the highest iteration selection.")
     }
 )
+
+
+# <><><> Register visualizers <><><>
+plugin.visualizers.register_function(
+    function=summarize,
+    inputs={ "interactions": WinnowedDirectoryFormat },
+    input_description={
+        "interactions": "this is the measure OTU's along with their interactions and the meausure of interaction"
+    },
+    name="Winnow Interaction Visualization",
+    description=("Visualize the interactions of microbial communities with graphs")
+)
+
+
 
 
 importlib.import_module('q2_winnowing._transformer') # Avoid circular dependencies
