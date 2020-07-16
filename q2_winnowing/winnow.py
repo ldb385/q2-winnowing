@@ -199,7 +199,6 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
     # assemble output and return as artifact
     artifact_directory = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
-    print( len( artifact_directory ) )
     return artifact_directory
 
 
