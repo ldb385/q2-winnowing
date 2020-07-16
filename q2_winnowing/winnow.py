@@ -79,7 +79,7 @@ def _write_to_dump( verbose, dump_path, step ):
     """
 
     if( verbose ):
-        with open( dump_path, "a" ) as dump:
+        with open( dump_path, "a" ) as dump: # allows for closeing if exception is throwns
             if( step == 0 ):
                 dump.write("Beginning to convert input to dataframes.\n")
             elif( step == 0.5 ):
