@@ -44,5 +44,10 @@ def summarize( output_dir: str, data: list ) -> None:
     AucOrdering.to_html( open( auc_html_new, "w" ))
     PermanovaOrdering.to_html( open( permanova_html_new, "w" ))
 
+    # copy css stylesheets
+    css = os.path.join( TEMPLATES, "assets", "css" )
+    css_new = os.path.join( output_dir, "css" )
+    shutil.copytree( css, css_new )
+
 
     return # Standard to not return on qiime2 visualizer
