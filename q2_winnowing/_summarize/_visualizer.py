@@ -13,15 +13,15 @@ def summarize( output_dir: str, data: list ) -> None:
     featureOrdering, AucOrdering, PermanovaOrdering = data[0] # Split directory into its parts
 
     # <><><> Allow user to download data <><><>
-    # # save out feature ordering data for download
-    # featureOrdering = qiime2.Metadata( "FO" )
-    # featureOrdering.save(os.path.join( output_dir, 'feature_ordered.tsv')) # download
-    # # save out AUC ordering data for download
-    # AucOrdering = qiime2.Metadata( "AO")
-    # AucOrdering.save(os.path.join( output_dir, 'auc_ordered.tsv')) # download
-    # # save out PERMANOVA ordering data for download
-    # PermanovaOrdering = qiime2.Metadata( "PO")
-    # PermanovaOrdering.save(os.path.join( output_dir, 'permanova_ordered.tsv')) # download
+    # save out feature ordering data for download
+    featureOrdering_new = os.path.join( output_dir, 'feature_ordered.tsv')
+    featureOrdering.to_csv( featureOrdering_new, sep="\t" )
+    # save out AUC ordering data for download
+    AucOrdering_new = os.path.join( output_dir, 'auc_ordered.tsv')
+    AucOrdering.to_csv( AucOrdering_new, sep="\t" )
+    # save out PERMANOVA ordering data for download
+    PermanovaOrdering_new = os.path.join( output_dir, 'permanova_ordered.tsv')
+    PermanovaOrdering.to_csv( PermanovaOrdering_new, sep="\t" )
 
     # Get html files that will be written to
     index_html = os.path.join( TEMPLATES, "assets", "index.html" )
