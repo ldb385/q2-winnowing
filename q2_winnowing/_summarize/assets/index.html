@@ -5,13 +5,60 @@
     <title>Winnowing Viewer</title>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="featureOrdering.html">Feature Ordering</a></li>
-            <li><a href="auc.html">AUC Ordered</a></li>
-            <li><a href="permanova.html">PERMANOVA Ordered</a></li>
-        </ul>
-    </nav>
+    <div class="btn-group">
+        <button onclick="viewTables('FO')">Feature Ordering</button>
+        <button onclick="viewTables('AO')">AUC Ordered</button>
+        <button onclick="viewTables('PO')">PERMANOVA Ordered</button>
+    </div>
+    <h1> Winnowing Plugin Viewer </h1>
+
+    <!-- Define all viewings of tables as blocks that can be hidden -->
+    <div id="FO">
+        <h2>Feature Ordering</h2>
+        <iframe src="featureOrdering.html" title="Feature Ordering"></iframe>
+    </div>
+
+    <div id="AO" style="display: none;">
+        <h2>AUC Ordered</h2>
+        <iframe src="auc.html" title="AUC Ordered"></iframe>
+    </div>
+
+    <div id="PO" style="display: none;">
+        <h2>PERMANOVA Ordered</h2>
+        <iframe src="permanova.html" title="PERMANOVA Ordered"></iframe>
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script>
+
+        function viewTables( table ){
+            var fo = document.getElementById("FO");
+            var ao = document.getElementById("AO");
+            var po = document.getElementById("PO");
+
+            switch( table ){
+                case 'FO':
+                    fo.style.display = "block"
+                    ao.style.display = "none"
+                    po.style.display = "none"
+                    break;
+                case 'AO':
+                    fo.style.display = "none"
+                    ao.style.display = "block"
+                    po.style.display = "none"
+                    break;
+                case 'PO':
+                    fo.style.display = "none"
+                    ao.style.display = "none"
+                    po.style.display = "block"
+                    break;
+                default:
+                    // nothing
+            }
+        }
+
+    </script>
 
 </body>
 </html>
