@@ -79,7 +79,7 @@ def _write_to_dump( verbose, dump_path, step ):
     """
 
     if( verbose ):
-        with open( dump_path, "a" ) as dump:
+        with open( dump_path, "a" ) as dump: # allows for closeing if exception is throwns
             if( step == 0 ):
                 dump.write("Beginning to convert input to dataframes.\n")
             elif( step == 0.5 ):
@@ -199,7 +199,6 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
 
     # assemble output and return as artifact
     artifact_directory = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
-    print( len( artifact_directory ) )
     return artifact_directory
 
 

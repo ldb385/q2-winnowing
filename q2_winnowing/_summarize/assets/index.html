@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/frame_formatting.css">
+    <link rel="stylesheet" href="./css/button_formatting.css">
+    <link rel="stylesheet" href="./css/page_formatting.css">
+    <meta charset="UTF-8">
+    <title>Winnowing Viewer</title>
+</head>
+<body style="overflow:hidden">
+    <h1 class="header"> Winnowing Plugin Viewer </h1>
+
+    <div class="btn-group">
+        <button class="button" onclick="viewTables('FO')">Feature Ordering</button>
+        <button class="button" onclick="viewTables('AO')">AUC Ordered</button>
+        <button class="button" onclick="viewTables('PO')">PERMANOVA Ordered</button>
+    </div>
+
+    <!-- Define all viewings of tables as blocks that can be hidden -->
+    <div class="frame-container" id="FO">
+        <h2 class="sub-header">Feature Ordering</h2>
+        <button class="btn" onclick="window.open('./feature_ordered.tsv')"><i class="fa fa-download"></i> Download</button>
+        <br>
+        <iframe class="frame-fit" src="featureOrdering.html" title="Feature Ordering"></iframe>
+    </div>
+
+    <div id="AO" style="display: none;">
+        <h2 class="sub-header">AUC Ordered</h2>
+        <button class="btn" onclick="window.open('./auc_ordered.tsv')"><i class="fa fa-download"></i> Download</button>
+        <br>
+        <iframe class="frame-fit" src="auc.html" title="AUC Ordered"></iframe>
+    </div>
+
+    <div id="PO" style="display: none;">
+        <h2 class="sub-header">PERMANOVA Ordered</h2>
+        <button class="btn" onclick="window.open('./permanova_ordered.tsv')"><i class="fa fa-download"></i> Download</button>
+        <br>
+        <iframe class="frame-fit" src="permanova.html" title="PERMANOVA Ordered" ></iframe>
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script>
+
+        function viewTables( table ){
+            var fo = document.getElementById("FO");
+            var ao = document.getElementById("AO");
+            var po = document.getElementById("PO");
+
+            switch( table ){
+                case 'FO':
+                    fo.style.display = "block"
+                    ao.style.display = "none"
+                    po.style.display = "none"
+                    break;
+                case 'AO':
+                    fo.style.display = "none"
+                    ao.style.display = "block"
+                    po.style.display = "none"
+                    break;
+                case 'PO':
+                    fo.style.display = "none"
+                    ao.style.display = "none"
+                    po.style.display = "block"
+                    break;
+                default:
+                    // nothing
+            }
+        }
+
+    </script>
+
+</body>
+</html>
