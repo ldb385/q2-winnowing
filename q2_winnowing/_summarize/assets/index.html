@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <title>Winnowing Viewer</title>
 </head>
@@ -16,16 +18,22 @@
     <div id="FO">
         <h2>Feature Ordering</h2>
         <iframe src="featureOrdering.html" title="Feature Ordering"></iframe>
+        <br>
+        <button class="btn" onclick="window.open('./feature_ordered.tsv')"><i class="fa fa-download"></i> Download</button>
     </div>
 
     <div id="AO" style="display: none;">
         <h2>AUC Ordered</h2>
         <iframe src="auc.html" title="AUC Ordered"></iframe>
+        <br>
+        <button class="btn" onclick="window.open('./auc_ordered.tsv')"><i class="fa fa-download"></i> Download</button>
     </div>
 
     <div id="PO" style="display: none;">
         <h2>PERMANOVA Ordered</h2>
         <iframe src="permanova.html" title="PERMANOVA Ordered"></iframe>
+        <br>
+        <button class="btn" onclick="window.open('./permanova_ordered.tsv')"><i class="fa fa-download"></i> Download</button>
     </div>
 
 
