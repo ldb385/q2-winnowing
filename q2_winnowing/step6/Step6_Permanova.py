@@ -181,14 +181,12 @@ def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
 
 
 
-def perform_permanova( df_sample, data_frame_1, data_frame_2, output_file, detailed=False, verbose=False, dump=None):
+def perform_permanova( df_sample, df_dg_auc, df_dg_auc100, output_file, detailed=False, verbose=False, dump=None):
 
     if( verbose ):
-        dump.write( f"Processing Input File: {str(data_frame_1)} \n")
-        dump.write( f"Processing Input file: {str(data_frame_2)} \n")
+        dump.write( f"Processing Input File: {str(df_dg_auc)} \n") # AUC curves for subsetting
+        dump.write( f"Processing Input file: {str(df_dg_auc100)} \n") # Abundances used for Hellinger
 
-    df_dg_auc = data_frame_1 # AUC curves for subsetting
-    df_dg_auc100 = data_frame_2 # Abundances used for Hellinger
     # Make sure indices begin at 0 so loop works
     df_dg_auc.reset_index( drop=True, inplace=True )
     df_dg_auc100.reset_index(  drop=True, inplace=True )
