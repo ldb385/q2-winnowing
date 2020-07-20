@@ -109,9 +109,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
                       min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
                       smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                       keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
-                      evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False,
-                      plot_pca: Bool=False, naming_file: Str=None, proc_id: Int=0, min_connected: Int=0,
-                      detailed: Bool=False, verbose: Bool=False
+                      evaluation_type: Str=None, min_connected: Int=0, detailed: Bool=False, verbose: Bool=False
                       ) -> list:
 
     if iteration_select is None: # Since default parameter can't have set function call
@@ -160,8 +158,7 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
                               c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
                               pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                               centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
-                              weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
-                              create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
+                              weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type,
                               min_connected=min_connected, detailed=detailed, verbose=verbose)
         # these are used in: Step7_9, Step4_5, Step6
 
@@ -206,8 +203,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
                  c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
-                 evaluation_type: Str=None, plot_metric: Bool=False, create_graph: Bool=False, plot_pca: Bool=False,
-                 naming_file: Str=None, proc_id: Int=0, min_connected: Int=0, detailed: Bool=False, verbose: Bool=False
+                 evaluation_type: Str=None, min_connected: Int=0, detailed: Bool=False, verbose: Bool=False
                  ):
     """
     Note this function executes the main functionality of steps 1-3 in the pipeline of
@@ -271,8 +267,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
                           c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_select,
                           pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
-                          weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
-                          create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
+                          weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type,
                           min_connected=min_connected, detailed=detailed,verbose_p=verbose )
     else:
         metric_result, important_features, abundances = \
@@ -280,8 +275,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
                           min_count=min_count, total_select=total_select, iteration_select=iteration_select,
                           pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
-                          weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type, plot_metric=plot_metric,
-                          create_graph=create_graph, plot_pca=plot_pca, naming_file=naming_file, proc_id=proc_id,
+                          weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type,
                           min_connected=min_connected, detailed=detailed,verbose_p=verbose )
 
 
