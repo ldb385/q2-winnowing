@@ -46,6 +46,8 @@ class Step4_5Tests( TestCase ):
             parameter_out = pd.read_csv( parameter_path, index_col=0 )
             auc_out = pd.read_csv( auc_path, index_col=0 )
 
+            print(parameter_out, auc_out )
+
             np.testing.assert_array_almost_equal(
                 auc_result.to_numpy().astype(type(0.0)),
                 auc_out.to_numpy().astype(type(0.0)),
