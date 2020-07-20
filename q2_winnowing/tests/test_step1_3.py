@@ -19,13 +19,39 @@ class Step1_3Tests( TestCase ):
         f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step1_3/test_out_abundances.csv",
     ))
 
-    def test_step1_3_main(self):
+    def test_step1_3_main_betweenness(self):
 
         for data_path, features_path, important_path, adundances_path in self.testing_data:
             data_in = pd.read_csv( data_path )
+            data_in.name = "TESTING_FRAME"
             features_out = pd.read_csv( features_path, index_col=0 )
             important_out = pd.read_csv( important_path, index_col=0 )
-            adundances_out = pd.read_csv( adundances_path, index_col=0 )
+            abundances_out = pd.read_csv( adundances_path, index_col=0 )
+
+            features_result, important_result, abundances_result = \
+                step1_3_main( False, data_in, None, metric_name="graph_centrality", c_type="add_one", min_count=3,
+                              total_select=25, iteration_select=128, pca_components=4, smooth_type="sliding_window",
+                              window_size=3, centrality_type="betweenness", keep_threshold=0.5, correlation="spearman",
+                              weighted=False, corr_prop="both", evaluation_type="kl_divergence", min_connected=0,
+                              detailed=False, verbose_p=False )
+
+            # No need to compare runtime directly just make sure theyre close
+            run_out = features_out.pop("run time")
+            run_result = features_result.pop("run time")
+            self.assertAlmostEqual( run_result.item(), run_out.item(), 2 )
+
+            np.testing.assert_array_equal(
+                features_result.to_numpy().astype(object),
+                features_out.to_numpy().astype(object),
+            )
+            np.testing.assert_array_equal(
+                important_result.to_numpy().astype(object),
+                important_out.to_numpy().astype(object),
+            )
+            np.testing.assert_array_equal(
+                abundances_result.to_numpy().astype(object),
+                abundances_out.to_numpy().astype(object),
+            )
 
 
 
