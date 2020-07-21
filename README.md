@@ -25,22 +25,39 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
     * If you do not get output it might be that your libraries are already configured. __NOTE: output should only be extensive on first run of command.__
 8. Interface should now display in terminal showing __Usage, Options, Commands__, if this does not show please consult previous steps or Qiime2 forums.
 
-
 # Usage
 __NOTE: These instructions assume you are working within a conda environment in terminal and have completed the Installation portion.__
-* Usage should be fairly intuitive however there is some things to note about plugin
-* The main function is "qiime winnowing processing" while
+* Usage should be fairly intuitive however there is some things to note about plugin. Will be easiest to run through potentially confusing parameters for each function. 
 * "qiime winnowing processing"
     * --i-infile1 must be frequency table in qza format
        * .qza formatted file can be generated from .csv file. The steps are slightly confusing but it goes .csv-->.txt-->.biom-->.qza .
-           1. To convert from .csv it is easiest to save as .txt ( tab delimited ) while in MS Excel 
-           2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin
+           1. To convert from .csv it is easiest to save as .txt ( tab delimited ) while in MS Excel.
+           2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin.
                * In tutorial look for:
-               * biom convert -i test_otu_table.transpose.txt -o test_otu_table.transpose.biom --table-type="OTU table" --to-hdf5
-               * qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable[RelativeFrequency]' --source-format BIOMV210Format --output-path test_otu_table.transpose.qza
+               * "biom convert -i test_otu_table.transpose.txt -o test_otu_table.transpose.biom --table-type="OTU table" --to-hdf5"
+               * "qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable[RelativeFrequency]' --source-format BIOMV210Format --output-path test_otu_table.transpose.qza"
+       * The same follows when using --i-infile2.
+    * --m-sample-types-file
+       * This is the path to the .txt metadata ( tab delimited ). Format is:
+       * <pre>#SampleID    Type
+         sample1      natural
+         sample2      natural
+         sample3      natural
+           ...          ...
+         sample15     invaded
+         sample16     invaded
+         sample17     natural
+           ...          ...
+         </pre>
+    * --m-sample-types-column "Type"
+    * Ex)
+        * 
 * "qiime winnowing summarize" 
     * is only used to generate a .qzv artifact from the .qza artifact generated from "qiime winnowing processing".
     * To view the .qzv artifact please drag&drop file into https://view.qiime2.org/ .
+    * Ex)
+        * 
+
 # Versions
 <ul>
  <li> 20.0.0 = Initial Plugin </li>
