@@ -50,13 +50,15 @@ __NOTE: These instructions assume you are working within a conda environment in 
            ...          ...
          </pre>
     * --m-sample-types-column "Type"
-    * Ex)
-        * 
+    * Command Example)
+        * qiime winnowing winnow-processing --i-infile1 __inputFile.qza__ --p-metric-name graph_centrality --m-sample-types-file metadata_samples.txt --m-sample-types-column Type --p-evaluation-type kl_divergence --p-min-count 3 --p-c-type add_one --p-total-select 25 --p-iteration-select {1,6,16,64,128} --p-centrality-type betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-corr-prop both --p-detailed --p-verbose --output-dir __./OutFolder__
+
 * "qiime winnowing summarize" 
     * is only used to generate a .qzv artifact from the .qza artifact generated from "qiime winnowing processing".
     * To view the .qzv artifact please drag&drop file into https://view.qiime2.org/ .
-    * Ex)
-        * 
+    * Command Example)
+        * qiime winnowing summarize --i-data __./output_file.qza__ --o-visualization __./output_visual.qzv__
+
 
 # Versions
 <ul>
