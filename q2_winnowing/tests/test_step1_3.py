@@ -19,7 +19,7 @@ class Step1_3Tests( TestCase ):
         f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step1_3/test_out_abundances.csv",
     ))
 
-    def test_step1_3_main_betweenness(self):
+    def test_step1_3_main_graph_bw(self):
 
         for data_path, features_path, important_path, adundances_path in self.testing_data:
             data_in = pd.read_csv( data_path )
