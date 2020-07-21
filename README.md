@@ -59,8 +59,10 @@ __NOTE: These instructions assume you are working within a conda environment in 
     * Command Example)
         * qiime winnowing summarize --i-data __./output_file.qza__ --o-visualization __./output_visual.qzv__
 
-
 # Versions
 <ul>
  <li> 20.0.0 = Initial Plugin </li>
 </ul>
+
+# Useful Recourses
+* Qiime2 User Documentation: https://docs.qiime2.org/2020.6/
