@@ -18,7 +18,7 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
 4. "make install"   --__OR__--   "python setup.py install"
     * If error please run python plugin_setup.py.
     * If qiime2 does not import it is likely an issue with PYTHONPATH or conda environment.
-    * See qiime2 documentation for more information (https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/).
+    * See qiime2 documentation for more information https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/.
 6. Run "pip install minepy".
 7. Run "qiime winnowing".
     * There should be quite a bit of output to console. This is just R configuring libraries and is nothing to be concerned about.
@@ -34,7 +34,7 @@ __NOTE: These instructions assume you are working within a conda environment in 
     * --i-infile1 must be frequency table in qza format
        * .qza formatted file can be generated from .csv file. The steps are slightly confusing but it goes .csv-->.txt-->.biom-->.qza .
            1. To convert from .csv it is easiest to save as .txt ( tab delimited ) while in MS Excel 
-           2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin/
+           2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin
                * In tutorial look for:
                * biom convert -i test_otu_table.transpose.txt -o test_otu_table.transpose.biom --table-type="OTU table" --to-hdf5
                * qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable[RelativeFrequency]' --source-format BIOMV210Format --output-path test_otu_table.transpose.qza
