@@ -152,7 +152,7 @@ plugin.visualizers.register_function(
     parameter_descriptions={
     },
     name="Winnow Interaction Visualization",
-    description=("Visualize the interactions of microbial communities with graphs")
+    description=("Visualize the output from processing function through graphs.")
 )
 
 
