@@ -7,7 +7,7 @@ This plugin was developed in order integrate R and Jupyter code into Python as w
  
 # Installation
 __NOTE: These instructions assume you are working within a terminal. If not in a terminal please open one to follow along.__
-1. Make sure you are running in a qiime2 conda environment or else "import qiime2" will not work.
+1. Make sure you are running in a qiime2 conda environment or else "python import qiime2" will not work.
     * See https://docs.qiime2.org/2020.6/install/ for more information. I recommend using a VM if plugin is being tested or git is being forked.
     * If you have a qiime2 environment created activate with "source activate __env_name__".
         * Ex) If environment is named "qiime2-dev" use "source activate qiime2-dev".
@@ -27,7 +27,20 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
 
 
 # Usage
-
+__NOTE: These instructions assume you are working within a conda environment in terminal and have completed the Installation portion.__
+* Usage should be fairly intuitive however there is some things to note about plugin
+* The main function is "qiime winnowing processing" while
+* "qiime winnowing processing"
+    * --i-infile1 must be frequency table in qza format
+       * .qza formatted file can be generated from .csv file. The steps are slightly confusing but it goes .csv-->.txt-->.biom-->.qza .
+           1. To convert from .csv it is easiest to save as .txt ( tab delimited ) while in MS Excel 
+           2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin/
+               * In tutorial look for:
+               * biom convert -i test_otu_table.transpose.txt -o test_otu_table.transpose.biom --table-type="OTU table" --to-hdf5
+               * qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable[RelativeFrequency]' --source-format BIOMV210Format --output-path test_otu_table.transpose.qza
+* "qiime winnowing summarize" 
+    * is only used to generate a .qzv artifact from the .qza artifact generated from "qiime winnowing processing".
+    * To view the .qzv artifact please drag&drop file into https://view.qiime2.org/ .
 # Versions
 <ul>
  <li> 20.0.0 = Initial Plugin </li>
