@@ -127,7 +127,7 @@ plugin.methods.register_function(
             "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."),
         "min_connected": (
             "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted."),
-        "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout"
+        "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout "
                      "computation. If not enabled files will not be generated"),
         "verbose": ("Notifies plugin to generate dump files for every step. These will contain all data that previously "
                     "may have been output through print statements during execution. Each dump.txt file is stored in "
