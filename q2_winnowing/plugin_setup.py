@@ -9,7 +9,7 @@ import q2_winnowing
 from ._type import Winnowed
 from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
                        WinnowedAucOrderingFormat, WinnowedPermanovaOrderingFormat )
-from q2_winnowing.winnow import winnow_processing
+from q2_winnowing.winnow import processing
 from q2_winnowing._summarize._visualizer import summarize
 
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
@@ -57,10 +57,10 @@ plugin.register_semantic_type_to_format(
 # <><><> Register functions <><><>
 
 plugin.methods.register_function(
-    name='processing',
+    name='winnowing processing',
     description=("Infer the interaction type of microbial communities through statistical analysis. "
                  "This will allow for a better understanding of taxa interaction at a micro scale."),
-    function=winnow_processing,
+    function=processing,
     inputs={
         "infile1": FeatureTable[RelativeFrequency],
         "infile2": FeatureTable[RelativeFrequency]
@@ -127,7 +127,7 @@ plugin.methods.register_function(
             "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."),
         "min_connected": (
             "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted."),
-        "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout"
+        "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout "
                      "computation. If not enabled files will not be generated"),
         "verbose": ("Notifies plugin to generate dump files for every step. These will contain all data that previously "
                     "may have been output through print statements during execution. Each dump.txt file is stored in "
