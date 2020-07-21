@@ -14,20 +14,20 @@ class Step7_9Tests( TestCase ):
     # <><> read input values and expected output values for testing <><>
     testing_data = []
     testing_data.append((
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_spearman_0.5_bw.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_spearman_0.5_bw.csv", index_col=0 )
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_spearman_0.5_bw.csv",
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_spearman_0.5_bw.csv"
     ))
     testing_data.append((
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_spearman_0.5_ei.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_spearman_0.5_ei.csv", index_col=0 )
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_spearman_0.5_ei.csv",
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_spearman_0.5_ei.csv"
     ))
     testing_data.append((
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_MIC_0.5_cl.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_MIC_0.5_cl.csv", index_col=0 )
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_MIC_0.5_cl.csv",
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_MIC_0.5_cl.csv",
     ))
     testing_data.append((
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_MIC_0.5_dg.csv"),
-        pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_MIC_0.5_dg.csv", index_col=0 )
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_in_metric_results_graph_MIC_0.5_dg.csv",
+        f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step7_9/test_out_jaccard_graph_MIC_0.5_dg.csv"
     ))
 
 
@@ -45,7 +45,11 @@ class Step7_9Tests( TestCase ):
 
     def test_step7_9_main(self):
 
-        for metric_results_in, jaccard_out in self.testing_data:
+        for metric_results_path, jaccard_path in self.testing_data:
+
+            metric_results_in = pd.read_csv( metric_results_path )
+            jaccard_out = pd.read_csv( jaccard_path, index_col=0 )
+
             jaccard_result = step7_9_main( metric_results_in, "", False, False )
 
             for row in range(0, len(jaccard_result)):

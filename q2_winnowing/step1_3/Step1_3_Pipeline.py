@@ -762,8 +762,7 @@ def log_transfrom(df, cond_type='add_one'):
 def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
          total_select, iteration_select, pca_components, smooth_type,
          window_size, centrality_type, keep_threshold, correlation,
-         weighted, corr_prop, evaluation_type, plot_metric,
-         create_graph, plot_pca, naming_file, proc_id, min_connected,
+         weighted, corr_prop, evaluation_type, min_connected,
          detailed=False, verbose_p=False):
 
     t_start = time.perf_counter()
@@ -778,8 +777,6 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     global disjoint
     disjoint = False
 
-    global process_id
-    process_id = proc_id
 
     global outdir
     outdir = f"{os.path.dirname(os.path.realpath(__file__))}/output/{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}_{dataframe1.name}"
@@ -806,8 +803,8 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
         data_file = pd.concat([dataframe2, dataframe1])
 
         if( detailed ):
-            metric_filename = f"{dataframe1.name}-{dataframe2.name}-results-{process_id}.csv"
-            abundance_filename = f"{dataframe1.name}-{dataframe2.name}-abundances-{process_id}.csv"
+            metric_filename = f"{dataframe1.name}-{dataframe2.name}-results.csv"
+            abundance_filename = f"{dataframe1.name}-{dataframe2.name}-abundances.csv"
 
     else:
         metric_header = ["ab_comp", "dataframe1", "metric", "centrality", "total select", "iteration select",
@@ -822,8 +819,8 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
         data_file = dataframe1
 
         if( detailed ):
-            metric_filename = f"{dataframe1.name}-{process_id}.csv"
-            abundance_filename = f"{dataframe1.name}-abundances-{process_id}.csv"
+            metric_filename = f"{dataframe1.name}-importantFeatures.csv"
+            abundance_filename = f"{dataframe1.name}-abundances.csv"
 
     if min_count != -1:
         data = remove_min_count(data_file, min_count)
@@ -869,16 +866,19 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
         important_features.loc[1] = 'Warning: No features returned.'
         if disjoint:
             important_features.loc[2] = 'Graph is disjoint'
-    elif naming_file:
-        important_features = name_imp_features(important_features, naming_file)
-        feature_abundances = name_feature_list(feature_abundances, naming_file)
+    # elif naming_file:
+    #     important_features = name_imp_features(important_features, naming_file)
+    #     feature_abundances = name_feature_list(feature_abundances, naming_file)
 
     # Create graphs if wanted
-    if plot_metric:
+    if detailed:
+        # plot_metric
         plot_feature_metric(important_features )
-    if plot_pca and (metric == pca_importance or metric == pca_abundance):
+    if detailed and (metric == pca_importance or metric == pca_abundance):
+        # plot_pca
         create_pca_plot(important_features )
-    if create_graph and metric == graph_centrality:
+    if detailed and metric == graph_centrality:
+        # graph centrality
         plot_graph_centrality(feature_abundances, c_type, correlation, corr_prop, keep_threshold, weighted )
 
     #
@@ -921,8 +921,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
                       'window_size': window_size, 'centrality_type': centrality_type,
                       'keep_threshold': keep_threshold, 'correlation': correlation,
                       'weighted': weighted, 'corr_prop': corr_prop, 'evaluation_type': evaluation_type,
-                      'plot_metric': plot_metric, 'create_graph': create_graph, 'plot_pca': plot_pca,
-                      'naming_file': naming_file, 'proc_id': proc_id, 'runtime': runtime, 'min_connected': min_connected,
+                      'runtime': runtime, 'min_connected': min_connected,
                       'connectedness': connectedness}
     else:
         param_dict = {'ab_comp': ab_comp, 'dataframe1': dataframe1.name, 'dataframe2': "",
@@ -932,14 +931,13 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
                       'window_size': window_size, 'centrality_type': centrality_type,
                       'keep_threshold': keep_threshold, 'correlation': correlation,
                       'weighted': weighted, 'corr_prop': corr_prop, 'evaluation_type': evaluation_type,
-                      'plot_metric': plot_metric, 'create_graph': create_graph, 'plot_pca': plot_pca,
-                      'naming_file': naming_file, 'proc_id': proc_id, 'runtime': runtime, 'min_connected': min_connected,
+                      'runtime': runtime, 'min_connected': min_connected,
                       'connectedness': connectedness}
 
     if( detailed ):
         parameter_df = pd.DataFrame(list(param_dict.items()),
                                     columns=['Parameter', 'Values'])
-        param_filename = f'parameter_list-{process_id}.csv'
+        param_filename = f'parameter_list.csv'
         parameter_df.to_csv(os.path.join(outdir, param_filename))
 
     # precautionary re-index of files

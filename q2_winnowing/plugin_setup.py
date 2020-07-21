@@ -91,11 +91,6 @@ plugin.methods.register_function(
         "correlation": qiime2.plugin.Str % qiime2.plugin.Choices(_CORRELATION_TYPES_),
         "weighted": qiime2.plugin.Bool,
         "corr_prop": qiime2.plugin.Str % qiime2.plugin.Choices(_CORRELATION_PROPERTIES_),
-        "plot_metric": qiime2.plugin.Bool,
-        "create_graph": qiime2.plugin.Bool,
-        "plot_pca": qiime2.plugin.Bool,
-        "naming_file": qiime2.plugin.Str,
-        "proc_id": qiime2.plugin.Int,
         "min_connected": qiime2.plugin.Float,
         "detailed": qiime2.plugin.Bool,
         "verbose": qiime2.plugin.Bool
@@ -130,15 +125,6 @@ plugin.methods.register_function(
             "If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph."),
         "corr_prop": (
             "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."),
-        "plot_metric": (
-            "Including this parameter will create a line plot of the metric values for the selected features."),
-        "create_graph": ("If graph centrality is the metric, including this parameter will create a graph image of "
-                         "the selected features (using the same correlation type used to select the features)."),
-        "plot_pca": ("If PCA is the metric, including this parameter will create a scatter plot image of "
-                     "the first two principle components."),
-        "naming_file": (
-            "The file to be used to name the features. If not used, the features will be outputted with the names the input file."),
-        "proc_id": ("The identifying number to use in the output file names."),
         "min_connected": (
             "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted."),
         "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout"
@@ -166,7 +152,7 @@ plugin.visualizers.register_function(
     parameter_descriptions={
     },
     name="Winnow Interaction Visualization",
-    description=("Visualize the interactions of microbial communities with graphs")
+    description=("Visualize the output from processing function through graphs.")
 )
 
 
