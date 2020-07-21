@@ -104,7 +104,7 @@ def _write_to_dump( verbose, dump_path, step ):
     return # Nothing just signifies termination of function
 
 
-def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
+def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
                       name: Str="-name-", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
                       min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
                       smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
@@ -175,6 +175,9 @@ def winnow_processing(infile1: biom.Table, sample_types: MetadataColumn, infile2
             _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
         aucOutput = AUC_results
+
+        # order sample types so ordering conforms with other values
+
 
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )

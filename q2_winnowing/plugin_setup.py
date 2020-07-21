@@ -9,7 +9,7 @@ import q2_winnowing
 from ._type import Winnowed
 from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
                        WinnowedAucOrderingFormat, WinnowedPermanovaOrderingFormat )
-from q2_winnowing.winnow import winnow_processing
+from q2_winnowing.winnow import processing
 from q2_winnowing._summarize._visualizer import summarize
 
 # cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
@@ -57,10 +57,10 @@ plugin.register_semantic_type_to_format(
 # <><><> Register functions <><><>
 
 plugin.methods.register_function(
-    name='processing',
+    name='winnowing processing',
     description=("Infer the interaction type of microbial communities through statistical analysis. "
                  "This will allow for a better understanding of taxa interaction at a micro scale."),
-    function=winnow_processing,
+    function=processing,
     inputs={
         "infile1": FeatureTable[RelativeFrequency],
         "infile2": FeatureTable[RelativeFrequency]
