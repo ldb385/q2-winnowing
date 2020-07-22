@@ -12,7 +12,7 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
     * If you have a qiime2 environment created activate with "source activate __env_name__".
         * Ex) If environment is named "qiime2-dev" use "source activate qiime2-dev".
 2. Clone plugin repo in desired location.
-    * Run "git clone 'https://github.com/ldb385/q2-winnowing.git'" in desired directory. __OR__ Download and unzip zip file in desired directory.
+    * Run "git clone 'https://github.com/ldb385/q2-winnowing.git'" in desired directory. --__OR__-- Download and unzip zip file in desired directory.
 3. Navigate to inside directory.
     * Run "cd q2-winnowing" if git was copied into current working directory ( check with "ls" if unsure if it is in CWD ).
 4. "make install"   --__OR__--   "python setup.py install"
