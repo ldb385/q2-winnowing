@@ -195,7 +195,10 @@ def perform_permanova( df_sample, df_dg_auc, df_dg_auc100, output_file, detailed
     df_dg_premanova = pd.DataFrame(columns=['test', 'order', 'auc','SumsOfSqs','MeanSqs','F.model','R2','Pval','N.taxa','F.model.scale'])
 
     # Setup variables before loop to avoid extra computation
-    typeIndex = int( df_sample.columns.get_loc("Type"))  # Since Rpy doesn't allow for string index must get column int index
+    if ("type" in df_sample.columns): # check for capitalization
+        typeIndex = int( df_sample.columns.get_loc("type"))  # Since Rpy doesn't allow for string index must get column int index
+    else:
+        typeIndex = int( df_sample.columns.get_loc("Type"))  # Since Rpy doesn't allow for string index must get column int index
     rdf_sample = pandas2ri.py2rpy(df_sample)[typeIndex]
 
     rformula = Formula('x ~ y') # Note, y is independent while x is dependant

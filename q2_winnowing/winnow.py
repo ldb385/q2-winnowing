@@ -128,7 +128,10 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
     # Make sure input is valid
     num_samples = len( infile1.ids( axis='observation' ) )
     try:
-        num_sample_types = len( sample_types.loc[:,"Type"] )
+        if( "type" in sample_types.columns ):
+            num_sample_types = len( sample_types.loc[:,"type"] )
+        else:
+            num_sample_types = len( sample_types.loc[:,"Type"] )
     except:
         raise Exception( "Error: sample metadata must include a column titled Type.")
     if( num_samples != num_sample_types ):
@@ -257,11 +260,15 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
             total_select = int( total_select )
         except:
             total_select = "all"
+    # if( not total_select.isnumeric() ):
+    #     total_select = len( dataFrame1 )
     if( iteration_select and iteration_select != "all" ):
         try:
             iteration_select = int( iteration_select )
         except:
             iteration_select = "all"
+    # if( not iteration_select.isnumeric() ):
+    #     iteration_select = len( dataFrame1 )
 
 
     if( ab_comp ):
