@@ -13,32 +13,6 @@ from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
 from q2_winnowing.step6.Step6_Permanova import main as step6_main
 from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
 
-def _dummy_biom_table():
-    """
-    this was used as a placeholder of output while testing functionality of parts
-    :return: created biom table
-    """
-    # from https://biom-format.org/documentation/table_objects.html
-    data = np.arange(40).reshape(10, 4)
-    sample_ids = ['S%d' % i for i in range(4)]
-    observ_ids = ['O%d' % i for i in range(10)]
-    sample_metadata = [{'environment': 'A'}, {'environment': 'B'},
-                       {'environment': 'A'}, {'environment': 'B'}]
-    observ_metadata = [{'taxonomy': ['Bacteria', 'Firmicutes']},
-                       {'taxonomy': ['Bacteria', 'Firmicutes']},
-                       {'taxonomy': ['Bacteria', 'Proteobacteria']},
-                       {'taxonomy': ['Bacteria', 'Proteobacteria']},
-                       {'taxonomy': ['Bacteria', 'Proteobacteria']},
-                       {'taxonomy': ['Bacteria', 'Bacteroidetes']},
-                       {'taxonomy': ['Bacteria', 'Bacteroidetes']},
-                       {'taxonomy': ['Bacteria', 'Firmicutes']},
-                       {'taxonomy': ['Bacteria', 'Firmicutes']},
-                       {'taxonomy': ['Bacteria', 'Firmicutes']}]
-    table = biom.Table(data, observ_ids, sample_ids, observ_metadata,
-        sample_metadata, table_id = 'Example Table')
-
-    return table
-
 
 def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard_df ):
 
@@ -117,7 +91,7 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
-    dump = open(f"{outDir}/processing_dump.txt", "w", encoding="utf-8") # Overwrite file to new empty
+    dump = open(f"{outDir}/processing_dump.txt", "w+", encoding="utf-8") # Overwrite file to new empty
     dump.close()
     dump = f"{outDir}/processing_dump.txt"
 
@@ -128,7 +102,10 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
     # Make sure input is valid
     num_samples = len( infile1.ids( axis='observation' ) )
     try:
-        num_sample_types = len( sample_types.loc[:,"Type"] )
+        if( "type" in sample_types.columns ):
+            num_sample_types = len( sample_types.loc[:,"type"] )
+        else:
+            num_sample_types = len( sample_types.loc[:,"Type"] )
     except:
         raise Exception( "Error: sample metadata must include a column titled Type.")
     if( num_samples != num_sample_types ):

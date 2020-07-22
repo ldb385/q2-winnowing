@@ -27,6 +27,7 @@ global connectedness
 
 # Verbose global will help prevent not necessary graphs from always being generated
 global verbose
+global dump
 
 
 def remove_min_count(df, min_count):
@@ -265,7 +266,8 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     :return:
     """
 
-    print('In Graph Centrality Function')
+    if (verbose):
+        dump.write('In Graph Centrality Function\n')
 
     data = df.copy()
     conditioned_df = condition(data, cond_type)  # condition data
@@ -322,14 +324,18 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     # largest_subgraph = max( networkx.connected_component_subgraphs(df_g), key=len ) #Deprecated
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
 
-    print('total', total_nodes, ' largest', nodes_sg)
+    if (verbose):
+        dump.write(f"total, {total_nodes}, largest, {nodes_sg}\n")
     percent_connected = nodes_sg / total_nodes * 100
-    print('percent connected', percent_connected)
+    if (verbose):
+        dump.write(f"percent connected, {percent_connected}\n")
     global connectedness
     connectedness.append((nodes_sg, total_nodes, float(str(round(percent_connected, 2)))))
-    print('connectedness', connectedness)
+    if (verbose):
+        dump.write(f"connectedness, {connectedness}\n")
     if percent_connected < float(min_connected):
-        print('graph under min connectedness... returning')
+        if (verbose):
+            dump.write('graph under min connectedness... returning\n')
         disjoint = True
         return pd.DataFrame()
     else:
@@ -343,7 +349,8 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
             try:
                 centrality = networkx.eigenvector_centrality(largest_subgraph)
             except:
-                print('eigenvector failed to converge... returning')
+                if (verbose):
+                    dump.write('eigenvector failed to converge... returning\n')
                 disjoint = True
                 return pd.DataFrame()
         else:
@@ -393,8 +400,7 @@ def selection(func, s_total, s_per_iter, df, *args):
         try:
             select_total = int(s_total)
         except:
-            print('not a valid select total value')
-            sys.exit(1)
+            raise('not a valid select total value')
 
     if s_per_iter == 'all':
         select_per_iter = len(data.columns)
@@ -402,7 +408,7 @@ def selection(func, s_total, s_per_iter, df, *args):
         try:
             select_per_iter = int(s_per_iter)
         except:
-            print('not a valid select per iteration value')
+            raise('not a valid select per iteration value')
 
     # make sure they aren't trying to select more features per iter than total features
     select_per_iter = min(select_per_iter, select_total)
@@ -729,7 +735,8 @@ def name_feature_list(feature_df, filename):
 
 
 def log_transfrom_balance(df, cond_type='add_one'):
-    print("In the Log Transfom Balance Function")
+    if (verbose):
+        dump.write("In the Log Transfom Balance Function\n")
 
     data = condition(df.copy(), cond_type)
 
@@ -754,7 +761,8 @@ def log_transfrom_balance(df, cond_type='add_one'):
 
 
 def log_transfrom(df, cond_type='add_one'):
-    print("In the log Transfom Function")
+    if( verbose ):
+        dump.write("In the log Transfom Function\n")
 
     return np.log(condition(df.copy(), cond_type))
 
@@ -764,6 +772,9 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, corr_prop, evaluation_type, min_connected,
          detailed=False, verbose_p=False):
+
+    global dump
+    dump = open(f"{os.path.dirname(os.path.realpath(__file__))}/output/step1_3-{iteration_select}_dump.txt", "w", encoding="utf-8")  # Overwrite file to new empty
 
     t_start = time.perf_counter()
 
@@ -944,6 +955,9 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     feature_df.reset_index( drop=True, inplace=True )
     important_features.reset_index( drop=True, inplace=True )
     feature_abundances.reset_index( drop=True, inplace=True )
+
+    dump.write("\n\n") # for easier readability
+    dump.close()
 
     return ( feature_df, important_features, feature_abundances )
 

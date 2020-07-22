@@ -4,8 +4,5 @@
 #TODO: Get review from user group
 #TODO: Go through code and check for optimization and error handling
 #TODO: Run through possible inputs to plugin
-#TODO: Do a fresh installation of plugin and record process for easier user installation
-
-
 
 
