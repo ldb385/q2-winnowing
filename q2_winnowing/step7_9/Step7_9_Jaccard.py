@@ -45,6 +45,12 @@ rsummary = r['summary']
 # <><><> DEFINE FUNCTIONS <><><>
 
 def _print_summaries( df_kappa, dump ):
+    """
+    Output table and column stats to dump
+    :param df_kappa: Dataframe which is refrenced for prints
+    :param dump: file where output is written to
+    :return: nothing is returned function is simply for generating verbose output
+    """
 
     df_kappa['select_iter'] = df_kappa['select_iter'].astype('int')
     # <><><> OUTPUT TABLE <><><>
@@ -60,10 +66,24 @@ def _print_summaries( df_kappa, dump ):
 
 
 def jaccard_coefficient(x,y):
+    """
+    Jaccard index used to display the similarity between sample sets.
+    :param A: set x
+    :param y: set y
+    :return: similarity of A and B or A intersect B
+    """
     return len(set(x) & set(y)) / len(set(x) | set(y)) # Set gets rid of duplicates
 
 
 def main( df_leaveOneOut, name, detailed=False, verbose=False ):
+    """
+    perform jaccard index on data to find most influential taxa.
+    :param df_leaveOneOut: result of leave one out feature ordering method. Ordered OTU
+    :param name: name that is attached to output data for identification
+    :param detailed: Output helper tables
+    :param verbose: Output helper prints
+    :return:
+    """
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
@@ -122,26 +142,6 @@ def main( df_leaveOneOut, name, detailed=False, verbose=False ):
         dump.close()
 
     return kappa_df
-
-
-
-
-# <><><> TEST <><><>
-# bfa = pd.read_csv("./test_data/arc_bac_fun_abundances.csv") # Hmmmmmmm
-# bfa.rename(columns={'hor.plot': 'OTUid'}, inplace=True)  # Hmmmmmmm
-#
-# loo = pd.read_csv("./test_data/dataFromStep1.csv")
-# main( loo, "test_results", True, True )
-#
-# loo = pd.read_csv("./test_data/firstValues.csv")
-# main( loo, "test_firstValues", True, True )
-
-
-
-
-
-
-
 
 
 
