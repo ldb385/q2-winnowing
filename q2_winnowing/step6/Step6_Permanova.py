@@ -47,6 +47,18 @@ rplot = r['plot']
 # <><><> DEFINE FUNCTIONS <><><>
 
 def _generate_figures( permanova_df, cent_type, outdir, name ):
+    """
+    Generate figures depending on centrality type was used
+    :param permanova_df: PERMANOVA table generated
+    :param cent_type: centrality type used ( None, degree, closeness, eigenvector, betweenness )
+    :param outdir: directory where figures are written to
+    :param name: name attached to figures
+    :return:
+    """
+
+    if( cent_type is None ):
+        # cent type was not given don't attempt to graph
+        return # Nothing simply termination of function
 
     dataFrame_permanova = permanova_df.copy( deep=True ) # deep copy to avoid altering original dataframe
 
@@ -156,7 +168,13 @@ def _generate_figures( permanova_df, cent_type, outdir, name ):
 
 
 
-def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
+def _convert_to_dist_hel_matrix( array, length ):
+    """
+    Convert array to a distance hellinger matrix
+    :param array: the array with all values
+    :param length: the length x width of what the new matrix will be
+    :return: output distance hellinger matrix
+    """
 
     # initialize an empty matrix to fill
     newMatrix = np.zeros( ( length, length ), dtype=float )
@@ -165,8 +183,8 @@ def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
     rowIndex = 1
 
     # needs to fill by columns instead of by rows so need to do this manually
-    for hellingerValue in hellingerMatrix:
-        newMatrix[rowIndex][colIndex] = hellingerValue
+    for value in array:
+        newMatrix[rowIndex][colIndex] = value
 
         if( rowIndex < length -1 ):
             rowIndex += 1
@@ -175,13 +193,24 @@ def _convert_to_dist_hel_matrix( hellingerMatrix, length ):
             rowIndex = colIndex + 1
 
     # it needs the upper triangle to mirror the lower
-    newMatrix[ np.triu_indices(length, 1 )] = hellingerMatrix
+    newMatrix[ np.triu_indices(length, 1 )] = array
 
     return newMatrix
 
 
 
-def perform_permanova( df_sample, df_dg_auc, df_dg_auc100, output_file, detailed=False, verbose=False, dump=None):
+def perform_permanova( df_dg_auc, df_dg_auc100, df_sample, output_file, detailed=False, verbose=False, dump=None):
+    """
+    Perform ANOVA calculation with permutations
+    :param df_sample: Sample that provide data on whether taxom were invaded or natural
+    :param df_dg_auc: AUC ordering
+    :param df_dg_auc100: abundances generated
+    :param output_file: this is the result folder where output is written to if detailed
+    :param detailed: Output helper tables
+    :param verbose: Output helper prints
+    :param dump: file were verbose is being written to
+    :return: data frame containing calculations performed
+    """
 
     if( verbose ):
         dump.write( f"Processing Input File: {str(df_dg_auc)} \n") # AUC curves for subsetting
@@ -195,7 +224,7 @@ def perform_permanova( df_sample, df_dg_auc, df_dg_auc100, output_file, detailed
     df_dg_premanova = pd.DataFrame(columns=['test', 'order', 'auc','SumsOfSqs','MeanSqs','F.model','R2','Pval','N.taxa','F.model.scale'])
 
     # Setup variables before loop to avoid extra computation
-    if ("type" in df_sample.columns): # check for capitalization
+    if ("type" in df_sample.columns): # check for capitalization in index
         typeIndex = int( df_sample.columns.get_loc("type"))  # Since Rpy doesn't allow for string index must get column int index
     else:
         typeIndex = int( df_sample.columns.get_loc("Type"))  # Since Rpy doesn't allow for string index must get column int index
@@ -255,7 +284,18 @@ def perform_permanova( df_sample, df_dg_auc, df_dg_auc100, output_file, detailed
 
 
 # <><><> DEFINE EXECUTION FUNCTION <><><>
-def main( dataFrame1, dataFrame2, sampleDataframe, centralityType, name, detailed=False, verbose=False):
+def main( auc_ordering, abundances, sample_df, centralityType, name, detailed=False, verbose=False):
+    """
+    take in auc, abundance, and sample information and output values with permanova table
+    :param auc_ordering: auc ordering generated
+    :param abundances: abundances generated
+    :param sample_df: samples with cooresponding types of invaded/natural
+    :param centralityType: used for generating detailed output ( betweenness, degree, eigenvector, closseness )
+    :param name: name attached to all detailed output
+    :param detailed: Output helper tables
+    :param verbose: Output helper prints
+    :return: table of all values generated during permanova calculation
+    """
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
@@ -269,13 +309,13 @@ def main( dataFrame1, dataFrame2, sampleDataframe, centralityType, name, detaile
             dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
             # Call PERMANOVA calculation
-            df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, outFile, detailed, verbose, dump )
+            df_permanova = perform_permanova( auc_ordering, abundances, sample_df, outFile, detailed, verbose, dump )
             dump.write( f"Plots generated to {outDir}.\n" )
             dump.close()
 
         else:
             # Call PERMANOVA calculation
-            df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, outFile, detailed )
+            df_permanova = perform_permanova( auc_ordering, abundances, sample_df, outFile, detailed )
 
         # Since this is detailed must generate plots
         _generate_figures( df_permanova, centralityType, outDir, name )
@@ -285,35 +325,16 @@ def main( dataFrame1, dataFrame2, sampleDataframe, centralityType, name, detaile
         dump = open(f"{outDir}/step6_dump.txt", "w", encoding="utf-8")
 
         # Call PERMANOVA calculation
-        df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, None, verbose=verbose, dump=dump )
+        df_permanova = perform_permanova( auc_ordering, abundances, sample_df, None, verbose=verbose, dump=dump )
         dump.close()
 
     else:
         # No excess files necessary just generate dataframe to pass on
-        df_permanova = perform_permanova( sampleDataframe, dataFrame1, dataFrame2, None )
+        df_permanova = perform_permanova( auc_ordering, abundances, sample_df, None )
 
     df_permanova.reset_index( drop=True, inplace=True ) # reset indicis as a precautionary to make sure all df's start at index 0
 
     return df_permanova
-
-
-# <><> TEST <><>
-# Testing dataframe function
-# test_sample = pd.read_csv("./test_data/Brome_BFA_AB_sample_info.csv")
-# test_abundance = pd.read_csv("./test_data/ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall-abundances.csv")
-# test_AUC = pd.read_csv("./test_data/brome.dg.auc.csv")
-# main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
-#
-# test_sample = pd.read_csv( "./test_data/test_samples.csv" )  # AB horizon, BRA
-# test_abundance = pd.read_csv("./test_data/NoNameGiven_1_-abundances-0.csv")
-# test_AUC = pd.read_csv("./test_data/NoNameGiven_auc_result.csv")
-# main( test_AUC, test_abundance, test_sample, "Test_Step6", True, True)
-
-
-
-
-
-
 
 
 
