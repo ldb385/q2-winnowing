@@ -8,6 +8,7 @@ import os
 
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
 
+# Import different functions from each file
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
 from q2_winnowing.step6.Step6_Permanova import main as step6_main
@@ -15,6 +16,15 @@ from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
 
 
 def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard_df ):
+    """
+    This takes care of assembing a Winnowed artifact recognized by qiime2 from the different data
+    generated throughout execution.
+    :param combined_metric_df: this holds each metric output from the different iteration selections
+    :param auc_df: highest iteration auc selection
+    :param permanova_df: highest iteration permanova selection
+    :param jaccard_df: kappa and agreement values which are measures of consistency of feature ordering
+    :return: list( tuple( feature_df, AUC_df, Permanova_df ) ) Note the reasoning for this is explained in return
+    """
 
     # Precautionary reset index of dataframes to be joined
     combined_metric_df.reset_index( drop=True, inplace=True )
@@ -85,6 +95,39 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
                keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, correlation_prop: Str="both",
                evaluation: Str="kl_divergence", min_connected: Int=0,
                detailed: Bool=False, verbose: Bool=False ) -> list:
+    """
+    This is function corresponds with qiime2 function and takes care of file passing between all parts of plugin.
+
+    :param infile1: This is the biom file (qza) which will have OTU info extracted from and analyzed to generate
+        an interaction table of taxom.
+    :param sample_types: the is metadata representive of samples taken and whether there are invaded/natural
+    :param metric: This is the metric to use
+    :param conditioning: Conditioning type to use on the data.
+    :param infile2: This is only used in the case of an A/B analysis and will not be used if ab_comp is False.
+    :param name: This is attached to all detailed output as a means of identification
+    :param ab_comp: Boolean representing whether to perform AB comparison on the data.
+    :param min_count: Features with counts below this number will be removed.
+    :param total_select: Number of features to select in total. ie: 1,2,3,... or 'all'
+    :param iteration_select: Number of features to select for each time the metric is called. ie: 1,2,3,...
+    :param pca_components: Number of pca components to find
+    :param smooth_type:  Type of Smoothing to be used to remove noise.
+    :param window_size:  If Smoothing type is a sliding window, this is the size of the window.
+    :param centrality: If graph_centrality is the metric type, this is the type of Centrality to use.
+    :param keep_threshold: If graph_centrality is the metric type, this is the threshold to use to remove weak edges.
+    :param correlation: If graph centrality is the metric, this specifies if positive, negative, or both types
+        of correlation should be used.
+    :param weighted: If graph_centrality is the metric type, this specifies if weighted edges should be used
+        to create the graph.
+    :param correlation_prop:
+    :param evaluation: This is the evaluation type to use.
+    :param min_connected: The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.
+    :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
+        computation. If not enabled files will not be generated
+    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
+        may have been output through print statements during execution. Each dump.txt file is stored in output folders
+        that correspond with each step.
+    :return: return a list of single item with artifact see artifact generation for details on why this is done
+    """
 
     if iteration_select is None: # Since default parameter can't be mutable
         iteration_select = {1, 4, 16, 64, 128}
@@ -189,7 +232,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
     Note this function executes the main functionality of steps 1-3 in the pipeline of
     winnowing data.
 
-    :param dataFrame1: This is the biom file which will have OTU info extracted from and analyzed to generate
+    :param dataFrame1: This is the dataframe which will have OTU info extracted from and analyzed to generate
         an interaction table of taxom.
     :param dataFrame2: This is only used in the case of an A/B analysis and will not be used if ab_comp is False.
     :param ab_comp: Boolean representing whether to perform AB comparison on the data.
@@ -210,14 +253,6 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
     :param corr_prop: If graph centrality is the metric, this specifies if positive, negative, or both types
         of correlation should be used.
     :param evaluation_type: This is the evaluation type to use.
-    :param plot_metric: Including this parameter will create a line plot of the metric values for the selected features.
-    :param create_graph: If graph centrality is the metric, including this parameter will create a graph image of the
-        selected features (using the same correlation type used to select the features).
-    :param plot_pca: If PCA is the metric, including this parameter will create a scatter plot image of the first two
-        principle components.
-    :param naming_file: The file to be used to name the features. If not used, the features will be outputted with
-        the names the input file.
-    :param proc_id: The identifying number to use in the output file names.
     :param min_connected: The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.
     :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
         computation. If not enabled files will not be generated
