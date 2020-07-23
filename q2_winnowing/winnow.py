@@ -78,16 +78,16 @@ def _write_to_dump( verbose, dump_path, step ):
     return # Nothing just signifies termination of function
 
 
-def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.Table=None,
-                      name: Str="-name-", ab_comp: Bool=False, metric_name: Str=None, c_type: Str=None,
-                      min_count: Int=3, total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
-                      smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
-                      keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
-                      evaluation_type: Str=None, min_connected: Int=0, detailed: Bool=False, verbose: Bool=False
-                      ) -> list:
+def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, conditioning: Str,
+               infile2: biom.Table=None, name: Str="-name-", ab_comp: Bool=False, min_count: Int=3,
+               total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
+               smooth_type: Str="sliding_window", window_size: Int=3, centrality: Str=None,
+               keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, correlation_prop: Str="both",
+               evaluation: Str="kl_divergence", min_connected: Int=0,
+               detailed: Bool=False, verbose: Bool=False ) -> list:
 
-    if iteration_select is None: # Since default parameter can't have set function call
-        iteration_select = {1, 4, 16, 64}
+    if iteration_select is None: # Since default parameter can't be mutable
+        iteration_select = {1, 4, 16, 64, 128}
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
@@ -100,7 +100,7 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
     # This will be used as part of the PERMANOVA calculation
     sample_types = sample_types.to_dataframe()
     # Make sure input is valid
-    num_samples = len( infile1.ids( axis='observation' ) )
+    num_samples = len( infile1.ids( axis='observation' ) ) # this accounts for abundances being same size as well in later steps
     try:
         if( "type" in sample_types.columns ):
             num_sample_types = len( sample_types.loc[:,"type"] )
@@ -131,11 +131,11 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
         # <><><> Pass data to steps 1 to 3 <><><>
         _write_to_dump(verbose, dump, step=1)
         metric_result, important_features, abundances = \
-            _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
-                              c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
+            _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric,
+                              c_type=conditioning, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
                               pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
-                              centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
-                              weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type,
+                              centrality_type=centrality, keep_threshold=keep_threshold, correlation=correlation,
+                              weighted=weighted, corr_prop=correlation_prop, evaluation_type=evaluation,
                               min_connected=min_connected, detailed=detailed, verbose=verbose)
         # these are used in: Step7_9, Step4_5, Step6
 
@@ -153,14 +153,14 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
         # these are used in: Step6, None
         aucOutput = AUC_results
 
-        # order sample types so ordering conforms with other values
-
+        # Note: sample types correspond with abundances being passed
+        # print( abundances, AUC_results, sample_types )
 
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )
         PERMANOVA_results = \
             _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
-                               centralityType=centrality_type, name=newName, detailed=detailed, verbose=verbose )
+                               centralityType=centrality, name=newName, detailed=detailed, verbose=verbose )
         permanovaOutput = PERMANOVA_results
         _write_to_dump( verbose, dump, step=6.5 )
 
@@ -168,7 +168,7 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
     # <><><>  Pass data to steps 7 to 9 <><><>
     _write_to_dump( verbose, dump, step=7 )
     Jaccard_results = _winnow_sensativity(
-        metricOutput, name=f"{metric_name}_{correlation}_{str(keep_threshold)}_{centrality_type}_{name}",
+        metricOutput, name=f"{metric}_{correlation}_{str(keep_threshold)}_{centrality}_{name}",
         detailed=detailed, verbose=verbose )
 
     # Notify user of output path
@@ -197,7 +197,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
     :param c_type: Conditioning type to use on the data.
     :param min_count: Features with counts below this number will be removed.
     :param total_select: Number of features to select in total. ie: 1,2,3,... or 'all'
-    :param iteration_select: Number of features to select for each time the metric is called. ie: 1,2,3,... or 'all'
+    :param iteration_select: Number of features to select for each time the metric is called. ie: 1,2,3,...
     :param pca_components: Number of pca components to find
     :param smooth_type: Type of Smoothing to be used to remove noise.
     :param window_size: If Smoothing type is a sliding window, this is the size of the window.
@@ -234,12 +234,6 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
             total_select = int( total_select )
         except:
             total_select = "all"
-    if( iteration_select and iteration_select != "all" ):
-        try:
-            iteration_select = int( iteration_select )
-        except:
-            iteration_select = "all"
-
 
     if( ab_comp ):
         metric_result, important_features, abundances = \

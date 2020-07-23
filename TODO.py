@@ -3,6 +3,3 @@
 #TODO: Verify correct parameters
 #TODO: Get review from user group
 #TODO: Go through code and check for optimization and error handling
-#TODO: Run through possible inputs to plugin
-
-
