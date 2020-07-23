@@ -78,7 +78,7 @@ def _write_to_dump( verbose, dump_path, step ):
     return # Nothing just signifies termination of function
 
 
-def processing(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, conditioning: Str,
+def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, conditioning: Str,
                infile2: biom.Table=None, name: Str="-name-", ab_comp: Bool=False, min_count: Int=3,
                total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
                smooth_type: Str="sliding_window", window_size: Int=3, centrality: Str=None,
