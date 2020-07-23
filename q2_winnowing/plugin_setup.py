@@ -53,7 +53,6 @@ plugin.register_semantic_type_to_format(
 )
 
 
-
 # <><><> Register functions <><><>
 
 plugin.methods.register_function(
@@ -66,7 +65,7 @@ plugin.methods.register_function(
         "infile2": FeatureTable[RelativeFrequency]
     },
     outputs=[
-        ("interaction_of_taxa_result", Winnowed )
+        ("result", Winnowed )
     ],
     input_descriptions={
         "infile1": ("This is the biom file which will have OTU info extracted from and analyzed to generate "
@@ -77,64 +76,64 @@ plugin.methods.register_function(
         "name": qiime2.plugin.Str,
         "sample_types": MetadataColumn[Categorical],
         "ab_comp": qiime2.plugin.Bool,
-        "metric_name": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
-        "evaluation_type": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
+        "metric": qiime2.plugin.Str % qiime2.plugin.Choices(_METRIC_TYPES_),
+        "evaluation": qiime2.plugin.Str % qiime2.plugin.Choices(_EVALUATION_TYPES_),
         "min_count": qiime2.plugin.Int,
-        "c_type": qiime2.plugin.Str % qiime2.plugin.Choices(_CONDITIONING_TYPES_),
+        "conditioning": qiime2.plugin.Str % qiime2.plugin.Choices(_CONDITIONING_TYPES_),
         "total_select": qiime2.plugin.Str,
         "iteration_select": qiime2.plugin.Set[ qiime2.plugin.Int ],
         "pca_components": qiime2.plugin.Int,
         "smooth_type": qiime2.plugin.Str % qiime2.plugin.Choices(_SMOOTHING_TYPES_),
         "window_size": qiime2.plugin.Int,
-        "centrality_type": qiime2.plugin.Str % qiime2.plugin.Choices(_CENTRALITY_TYPES_),
+        "centrality": qiime2.plugin.Str % qiime2.plugin.Choices(_CENTRALITY_TYPES_),
         "keep_threshold": qiime2.plugin.Float,
         "correlation": qiime2.plugin.Str % qiime2.plugin.Choices(_CORRELATION_TYPES_),
         "weighted": qiime2.plugin.Bool,
-        "corr_prop": qiime2.plugin.Str % qiime2.plugin.Choices(_CORRELATION_PROPERTIES_),
+        "correlation_prop": qiime2.plugin.Str % qiime2.plugin.Choices(_CORRELATION_PROPERTIES_),
         "min_connected": qiime2.plugin.Float,
         "detailed": qiime2.plugin.Bool,
         "verbose": qiime2.plugin.Bool
     },
     parameter_descriptions={
         "name": ("This is the string that will be attached to output files. This is used especially in "
-                 "the case of detailed."),
+                 "the case of detailed. "),
         "sample_types": ("This data provides a legend for which samples are of different types. This allows for "
                          "permutations in PERMANOVA calculations to be descriptive. Data is labelled as "
-                         "invaded and natural"),
-        "ab_comp": ("Boolean representing whether to perform AB comparison on the data."),
-        "metric_name": ("This is the metric to use."),
-        "evaluation_type": ("This is the evaluation type to use."),
-        "min_count": ("Features with counts below this number will be removed."),
-        "c_type": ("Conditioning type to use on the data."),
-        "total_select": ("Number of features to select in total.\n"
-                         "Possible selections are:\n"
-                         f"\t {_ALL_OR_INT_}"),
-        "iteration_select": ("Number of features to select for each time the metric is called. \n"
-                             "Note: a set of values must be given to be later used in a kappa calcultaion \n"
-                             "\tAn example of an input could be [1, 4, 16, 64, 128]\n"),
-        "pca_components": ("Number of pca components to find"),
-        "smooth_type": ("Type of Smoothing to be used to remove noise."),
-        "window_size": ("If Smoothing type is a sliding window, this is the size of the window."),
-        "centrality_type": ("If graph_centrality is the metric type, this is the type of Centrality to use."),
+                         "invaded and natural "),
+        "ab_comp": ("Boolean representing whether to perform AB comparison on the data. "),
+        "metric": ("This is the metric to use. "),
+        "evaluation": ("This is the evaluation type to use. "),
+        "min_count": ("Features with counts below this number will be removed. "),
+        "conditioning": ("Conditioning type to use on the data. "),
+        "total_select": ("Number of features to select in total. "
+                         "Possible selections are: "
+                         f"{_ALL_OR_INT_}"),
+        "iteration_select": ("Number of features to select for each time the metric is called. "
+                             "Note: a set of values must be given to be later used in a kappa calcultaion "
+                             "An example of an input could be [1, 4, 16, 64, 128] "),
+        "pca_components": ("Number of pca components to find. "),
+        "smooth_type": ("Type of Smoothing to be used to remove noise. "),
+        "window_size": ("If Smoothing type is a sliding window, this is the size of the window. "),
+        "centrality": ("If graph_centrality is the metric type, this is the type of Centrality to use. "),
         "keep_threshold": ( "If graph_centrality is the metric type, this is the threshold to use to remove weak edges."),
         "correlation":
-            ("If graph_centrality is the metric type, this is the type of correlation to use to build the graph."),
+            ("If graph_centrality is the metric type, this is the type of correlation to use to build the graph. "),
         "weighted": (
-            "If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph."),
-        "corr_prop": (
-            "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used."),
+            "If graph_centrality is the metric type, this specifies if weighted edges should be used to create the graph. "),
+        "correlation_prop": (
+            "If graph centrality is the metric, this specifies if positive, negative, or both types of correlation should be used. "),
         "min_connected": (
-            "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted."),
+            "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted. "),
         "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout "
-                     "computation. If not enabled files will not be generated"),
+                     "computation. If not enabled files will not be generated. "),
         "verbose": ("Notifies plugin to generate dump files for every step. These will contain all data that previously "
                     "may have been output through print statements during execution. Each dump.txt file is stored in "
-                    "output foleders that correspond with each step.")
+                    "output foleders that correspond with each step. ")
     },
     output_descriptions={
-        "interaction_of_taxa_result": ("This is a directory containing an feature ordering based off influential taxom."
-                                       "Feature ordering also includes kappa and agreement values of iteration selection."
-                                       "AUC and Permanova values from the highest iteration selection.")
+        "result": ("This is a directory containing an feature ordering based off influential taxom. "
+                                       "Feature ordering also includes kappa and agreement values of iteration selection. "
+                                       "AUC and Permanova values from the highest iteration selection. ")
     }
 )
 
