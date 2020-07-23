@@ -7,6 +7,7 @@ import numpy as np
 from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
 
 class Step1_3Tests( TestCase ):
+    # <><><> Testing class for Step 1 to 3 <><><>
 
     package = 'q2_winnowing.tests'
 

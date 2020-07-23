@@ -8,6 +8,8 @@ from q2_winnowing.step6.Step6_Permanova import main as step6_main
 from q2_winnowing.step6.Step6_Permanova import _convert_to_dist_hel_matrix as array_to_hel
 
 class Step6Tests( TestCase ):
+    # <><><> Testing class for Step 6 <><><>
+
 
     package = 'q2_winnowing.tests'
 
