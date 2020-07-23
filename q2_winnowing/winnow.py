@@ -86,7 +86,7 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, c
                evaluation: Str="kl_divergence", min_connected: Int=0,
                detailed: Bool=False, verbose: Bool=False ) -> list:
 
-    if iteration_select is None: # Since default parameter can't be type set
+    if iteration_select is None: # Since default parameter can't be mutable
         iteration_select = {1, 4, 16, 64, 128}
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
