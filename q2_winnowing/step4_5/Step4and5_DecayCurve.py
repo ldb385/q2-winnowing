@@ -42,6 +42,14 @@ rc = r['c']
 
 
 def calc_auc_percentile( input_df, verbose=False, dump=None ):
+    """
+    calculate each AUC percentile of decay curve
+    :param input_df: Important features and OTUs that have been passed on to be ordered
+    :param verbose: Output helper prints
+    :param dump: file were verbose is being written to
+    :return: ordered AUC percentiles of which OTU is most influential for percentile
+    """
+
     input_df = input_df.sort_values("metric", axis=0, ascending=False)
     input_df.index = range(1, len(input_df) + 1)
     input_auc = raucx(input_df["metric"], input_df.index, interval=rc(1, len(input_df["metric"])))
@@ -74,7 +82,15 @@ def calc_auc_percentile( input_df, verbose=False, dump=None ):
 # <><><> DEFINE EXECUTION FUNCTION <><><>
 
 
-def main( inDataframe, name, detailed=False, verbose=False ):
+def main( input_df, name, detailed=False, verbose=False ):
+    """
+    Each OTU is now ordered by centrality and the AUC of each is calculated.
+    :param input_df: Important features and OTUs that have been passed on to be ordered
+    :param name: name attached to all detailed output
+    :param detailed: Output helper tables
+    :param verbose: Output helper prints
+    :return: ordered AUC percentiles of which OTU is most influential for percentile
+    """
 
     outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
@@ -93,7 +109,7 @@ def main( inDataframe, name, detailed=False, verbose=False ):
             dump = open(f"{outDir}/step4_5_dump.txt", "w", encoding="utf-8")
 
             dump.write(f"\n\nProcessing Input dataFrame: {name}\n")
-            result, param = calc_auc_percentile(inDataframe, True, dump)
+            result, param = calc_auc_percentile(input_df, True, dump)
             dump.write(f"Output is written in file: {outFile}\n")
             dump.write(f"Parameters are written in file: {parameterFile}\n")
 
@@ -101,7 +117,7 @@ def main( inDataframe, name, detailed=False, verbose=False ):
 
         else:
             # Need to collect result
-            result, param = calc_auc_percentile( inDataframe )
+            result, param = calc_auc_percentile( input_df )
 
         # Write to CSV since this is detailed
         result.to_csv(outFile)
@@ -116,24 +132,14 @@ def main( inDataframe, name, detailed=False, verbose=False ):
         dump = open(f"{outDir}/step4_5_dump.txt", "w", encoding="utf-8")
 
         dump.write(f"\n\nProcessing Input dataFrame: {name}\n")
-        result, param = calc_auc_percentile(inDataframe, True, dump)
+        result, param = calc_auc_percentile(input_df, True, dump)
 
         dump.close()
     else:
-        result, param = calc_auc_percentile( inDataframe )
+        result, param = calc_auc_percentile( input_df )
 
     # Return results dataframe along with the parameters dataframe
     return result, param
 
-
-
-# <><><> TEST <><><>
-
-# # Test Original
-# main_original("test_data\ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall.csv", True )
-
-# Test DataFrame
-# input_df = pd.read_csv( "test_data\ADD1_AUC100_MIC0.2_Brome_bacfunarc_dw_otu_table-graph_centrality-degree-selectallbyall.csv" )
-# main_dataFrame( input_df, "testframe_1", True, True)
 
 
