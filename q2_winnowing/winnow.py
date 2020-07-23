@@ -100,7 +100,7 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
     # This will be used as part of the PERMANOVA calculation
     sample_types = sample_types.to_dataframe()
     # Make sure input is valid
-    num_samples = len( infile1.ids( axis='observation' ) )
+    num_samples = len( infile1.ids( axis='observation' ) ) # this accounts for abundances being same size as well in later steps
     try:
         if( "type" in sample_types.columns ):
             num_sample_types = len( sample_types.loc[:,"type"] )
@@ -153,8 +153,8 @@ def processing(infile1: biom.Table, sample_types: MetadataColumn, infile2: biom.
         # these are used in: Step6, None
         aucOutput = AUC_results
 
-        # order sample types so ordering conforms with other values
-
+        # Note: sample types correspond with abundances being passed
+        # print( abundances, AUC_results, sample_types )
 
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )
