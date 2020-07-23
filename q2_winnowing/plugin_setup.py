@@ -111,9 +111,7 @@ plugin.methods.register_function(
                          f"\t {_ALL_OR_INT_}"),
         "iteration_select": ("Number of features to select for each time the metric is called. \n"
                              "Note: a set of values must be given to be later used in a kappa calcultaion \n"
-                             "\tAn example of an input could be [1, 4, 16, 64, 128]\n"
-                             "Possible values are:\n"
-                             f"\t {_ALL_OR_INT_}"),
+                             "\tAn example of an input could be [1, 4, 16, 64, 128]\n"),
         "pca_components": ("Number of pca components to find"),
         "smooth_type": ("Type of Smoothing to be used to remove noise."),
         "window_size": ("If Smoothing type is a sliding window, this is the size of the window."),
