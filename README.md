@@ -28,7 +28,7 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
 # Usage
 __NOTE: These instructions assume you are working within a conda environment in terminal and have completed the Installation portion.__
 * Usage should be fairly intuitive however there is some things to note about plugin. Will be easiest to run through potentially confusing parameters for each function. 
-* "qiime winnowing processing"
+* "qiime winnowing process"
     * --i-infile1 must be frequency table in qza format
        * .qza formatted file can be generated from .csv file. The steps are slightly confusing but it goes .csv-->.txt-->.biom-->.qza .
            1. To convert from .csv it is easiest to save as .txt ( tab delimited ) while in MS Excel.
@@ -51,7 +51,7 @@ __NOTE: These instructions assume you are working within a conda environment in 
          </pre>
     * --m-sample-types-column "Type"
     * Command Example)
-        * qiime winnowing winnow-processing --i-infile1 __inputFile.qza__ --p-metric-name graph_centrality --m-sample-types-file metadata_samples.txt --m-sample-types-column Type --p-evaluation-type kl_divergence --p-min-count 3 --p-c-type add_one --p-total-select 25 --p-iteration-select {1,6,16,64,128} --p-centrality-type betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-corr-prop both --p-detailed --p-verbose --output-dir __./OutFolder__
+        * qiime winnowing process --i-infile1 __inputFile.qza__ --p-metric graph_centrality --m-sample-types-file metadata_samples.txt --m-sample-types-column Type --p-evaluation kl_divergence --p-min-count 3 --p-conditioning add_one --p-total-select 25 --p-iteration-select {1,6,16,64,128} --p-centrality betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-correlation-prop both --p-detailed --p-verbose --output-dir __./OutFolder__
 
 * "qiime winnowing summarize" 
     * is only used to generate a .qzv artifact from the .qza artifact generated from "qiime winnowing processing".
