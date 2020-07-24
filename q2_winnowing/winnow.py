@@ -132,11 +132,11 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     if iteration_select is None: # Since default parameter can't be mutable
         iteration_select = {1, 4, 16, 64, 128}
 
-    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    out_dir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
-    dump = open(f"{outDir}/processing_dump.txt", "w+", encoding="utf-8") # Overwrite file to new empty
+    dump = open(f"{out_dir}/processing_dump.txt", "w+", encoding="utf-8") # Overwrite file to new empty
     dump.close()
-    dump = f"{outDir}/processing_dump.txt"
+    dump = f"{out_dir}/processing_dump.txt"
 
     _write_to_dump( verbose, dump, step=0)
 
@@ -154,9 +154,9 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
 
-    metricOutput = pd.DataFrame() # dataframe to write metrics new
-    aucOutput = pd.DataFrame() # Keep most accurate AUC
-    permanovaOutput = pd.DataFrame() # Keep most accurate PERMANOVA value
+    metric_output = pd.DataFrame() # dataframe to write metrics new
+    auc_output = pd.DataFrame() # Keep most accurate AUC
+    permanova_output = pd.DataFrame() # Keep most accurate PERMANOVA value
     _write_to_dump( verbose, dump, step=0.5 )
 
     for iteration_selected in sorted( iteration_select ):
@@ -182,19 +182,19 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
                               min_connected=min_connected, detailed=detailed, verbose=verbose)
         # these are used in: Step7_9, Step4_5, Step6
 
-        if( metricOutput.empty ): # create a dataframe of import OTU's for jaccard step
-            metricOutput = metric_result
+        if( metric_output.empty ): # create a dataframe of import OTU's for jaccard step
+            metric_output = metric_result
         else:
-            if( len(metricOutput.columns) < len(metric_result.columns) ):
-                metricOutput.columns = metric_result.columns # this accounts for differing # of OTUs
-            metricOutput = metricOutput.append(metric_result, ignore_index=True ) # assign back since does not perform in place
+            if( len(metric_output.columns) < len(metric_result.columns) ):
+                metric_output.columns = metric_result.columns # this accounts for differing # of OTUs
+            metric_output = metric_output.append(metric_result, ignore_index=True ) # assign back since does not perform in place
 
         # <><><> Pass data to steps 4 to 5 <><><>
         _write_to_dump( verbose, dump, step=4 )
         AUC_results, AUC_parameters = \
             _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
-        aucOutput = AUC_results
+        auc_output = AUC_results
 
         # Note: sample types correspond with abundances being passed
         # print( abundances, AUC_results, sample_types )
@@ -204,21 +204,21 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         PERMANOVA_results = \
             _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
                                centralityType=centrality, name=newName, detailed=detailed, verbose=verbose )
-        permanovaOutput = PERMANOVA_results
+        permanova_output = PERMANOVA_results
         _write_to_dump( verbose, dump, step=6.5 )
 
 
     # <><><>  Pass data to steps 7 to 9 <><><>
     _write_to_dump( verbose, dump, step=7 )
     Jaccard_results = _winnow_sensativity(
-        metricOutput, name=f"{metric}_{correlation}_{str(keep_threshold)}_{centrality}_{name}",
+        metric_output, name=f"{metric}_{correlation}_{str(keep_threshold)}_{centrality}_{name}",
         detailed=detailed, verbose=verbose )
 
     # Notify user of output path
     _write_to_dump( verbose, dump, step=10 )
 
     # assemble output and return as artifact
-    artifact_directory = _assemble_artifact_output( metricOutput, aucOutput, permanovaOutput, Jaccard_results )
+    artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, Jaccard_results )
     return artifact_directory
 
 
