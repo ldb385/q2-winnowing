@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 import os
 
-from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
-from q2_winnowing.step7_9.Step7_9_Jaccard import jaccard_coefficient
+from q2_winnowing.step7_9.jaccard import main as step7_9_main
+from q2_winnowing.step7_9.jaccard import jaccard_coefficient
 
 class Step7_9Tests( TestCase ):
     # <><><> Testing class for Step 7 to 9 <><><>

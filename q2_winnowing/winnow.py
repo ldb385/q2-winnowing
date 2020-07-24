@@ -9,10 +9,10 @@ import os
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
 
 # Import different functions from each file
-from q2_winnowing.step1_3.Step1_3_Pipeline import main as step1_3_main
-from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
-from q2_winnowing.step6.Step6_Permanova import main as step6_main
-from q2_winnowing.step7_9.Step7_9_Jaccard import main as step7_9_main
+from q2_winnowing.step1_3.pipeline import main as step1_3_main
+from q2_winnowing.step4_5.decay_curve import main as step4_5_main
+from q2_winnowing.step6.permanova import main as step6_main
+from q2_winnowing.step7_9.jaccard import main as step7_9_main
 
 
 def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard_df ):

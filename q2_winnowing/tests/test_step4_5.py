@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import numpy as np
 
-from q2_winnowing.step4_5.Step4and5_DecayCurve import main as step4_5_main
+from q2_winnowing.step4_5.decay_curve import main as step4_5_main
 
 class Step4_5Tests( TestCase ):
     # <><><> Testing class for Step 4 to 5 <><><>
