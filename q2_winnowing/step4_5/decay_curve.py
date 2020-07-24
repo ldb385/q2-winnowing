@@ -92,13 +92,13 @@ def main( input_df, name, detailed=False, verbose=False ):
     :return: ordered AUC percentiles of which OTU is most influential for percentile
     """
 
-    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    out_dir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
 
 
     if( detailed ):
-        outFile = f"{outDir}/{name}_auc_result.csv"
-        parameterFile = f"{outDir}/{name}_auc_parameter.csv"
+        outFile = f"{out_dir}/{name}_auc_result.csv"
+        parameterFile = f"{out_dir}/{name}_auc_parameter.csv"
 
         # Create new files for output
         outFile = open( outFile, "w+", encoding="utf-8")
@@ -106,7 +106,7 @@ def main( input_df, name, detailed=False, verbose=False ):
 
         if( verbose ):
             # Since this is verbose we must also write to a dump
-            dump = open(f"{outDir}/step4_5_dump.txt", "w", encoding="utf-8")
+            dump = open(f"{out_dir}/step4_5_dump.txt", "w", encoding="utf-8")
 
             dump.write(f"\n\nProcessing Input dataFrame: {name}\n")
             result, param = calc_auc_percentile(input_df, True, dump)
@@ -129,7 +129,7 @@ def main( input_df, name, detailed=False, verbose=False ):
 
     elif( verbose ):
         # Since this is verbose we must also write to a dump
-        dump = open(f"{outDir}/step4_5_dump.txt", "w", encoding="utf-8")
+        dump = open(f"{out_dir}/step4_5_dump.txt", "w", encoding="utf-8")
 
         dump.write(f"\n\nProcessing Input dataFrame: {name}\n")
         result, param = calc_auc_percentile(input_df, True, dump)
