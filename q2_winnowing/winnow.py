@@ -191,26 +191,26 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
 
         # <><><> Pass data to steps 4 to 5 <><><>
         _write_to_dump( verbose, dump, step=4 )
-        AUC_results, AUC_parameters = \
+        auc_results, auc_parameters = \
             _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
-        auc_output = AUC_results
+        auc_output = auc_results
 
         # Note: sample types correspond with abundances being passed
-        # print( abundances, AUC_results, sample_types )
+        # print( abundances, auc_results, sample_types )
 
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )
-        PERMANOVA_results = \
-            _winnow_permanova( df_AUC_ordering=AUC_results, df_abundances=abundances, df_samples=sample_types,
+        permanova_results = \
+            _winnow_permanova( df_AUC_ordering=auc_results, df_abundances=abundances, df_samples=sample_types,
                                centralityType=centrality, name=newName, detailed=detailed, verbose=verbose )
-        permanova_output = PERMANOVA_results
+        permanova_output = permanova_results
         _write_to_dump( verbose, dump, step=6.5 )
 
 
     # <><><>  Pass data to steps 7 to 9 <><><>
     _write_to_dump( verbose, dump, step=7 )
-    Jaccard_results = _winnow_sensativity(
+    jaccard_results = _winnow_sensativity(
         metric_output, name=f"{metric}_{correlation}_{str(keep_threshold)}_{centrality}_{name}",
         detailed=detailed, verbose=verbose )
 
@@ -218,7 +218,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     _write_to_dump( verbose, dump, step=10 )
 
     # assemble output and return as artifact
-    artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, Jaccard_results )
+    artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, jaccard_results )
     return artifact_directory
 
 
