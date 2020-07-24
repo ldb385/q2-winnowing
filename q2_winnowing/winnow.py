@@ -162,19 +162,19 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     for iteration_selected in sorted( iteration_select ):
 
         # Convert input to dataframes
-        dataFrame1 = infile1.to_dataframe().to_dense()
-        dataFrame1.name = f"{name}_1_{iteration_selected}_"
-        dataFrame2 = None
+        dataframe_1 = infile1.to_dataframe().to_dense()
+        dataframe_1.name = f"{name}_1_{iteration_selected}_"
+        dataframe_2 = None
         if (ab_comp):
-            dataFrame2 = infile2.to_dataframe().to_dense()
-            dataFrame2.name = f"{name}_2_{iteration_selected}_"
+            dataframe_2 = infile2.to_dataframe().to_dense()
+            dataframe_2.name = f"{name}_2_{iteration_selected}_"
 
-        newName = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
+        name_new = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
         # <><><> Pass data to steps 1 to 3 <><><>
         _write_to_dump(verbose, dump, step=1)
         metric_result, important_features, abundances = \
-            _winnow_pipeline( dataFrame1=dataFrame1, dataFrame2=dataFrame2, ab_comp=ab_comp, metric_name=metric,
+            _winnow_pipeline( dataframe_1=dataframe_1, dataframe_2=dataframe_2, ab_comp=ab_comp, metric_name=metric,
                               c_type=conditioning, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
                               pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                               centrality_type=centrality, keep_threshold=keep_threshold, correlation=correlation,
@@ -192,7 +192,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         # <><><> Pass data to steps 4 to 5 <><><>
         _write_to_dump( verbose, dump, step=4 )
         auc_results, auc_parameters = \
-            _winnow_ordering( dataframe=important_features, name=newName, detailed=detailed, verbose=verbose)
+            _winnow_ordering( dataframe=important_features, name=name_new, detailed=detailed, verbose=verbose)
         # these are used in: Step6, None
         auc_output = auc_results
 
@@ -203,7 +203,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         _write_to_dump( verbose, dump, step=6 )
         permanova_results = \
             _winnow_permanova( df_AUC_ordering=auc_results, df_abundances=abundances, df_samples=sample_types,
-                               centralityType=centrality, name=newName, detailed=detailed, verbose=verbose )
+                               centralityType=centrality, name=name_new, detailed=detailed, verbose=verbose )
         permanova_output = permanova_results
         _write_to_dump( verbose, dump, step=6.5 )
 
@@ -222,7 +222,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     return artifact_directory
 
 
-def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: Str=None,
+def _winnow_pipeline( dataframe_1, dataframe_2, ab_comp: Bool=False, metric_name: Str=None,
                  c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
@@ -232,9 +232,9 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
     Note this function executes the main functionality of steps 1-3 in the pipeline of
     winnowing data.
 
-    :param dataFrame1: This is the dataframe which will have OTU info extracted from and analyzed to generate
+    :param dataframe_1: This is the dataframe which will have OTU info extracted from and analyzed to generate
         an interaction table of taxom.
-    :param dataFrame2: This is only used in the case of an A/B analysis and will not be used if ab_comp is False.
+    :param dataframe_2: This is only used in the case of an A/B analysis and will not be used if ab_comp is False.
     :param ab_comp: Boolean representing whether to perform AB comparison on the data.
     :param metric_name: This is the metric to use.
     :param c_type: Conditioning type to use on the data.
@@ -272,7 +272,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
 
     if( ab_comp ):
         metric_result, important_features, abundances = \
-            step1_3_main( dataframe1=dataFrame1, dataframe2=dataFrame2, ab_comp=ab_comp, metric_name=metric_name,
+            step1_3_main( dataframe1=dataframe_1, dataframe2=dataframe_2, ab_comp=ab_comp, metric_name=metric_name,
                           c_type=c_type, min_count=min_count, total_select=total_select, iteration_select=iteration_select,
                           pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
@@ -280,7 +280,7 @@ def _winnow_pipeline( dataFrame1, dataFrame2, ab_comp: Bool=False, metric_name: 
                           min_connected=min_connected, detailed=detailed,verbose_p=verbose )
     else:
         metric_result, important_features, abundances = \
-            step1_3_main( dataframe1=dataFrame1, dataframe2=None, ab_comp=False, metric_name=metric_name, c_type=c_type,
+            step1_3_main( dataframe1=dataframe_1, dataframe2=None, ab_comp=False, metric_name=metric_name, c_type=c_type,
                           min_count=min_count, total_select=total_select, iteration_select=iteration_select,
                           pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
