@@ -1,0 +1,2 @@
+ab_comp,dataframe1,metric,centrality,total select,iteration select,min count,smooth type,conditioning,keep threshold,correlation,weighted,correlation property,run time,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25
+False,-name-_1_128_,graph_centrality,closeness,25,128,3,sliding_window,add_one,0.5,spearman,True,both,78.97653854000237,Otu4626,Otu5330,Otu6326,Otu6284,Otu4238,Otu6390,Otu6210,Otu6366,Otu5484,Otu6047,Otu6736,Otu5860,Otu6264,Otu5886,Otu6731,Otu5737,Otu6602,Otu6624,Otu6684,Otu6434,Otu6199,Otu6492,Otu5442,Otu5388,Otu6448
