@@ -25,14 +25,14 @@ def summarize( output_dir: str, data: list ) -> None:
 
     # Get html files that will be written to
     index_html = os.path.join( TEMPLATES, "assets", "index.html" )
-    featureOrdering_html = os.path.join( TEMPLATES, "assets", "featureOrdering.html" )
+    featureOrdering_html = os.path.join( TEMPLATES, "assets", "feature_ordering.html" )
     auc_html = os.path.join( TEMPLATES, "assets", "auc.html" )
     permanova_html = os.path.join( TEMPLATES, "assets", "permanova.html" )
 
     # Write files to output directory
     index_html_new = os.path.join( output_dir, "index.html" )
     shutil.copyfile( index_html, index_html_new )
-    featureOrdering_html_new = os.path.join( output_dir, "featureOrdering.html" )
+    featureOrdering_html_new = os.path.join( output_dir, "feature_ordering.html" )
     shutil.copyfile( featureOrdering_html, featureOrdering_html_new )
     auc_html_new = os.path.join( output_dir, "auc.html" )
     shutil.copyfile( auc_html, auc_html_new )
