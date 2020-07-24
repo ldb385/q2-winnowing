@@ -97,12 +97,12 @@ def main( input_df, name, detailed=False, verbose=False ):
 
 
     if( detailed ):
-        outFile = f"{out_dir}/{name}_auc_result.csv"
-        parameterFile = f"{out_dir}/{name}_auc_parameter.csv"
+        out_file = f"{out_dir}/{name}_auc_result.csv"
+        parameter_file = f"{out_dir}/{name}_auc_parameter.csv"
 
         # Create new files for output
-        outFile = open( outFile, "w+", encoding="utf-8")
-        parameterFile = open( parameterFile, "w+", encoding="utf-8" )
+        out_file = open( out_file, "w+", encoding="utf-8")
+        parameter_file = open( parameter_file, "w+", encoding="utf-8" )
 
         if( verbose ):
             # Since this is verbose we must also write to a dump
@@ -110,8 +110,8 @@ def main( input_df, name, detailed=False, verbose=False ):
 
             dump.write(f"\n\nProcessing Input dataFrame: {name}\n")
             result, param = calc_auc_percentile(input_df, True, dump)
-            dump.write(f"Output is written in file: {outFile}\n")
-            dump.write(f"Parameters are written in file: {parameterFile}\n")
+            dump.write(f"Output is written in file: {out_file}\n")
+            dump.write(f"Parameters are written in file: {parameter_file}\n")
 
             dump.close()
 
@@ -120,11 +120,11 @@ def main( input_df, name, detailed=False, verbose=False ):
             result, param = calc_auc_percentile( input_df )
 
         # Write to CSV since this is detailed
-        result.to_csv(outFile)
-        param.to_csv(parameterFile)
+        result.to_csv(out_file)
+        param.to_csv(parameter_file)
 
-        outFile.close()
-        parameterFile.close()
+        out_file.close()
+        parameter_file.close()
 
 
     elif( verbose ):
