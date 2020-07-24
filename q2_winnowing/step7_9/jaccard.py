@@ -44,21 +44,21 @@ rsummary = r['summary']
 
 # <><><> DEFINE FUNCTIONS <><><>
 
-def _print_summaries( df_kappa, dump ):
+def _print_summaries( kappa_df, dump ):
     """
     Output table and column stats to dump
-    :param df_kappa: Dataframe which is refrenced for prints
+    :param kappa_df: Dataframe which is refrenced for prints
     :param dump: file where output is written to
     :return: nothing is returned function is simply for generating verbose output
     """
 
-    df_kappa['select_iter'] = df_kappa['select_iter'].astype('int')
+    kappa_df['select_iter'] = kappa_df['select_iter'].astype('int')
     # <><><> OUTPUT TABLE <><><>
-    dump.write( str( df_kappa ) + "\n\n")
+    dump.write( str( kappa_df ) + "\n\n")
 
     # <><><> PRINTS STATS OF COLUMNS <><><>
-    dump.write(str( df_kappa.groupby(['conditioning', 'centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
-    dump.write(str( df_kappa.loc[( df_kappa["conditioning"] == "Add1") & ( df_kappa["correl"] == "MIC")].groupby(
+    dump.write(str( kappa_df.groupby(['conditioning', 'centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
+    dump.write(str( kappa_df.loc[( kappa_df["conditioning"] == "Add1") & ( kappa_df["correl"] == "MIC")].groupby(
         ['centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
 
     return  # finished print
@@ -75,69 +75,69 @@ def jaccard_coefficient(x,y):
     return len(set(x) & set(y)) / len(set(x) | set(y)) # Set gets rid of duplicates
 
 
-def main( df_leaveOneOut, name, detailed=False, verbose=False ):
+def main( leave_one_out_df, name, detailed=False, verbose=False ):
     """
     perform jaccard index on data to find most influential taxa.
-    :param df_leaveOneOut: result of leave one out feature ordering method. Ordered OTU
+    :param leave_one_out_df: result of leave one out feature ordering method. Ordered OTU
     :param name: name that is attached to output data for identification
     :param detailed: Output helper tables
     :param verbose: Output helper prints
     :return:
     """
 
-    outDir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
+    out_dir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
 
     try:
-        df_leaveOneOut_OTUs = df_leaveOneOut.iloc[:, df_leaveOneOut.columns.get_loc( 1 ):] # Get first OTU to last
+        leave_one_out_otu_df = leave_one_out_df.iloc[:, leave_one_out_df.columns.get_loc( 1 ):] # Get first OTU to last
     except: # if the column is not an int try using a string
-        df_leaveOneOut_OTUs = df_leaveOneOut.iloc[:, df_leaveOneOut.columns.get_loc( "1" ):] # Get first OTU to last
-    df_leaveOneOut_OTUs = df_leaveOneOut_OTUs.T
+        leave_one_out_otu_df = leave_one_out_df.iloc[:, leave_one_out_df.columns.get_loc( "1" ):] # Get first OTU to last
+    leave_one_out_otu_df = leave_one_out_otu_df.T
     # get blank cells and replace them with NA
-    df_leaveOneOut_OTUs = df_leaveOneOut_OTUs.astype('str')
-    df_leaveOneOut_OTUs = df_leaveOneOut_OTUs.replace("nan", np.nan)
+    leave_one_out_otu_df = leave_one_out_otu_df.astype('str')
+    leave_one_out_otu_df = leave_one_out_otu_df.replace("nan", np.nan)
 
     # create data frame in order to plot as well as pass data easier
     kappa_df = pd.DataFrame(
         columns=['conditioning', 'centrality', 'correl', 'threshold', 'select_iter', 'kappa', 'agreement'])
 
-    j = df_leaveOneOut_OTUs.shape[1] -1 # index of highest iteration selection
+    j = leave_one_out_otu_df.shape[1] -1 # index of highest iteration selection
     for i in range(0, j): # iterate through columns
 
-        _kConditioning = df_leaveOneOut["conditioning"].iloc[i]
-        _kCentrality = df_leaveOneOut["centrality"].iloc[i]
-        _kCorrel = df_leaveOneOut["correlation"].iloc[i]
-        _kThreshold = df_leaveOneOut["keep threshold"].iloc[i]
-        _kSelect_iter = df_leaveOneOut["iteration select"].iloc[i]
+        _kConditioning = leave_one_out_df["conditioning"].iloc[i]
+        _kCentrality = leave_one_out_df["centrality"].iloc[i]
+        _kCorrel = leave_one_out_df["correlation"].iloc[i]
+        _kThreshold = leave_one_out_df["keep threshold"].iloc[i]
+        _kSelect_iter = leave_one_out_df["iteration select"].iloc[i]
         _kKappa = None  # DEFINED LATER
         _kAgreement = None  # DEFINED LATER
 
-        if (len( df_leaveOneOut_OTUs.iloc[:, [i, j]].dropna()) >= 1):
-            _kKappa = (rirr.kappa2((df_leaveOneOut_OTUs.iloc[:, [i, j]]).dropna())[4][0])
-            _kAgreement = jaccard_coefficient(df_leaveOneOut_OTUs.iloc[:, i].dropna(), df_leaveOneOut_OTUs.iloc[:, j].dropna())
+        if (len( leave_one_out_otu_df.iloc[:, [i, j]].dropna()) >= 1):
+            _kKappa = (rirr.kappa2((leave_one_out_otu_df.iloc[:, [i, j]]).dropna())[4][0])
+            _kAgreement = jaccard_coefficient(leave_one_out_otu_df.iloc[:, i].dropna(), leave_one_out_otu_df.iloc[:, j].dropna())
 
-        elif (len( df_leaveOneOut_OTUs.iloc[:, [i, j]].dropna()) <= 0):
+        elif (len( leave_one_out_otu_df.iloc[:, [i, j]].dropna()) <= 0):
             _kKappa = np.nan
             _kAgreement = np.nan
 
         kappa_df.loc[i + 1] = [_kConditioning, _kCentrality, _kCorrel, _kThreshold, _kSelect_iter, _kKappa, _kAgreement]
     # It should be evident which result the kappa and agreement are being compared to
-    kappa_df.loc[j+1] = [ df_leaveOneOut["conditioning"].iloc[j],df_leaveOneOut["centrality"].iloc[j],
-                       df_leaveOneOut["correlation"].iloc[j],df_leaveOneOut["keep threshold"].iloc[j],
-                       df_leaveOneOut["iteration select"].iloc[j], 1.0, 1.0 ]
+    kappa_df.loc[j+1] = [ leave_one_out_df["conditioning"].iloc[j],leave_one_out_df["centrality"].iloc[j],
+                       leave_one_out_df["correlation"].iloc[j],leave_one_out_df["keep threshold"].iloc[j],
+                       leave_one_out_df["iteration select"].iloc[j], 1.0, 1.0 ]
 
     kappa_df.reset_index( drop=True, inplace=True ) # index should start at 0 for consistency
 
     if( detailed ):
-        outFile = f"{outDir}/{name}_Jaccard_result.csv"
+        out_file = f"{out_dir}/{name}_Jaccard_result.csv"
         # Create new files for output
-        outFile = open(outFile, "w+", encoding="utf-8")
-        kappa_df.to_csv( outFile )
-        outFile.close()
+        out_file = open(out_file, "w+", encoding="utf-8")
+        kappa_df.to_csv( out_file )
+        out_file.close()
 
     if( verbose ):
         # write all summaries to dump file
-        dump = open( f"{outDir}/step7_9_dump.txt", "w", encoding="utf-8" )
+        dump = open( f"{out_dir}/step7_9_dump.txt", "w", encoding="utf-8" )
         _print_summaries( kappa_df, dump )
         dump.close()
 
