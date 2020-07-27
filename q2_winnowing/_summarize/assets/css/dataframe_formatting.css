@@ -1,0 +1,24 @@
+
+/* Using https://stackoverflow.com/questions/50807744/apply-css-class-to-pandas-dataframe-using-to-html */
+/* includes alternating gray and white with on-hover color */
+
+.style_df {
+    font-size: 11pt;
+    font-family: Arial;
+    border-collapse: collapse;
+    border: 1px solid silver;
+
+}
+
+.style_df td, th {
+    padding: 5px;
+}
+
+.style_df tr:nth-child(even) {
+    background: #E0E0E0;
+}
+
+.style_df tr:hover {
+    background: silver;
+    cursor: pointer;
+}
