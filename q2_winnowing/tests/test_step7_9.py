@@ -32,7 +32,7 @@ class Step7_9Tests( TestCase ):
     ))
 
 
-    def test_jaccard_coefficient(self):
+    def test_jaccard_coefficient_unique(self):
         a = (0,1,2,5,6)
         b = (0,2,3,4,5,7,9)
         out = 0.3333333 # this is repeating
@@ -41,6 +41,17 @@ class Step7_9Tests( TestCase ):
             jaccard_coefficient_result,
             out,
             decimal=7
+        )
+
+
+    def test_jaccard_coefficient_duplicate(self):
+        a = (0,1,1,5,1)
+        b = (0,2,1,1,1)
+        out = 0.5
+        jaccard_coefficient_result = jaccard_coefficient(a,b)
+        np.testing.assert_equal(
+            jaccard_coefficient_result,
+            out
         )
 
 
