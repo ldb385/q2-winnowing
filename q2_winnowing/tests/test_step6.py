@@ -52,6 +52,7 @@ class Step6Tests( TestCase ):
 
         np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
 
+
     def test_step6_convert_linear_to_hel_large(self):
 
         test_array_in = [1,2,3,4,5,6,7,8,9,10]
@@ -72,7 +73,7 @@ class Step6Tests( TestCase ):
                         [0, 0, 0, 0],
                         [0, 0, 0, 0],
                         [0, 0, 0, 0]]
-        array_to_hel_output = array_to_hel( test_array_in, 5 )
+        array_to_hel_output = array_to_hel( test_array_in, 4 )
 
         np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
 
