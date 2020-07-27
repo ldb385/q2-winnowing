@@ -45,15 +45,28 @@ def summarize( output_dir: str, data: list ) -> None:
     permanova_html_new = os.path.join( output_dir, "permanova.html" )
     shutil.copyfile( permanova_html, permanova_html_new )
 
-    # Write tables to specific html files
-    feature_ordering.to_html( open( feature_ordering_html_new, "w" ))
-    auc_ordering.to_html( open( auc_html_new, "w" ))
-    permanova_ordering.to_html( open( permanova_html_new, "w" ))
-
     # copy css stylesheets
     css = os.path.join( TEMPLATES, "assets", "css" )
     css_new = os.path.join( output_dir, "css" )
     shutil.copytree( css, css_new )
 
+    # Write tables to specific html files
+    dataframe_format_string = """
+    <html>
+        <head></head>
+        <link rel="stylesheet" type="text/css" href="./css/dataframe_formatting.css"/>
+        <body>
+            {table}
+        </body>
+    </html>.
+    """ # this will like iframes to css stylesheets in order to format tables nicer then default in pandas.to_html
+    with open( feature_ordering_html_new, "w" ) as f:
+        f.write( dataframe_format_string.format( table=feature_ordering.to_html(classes="style_df")) )
+    with open( auc_html_new, "w" ) as f:
+        f.write( dataframe_format_string.format( table=auc_ordering.to_html(classes="style_df")) )
+    with open( permanova_html_new, "w" ) as f:
+        f.write( dataframe_format_string.format( table=permanova_ordering.to_html(classes="style_df")) )
+
 
     return # Standard to not return on qiime2 visualizer
+

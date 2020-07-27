@@ -20,7 +20,7 @@ class Step6Tests( TestCase ):
     # <><> read output values for comparison <><>
     permanova_df_out = pd.read_csv(f"{os.path.dirname(os.path.realpath(__file__))}/sample_data/step6/test_out_PERMANOVA.csv", index_col=0 )
 
-    def test_step6_convert_linear_to_hel_reg(self):
+    def test_step6_convert_linear_to_hel_unique(self):
 
         test_array_in = [1,2,3,4,5,6]
         test_hel_out = [[0, 1, 2, 3],
@@ -31,13 +31,48 @@ class Step6Tests( TestCase ):
 
         np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
 
-    def test_step6_convert_linear_to_hel_dup(self):
+    def test_step6_convert_linear_to_hel_duplicate(self):
 
         test_array_in = [1,2,1,2,1,2]
         test_hel_out = [[0, 1, 2, 1],
                         [1, 0, 2, 1],
                         [2, 2, 0, 2],
                         [1, 1, 2, 0]]
+        array_to_hel_output = array_to_hel( test_array_in, 4 )
+
+        np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
+
+
+    def test_step6_convert_linear_to_hel_small(self):
+
+        test_array_in = [1]
+        test_hel_out = [[0, 1],
+                        [1, 0]]
+        array_to_hel_output = array_to_hel( test_array_in, 2 )
+
+        np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
+
+
+    def test_step6_convert_linear_to_hel_large(self):
+
+        test_array_in = [1,2,3,4,5,6,7,8,9,10]
+        test_hel_out = [[0, 1, 2, 3 , 4 ],
+                        [1, 0, 5, 6 , 7 ],
+                        [2, 5, 0, 8 , 9 ],
+                        [3, 6, 8, 0 , 10],
+                        [4, 7, 9, 10, 0 ]]
+        array_to_hel_output = array_to_hel( test_array_in, 5 )
+
+        np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
+
+
+    def test_step6_convert_linear_to_hel_zero(self):
+
+        test_array_in = [0,0,0,0,0,0]
+        test_hel_out = [[0, 0, 0, 0],
+                        [0, 0, 0, 0],
+                        [0, 0, 0, 0],
+                        [0, 0, 0, 0]]
         array_to_hel_output = array_to_hel( test_array_in, 4 )
 
         np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
