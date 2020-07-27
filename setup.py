@@ -21,8 +21,8 @@ setup(
     name="winnowing",
     version=__version__,
     packages=find_packages(),
-    author="John Doe",
-    author_email="JohnDoe@FakeMail.com",
+    author="",
+    author_email="",
     description="Infer the interaction type of microbial communities through statistical analysis. " +
                 "This will allow for a better understanding of taxa interaction at a micro scale.",
     url="https://github.com/ldb385/q2-winnowing",
