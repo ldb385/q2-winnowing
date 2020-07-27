@@ -69,3 +69,4 @@ def summarize( output_dir: str, data: list ) -> None:
 
 
     return # Standard to not return on qiime2 visualizer
+
