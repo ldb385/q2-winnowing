@@ -55,6 +55,29 @@ class Step7_9Tests( TestCase ):
         )
 
 
+    def test_jaccard_coefficient_same(self):
+        a = (0,1,2,3)
+        b = (0,1,2,3)
+        out = 1
+        jaccard_coefficient_result = jaccard_coefficient(a,b)
+        np.testing.assert_equal(
+            jaccard_coefficient_result,
+            out
+        )
+
+
+    def test_jaccard_coefficient_different(self):
+        a = (12,21,24,47,89,100)
+        b = (6,323,67,9,27,92,96)
+        out = 0
+        jaccard_coefficient_result = jaccard_coefficient(a,b)
+        np.testing.assert_equal(
+            jaccard_coefficient_result,
+            out
+        )
+
+
+
     def test_step7_9_main(self):
 
         for metric_results_path, jaccard_path in self.testing_data:
