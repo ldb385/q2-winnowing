@@ -177,7 +177,9 @@ def _convert_to_dist_hel_matrix( array, length ):
     """
 
     # initialize an empty matrix to fill
-    matrix_new = np.zeros( ( length, length ), dtype=float )
+    matrix_new = np.zeros( (length, length), dtype=float )
+
+    print( len( array ) , len( matrix_new ) )
 
     col_index = 0
     row_index = 1
@@ -243,6 +245,7 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
         # Convert to Hellinger distance matrix
         data_hel_rdf = rvegan.vegdist( rvegan.decostand( data_rdf, "hellinger"), "euclidean")
         # this should be reformatted to lower triangular matrix where x rows == y values
+        print( data_hel_rdf, len( sample_df ) )
         data_hel_tri_rdf = _convert_to_dist_hel_matrix( data_hel_rdf, len( sample_rdf ) )
 
         # This is STEP 3
