@@ -58,8 +58,8 @@ def summarize( output_dir: str, data: list ) -> None:
         <body>
             {table}
         </body>
-    </html>.
-    """ # this will like iframes to css stylesheets in order to format tables nicer then default in pandas.to_html
+    </html>
+    """ # this will link iframe to css stylesheets in order to format tables nicer then default in pandas.to_html
     with open( feature_ordering_html_new, "w" ) as f:
         f.write( dataframe_format_string.format( table=feature_ordering.to_html(classes="style_df")) )
     with open( auc_html_new, "w" ) as f:
