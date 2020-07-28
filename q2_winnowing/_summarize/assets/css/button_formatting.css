@@ -1,7 +1,14 @@
 
+
+.btn-group {
+    margin-left: 0.5%;
+    margin-right: 0.5%;
+    clear: both;
+}
+
 .btn-group .button {
   background-color: #00693E; /* Green */
-  border: none;
+  border-color: #4D4E53; /* grey */
   width: 33.3%;
   color: white;
   padding: 15px 32px;
