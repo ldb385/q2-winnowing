@@ -254,7 +254,7 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
         # Convert to Hellinger distance matrix
         data_hel_rdf = rvegan.vegdist( rvegan.decostand( data_rdf, "hellinger"), "euclidean")
         # this should be reformatted to lower triangular matrix where x rows == y values
-        data_hel_tri_rdf = _convert_to_dist_hel_matrix( data_hel_rdf, 116 )
+        data_hel_tri_rdf = _convert_to_dist_hel_matrix( data_hel_rdf, len(sample_df) )
 
         # This is STEP 3
         # Setup formula for the adonis calculation.
