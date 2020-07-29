@@ -78,6 +78,16 @@ class Step6Tests( TestCase ):
         np.testing.assert_array_equal( array_to_hel_output, test_hel_out )
 
 
+    def test_step6_convert_linear_to_hel_fail(self):
+
+        test_array_in = [1,2,3,4,5,6,7]
+        try:
+            array_to_hel( test_array_in, 2 ) # should fail
+            self.assertTrue( False )
+        except:
+            self.assertTrue( True )
+
+
     def test_step6_main(self):
 
         permanova_output = step6_main( self.auc_df_in, self.abundances_df_in, self.samples_df_in, "", False, False )
