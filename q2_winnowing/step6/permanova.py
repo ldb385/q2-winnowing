@@ -183,8 +183,8 @@ def _convert_to_dist_hel_matrix( array, length ):
         needed_length_plus = ( 1 + math.sqrt( 1 + 8*(len(array))) )/2 # Quadratic formula +
         needed_length_minus = ( 1 - math.sqrt( 1 + 8*(len(array))) )/2 # Quadratic formula -
         raise Exception( f"can not convert to double triangular matrix since array is size {len(array)} and "
-                         f"matrix has capacity {needed_size}. A length of at most {needed_length_minus} and "
-                         f"at least {needed_length_plus} is needed for this array" )
+                         f"matrix has capacity {needed_size}. A length of < {needed_length_minus} or "
+                         f"< {needed_length_plus} is needed to have a capacity {len(array)}." )
 
     # initialize an empty matrix to fill
     matrix_new = np.zeros( (length, length), dtype=float )
@@ -254,8 +254,7 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
         # Convert to Hellinger distance matrix
         data_hel_rdf = rvegan.vegdist( rvegan.decostand( data_rdf, "hellinger"), "euclidean")
         # this should be reformatted to lower triangular matrix where x rows == y values
-        print( data_hel_rdf, len( sample_df ) )
-        data_hel_tri_rdf = _convert_to_dist_hel_matrix( data_hel_rdf, len( sample_rdf ) )
+        data_hel_tri_rdf = _convert_to_dist_hel_matrix( data_hel_rdf, 116 )
 
         # This is STEP 3
         # Setup formula for the adonis calculation.
