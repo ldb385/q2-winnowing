@@ -8,9 +8,12 @@ from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
 
 
 # <><><> DEFINE STATIC HEADERS FOR SNIFFING <><><>
-_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'iteration select', 'total select', 'min count',
-                    'smooth type', 'conditioning', 'keep threshold', 'correlation', 'weighted',
-                    'correlation property', 'run time', 'kappa', 'agreement']
+_EXPECTED_FEATURE_HEADERS_FALSE_ = ["ab_comp", "dataframe1", "metric", "centrality", "iteration select", "total select", "min count",
+                    "smooth type", "conditioning", "keep threshold", "correlation", "weighted",
+                    "correlation property", "run time", "kappa", "agreement"]
+_EXPECTED_FEATURE_HEADERS_TRUE_ = ["ab_comp", "dataframe1", "dataframe2", "metric", "centrality", "iteration select", "total select", "min count",
+                    "smooth type", "conditioning", "keep threshold", "correlation", "weighted",
+                    "correlation property", "min connected", "run time", "kappa", "agreement"]
 _EXPECTED_AUC_HEADERS_ = ["auc", "otu.num"]
 _EXPECTED_PERMANOVA_HEADERS_ = ["test", "order", "auc", "SumsOfSqs", "MeanSqs", "F.model", "R2", "Pval",
                                 "N.taxa", "F.model.scale"]
@@ -24,12 +27,11 @@ _EXPECTED_PERMANOVA_HEADERS_ = ["test", "order", "auc", "SumsOfSqs", "MeanSqs", 
 def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
     # No Doc String since annotation describes functionality
     with WinnowedFile.open() as wf:
-        wf.readline() # skip headers
-        is_ab_comp = wf.split("\t")[0]
+        is_ab_comp = wf.readline(1).split("\t")[0] # read ab_bool from ab_comp column
+        wf.seek(0)  # Reset read cursor to start of data
         if( is_ab_comp == False or is_ab_comp == "False" ):
-            wf.seek( 0 ) # Reset read cursor to start of data
-            expected_col = _EXPECTED_FEATURE_HEADERS_ + \
-                           list( range(1, abs( len(_EXPECTED_FEATURE_HEADERS_) - max([ len(lwf.rstrip("\n").split("\t")) for lwf in wf ]) )) )
+            expected_col = _EXPECTED_FEATURE_HEADERS_FALSE_ + \
+                           list( range(1, abs( len(_EXPECTED_FEATURE_HEADERS_FALSE_) - max([ len(lwf.rstrip("\n").split("\t")) for lwf in wf ]) )) )
             wf.seek( 0 ) # Reset read cursor to start of data
             wf.readline() # skip headers
             orderedFeatures_df = pd.DataFrame()
@@ -46,6 +48,24 @@ def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
             orderedFeatures_df.reset_index( drop=True, inplace=True )
             return orderedFeatures_df
         else:
+            expected_col = _EXPECTED_FEATURE_HEADERS_TRUE_ + \
+                           list(range(1, abs(len(_EXPECTED_FEATURE_HEADERS_TRUE_) - max(
+                               [len(lwf.rstrip("\n").split("\t")) for lwf in wf]))))
+            wf.seek(0)  # Reset read cursor to start of data
+            wf.readline()  # skip headers
+            orderedFeatures_df = pd.DataFrame()
+            for line in wf:
+                row = line.rstrip("\n").split("\t")
+                if (str(row[0]).isdigit()):
+                    row = row[1:]  # index column can be removed
+                if (len(row) > len(expected_col)):
+                    raise ValueError(f"FeatureOrdering: header does not have enough columns for row:\n\t{row}")
+                orderedFeatures_df = orderedFeatures_df.append([row], ignore_index=True)
+
+            # Make sure dataframe has proper index and column values
+            orderedFeatures_df.columns = expected_col  # Append changes columns so got to reset
+            orderedFeatures_df.reset_index(drop=True, inplace=True)
+            return orderedFeatures_df
 
 
 
