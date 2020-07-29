@@ -81,11 +81,7 @@ class Step6Tests( TestCase ):
     def test_step6_convert_linear_to_hel_fail(self):
 
         test_array_in = [1,2,3,4,5,6,7]
-        try:
-            array_to_hel( test_array_in, 2 ) # should fail
-            self.assertTrue( False )
-        except:
-            self.assertTrue( True )
+        self.assertRaises( Exception, array_to_hel, test_array_in, 2 ) # should fail
 
 
     def test_step6_main(self):
