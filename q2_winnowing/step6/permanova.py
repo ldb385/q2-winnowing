@@ -5,6 +5,7 @@ import os
 
 import pandas as pd
 import numpy as np
+import math
 from rpy2.robjects.packages import importr
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import StrVector
@@ -175,9 +176,19 @@ def _convert_to_dist_hel_matrix( array, length ):
     :param length: the length x width of what the new matrix will be
     :return: output distance hellinger matrix
     """
+    # check if array will fit in matrix
+    needed_size = (1/2)*(length -1)*(length) # reduced formula of triangular numbers capacity minus middle column
+    if( needed_size < len( array ) ):
+        # get point at which formula parabola is zero in quadratic (needed size)
+        needed_length_plus = ( 1 + math.sqrt( 1 + 8*(len(array))) )/2 # Quadratic formula +
+        needed_length_minus = ( 1 - math.sqrt( 1 + 8*(len(array))) )/2 # Quadratic formula -
+        raise Exception( f"Error: can not convert to double triangular matrix since array is size {len(array)} and "
+                         f"matrix has capacity {needed_size}. A length of < {needed_length_minus} or "
+                         f"< {needed_length_plus} is needed to have a capacity {len(array)}." )
 
     # initialize an empty matrix to fill
-    matrix_new = np.zeros( ( length, length ), dtype=float )
+    matrix_new = np.zeros( (length, length), dtype=float )
+    # print( len( array ), array.size, "\n" , len( matrix_new ), matrix_new.size )
 
     col_index = 0
     row_index = 1
@@ -243,7 +254,7 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
         # Convert to Hellinger distance matrix
         data_hel_rdf = rvegan.vegdist( rvegan.decostand( data_rdf, "hellinger"), "euclidean")
         # this should be reformatted to lower triangular matrix where x rows == y values
-        data_hel_tri_rdf = _convert_to_dist_hel_matrix( data_hel_rdf, len( sample_rdf ) )
+        data_hel_tri_rdf = _convert_to_dist_hel_matrix( data_hel_rdf, 116 )
 
         # This is STEP 3
         # Setup formula for the adonis calculation.
