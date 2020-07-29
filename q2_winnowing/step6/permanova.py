@@ -182,7 +182,7 @@ def _convert_to_dist_hel_matrix( array, length ):
         # get point at which formula parabola is zero in quadratic (needed size)
         needed_length_plus = ( 1 + math.sqrt( 1 + 8*(len(array))) )/2 # Quadratic formula +
         needed_length_minus = ( 1 - math.sqrt( 1 + 8*(len(array))) )/2 # Quadratic formula -
-        raise Exception( f"can not convert to double triangular matrix since array is size {len(array)} and "
+        raise Exception( f"Error: can not convert to double triangular matrix since array is size {len(array)} and "
                          f"matrix has capacity {needed_size}. A length of < {needed_length_minus} or "
                          f"< {needed_length_plus} is needed to have a capacity {len(array)}." )
 

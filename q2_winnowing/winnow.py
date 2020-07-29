@@ -153,6 +153,9 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         raise Exception( "Error: sample metadata must include a column titled Type.")
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
+    # if ab_comp is used we will assume that each sample type corresponds with the 1 - n sample of each dataframe
+    if( ab_comp ):
+        sample_types = pd.concat([sample_types, sample_types], ignore_index=True)
 
     metric_output = pd.DataFrame() # dataframe to write metrics new
     auc_output = pd.DataFrame() # Keep most accurate AUC
@@ -168,6 +171,9 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         if (ab_comp):
             dataframe_2 = infile2.to_dataframe().to_dense()
             dataframe_2.name = f"{name}_2_{iteration_selected}_"
+            if( len(dataframe_1) != len(dataframe_2) ):
+                raise Exception(f"Error: Dataframes must be the same size in order to correlate with sample metadata. "
+                                f"dataframe1: {len(dataframe_1)} != dataframe2: {len(dataframe_2)}")
 
         name_new = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
