@@ -24,23 +24,29 @@ _EXPECTED_PERMANOVA_HEADERS_ = ["test", "order", "auc", "SumsOfSqs", "MeanSqs", 
 def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
     # No Doc String since annotation describes functionality
     with WinnowedFile.open() as wf:
-        expected_col = _EXPECTED_FEATURE_HEADERS_ + \
-                       list( range(1, abs( len(_EXPECTED_FEATURE_HEADERS_) - max([ len(lwf.rstrip("\n").split("\t")) for lwf in wf ]) )) )
-        wf.seek( 0 ) # Reset read cursor to start of data
         wf.readline() # skip headers
-        orderedFeatures_df = pd.DataFrame()
-        for line in wf:
-            row = line.rstrip("\n").split("\t")
-            if( str(row[0]).isdigit() ):
-                row = row[1:] # index column can be removed
-            if( len(row) > len( expected_col ) ):
-                raise ValueError( f"FeatureOrdering: header does not have enough columns for row:\n\t{row}" )
-            orderedFeatures_df = orderedFeatures_df.append( [row], ignore_index=True )
+        is_ab_comp = wf.split("\t")[0]
+        if( is_ab_comp == False or is_ab_comp == "False" ):
+            wf.seek( 0 ) # Reset read cursor to start of data
+            expected_col = _EXPECTED_FEATURE_HEADERS_ + \
+                           list( range(1, abs( len(_EXPECTED_FEATURE_HEADERS_) - max([ len(lwf.rstrip("\n").split("\t")) for lwf in wf ]) )) )
+            wf.seek( 0 ) # Reset read cursor to start of data
+            wf.readline() # skip headers
+            orderedFeatures_df = pd.DataFrame()
+            for line in wf:
+                row = line.rstrip("\n").split("\t")
+                if( str(row[0]).isdigit() ):
+                    row = row[1:] # index column can be removed
+                if( len(row) > len( expected_col ) ):
+                    raise ValueError( f"FeatureOrdering: header does not have enough columns for row:\n\t{row}" )
+                orderedFeatures_df = orderedFeatures_df.append( [row], ignore_index=True )
 
-        # Make sure dataframe has proper index and column values
-        orderedFeatures_df.columns = expected_col # Append changes columns so got to reset
-        orderedFeatures_df.reset_index( drop=True, inplace=True )
-        return orderedFeatures_df
+            # Make sure dataframe has proper index and column values
+            orderedFeatures_df.columns = expected_col # Append changes columns so got to reset
+            orderedFeatures_df.reset_index( drop=True, inplace=True )
+            return orderedFeatures_df
+        else:
+
 
 
 # Define transformer to convert featureOrdering dataframe to file format
