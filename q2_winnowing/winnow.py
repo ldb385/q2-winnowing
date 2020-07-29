@@ -141,7 +141,8 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     _write_to_dump( verbose, dump, step=0)
 
     # This will be used as part of the PERMANOVA calculation
-    sample_types = sample_types.to_dataframe()
+    if( not isinstance( sample_types, pd.DataFrame ) ): # allows for easier testing and input directly to python
+        sample_types = sample_types.to_dataframe()
     # Make sure input is valid
     num_samples = len( infile1.ids( axis='observation' ) ) # this accounts for abundances being same size as well in later steps
     try:
