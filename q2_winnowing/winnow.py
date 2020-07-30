@@ -1,11 +1,11 @@
 
 
 import biom
-import qiime2
 import numpy as np
 import pandas as pd
 import os
 
+import qiime2
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
 
 # Import different functions from each file
@@ -88,6 +88,40 @@ def _write_to_dump( verbose, dump_path, step ):
     return # Nothing just signifies termination of function
 
 
+def _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centrality, correlation ):
+    """
+    This function provides preventative error checking.
+    If a metric is used make sure the parameters for it have been provided.
+    Otherwise the process should be terminated immediately in order to prevent wasted time and confusion.
+    :param metric: graph_centrality, log_transform, pca_importance, abundance
+    :param conditioning: add_one, hellinger
+    :param ab_comp: True, False
+    :param infile2: Dataframe used only in ab_comp
+    :param centrality: betweenness, closeness, degree, eigenvector
+    :param correlation: spearman, pearson, kendall, MIC
+    :return: Nothing: Success, Otherwise will terminate process with exception
+    """
+    if( ab_comp ):
+        if( infile2 == None ):
+            raise Exception( f"Error: Must provide infile2 in order to perform ab_comp. \n"
+                             f"Given parameters were ab_comp: {ab_comp}, infile2: {infile2}.")
+
+    if( metric == "graph_centrality" or metric == "log_transform" ):
+        if( conditioning == None or centrality == None or correlation == None ):
+            raise Exception( f"Error: {metric} requires conditioning, centrality, and correlation parameters. \n"
+                             f"Given parameters were {conditioning}, {centrality}, and {correlation}.")
+    elif( metric == "pca_importance" ):
+        if( conditioning == None ):
+            raise Exception( f"Error: A valid conditioning type must be given. Provided conditioning was {conditioning}.")
+    else:
+        # This is only for when definition is directly called in python, qiime2 will not allow this to be reached.
+        raise Exception( f"Error: {metric} is not a valid metric.")
+    return # Nothing, just signifies termination of function
+
+
+
+
+
 def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, conditioning: Str,
                infile2: biom.Table=None, name: Str="-name-", ab_comp: Bool=False, min_count: Int=3,
                total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
@@ -141,7 +175,8 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     _write_to_dump( verbose, dump, step=0)
 
     # This will be used as part of the PERMANOVA calculation
-    sample_types = sample_types.to_dataframe()
+    if( not isinstance( sample_types, pd.DataFrame ) ): # allows for easier testing and input directly to python
+        sample_types = sample_types.to_dataframe()
     # Make sure input is valid
     num_samples = len( infile1.ids( axis='observation' ) ) # this accounts for abundances being same size as well in later steps
     try:
@@ -153,6 +188,10 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         raise Exception( "Error: sample metadata must include a column titled Type.")
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
+
+    # Verify parameters are all given
+    _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centrality, correlation )
+
     # if ab_comp is used we will assume that each sample type corresponds with the 1 - n sample of each dataframe
     if( ab_comp ):
         sample_types = pd.concat([sample_types, sample_types], ignore_index=True)
@@ -222,6 +261,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
 
     # Notify user of output path
     _write_to_dump( verbose, dump, step=10 )
+    print("############################# DONE #############################")
 
     # assemble output and return as artifact
     artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, jaccard_results )

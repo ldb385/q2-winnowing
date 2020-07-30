@@ -354,8 +354,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
                 disjoint = True
                 return pd.DataFrame()
         else:
-            # print('error, unknown centrality')
-            return -1
+            raise Exception("Error: No centrality type given. Must be either: betweenness, degree, closeness, or eigenvector.")
 
         centrality_df = pd.DataFrame.from_dict(centrality, orient='index')
         centrality_df.columns = ['metric']
@@ -446,10 +445,6 @@ def selection(func, s_total, s_per_iter, df, *args):
 
     results = selected_df
     return results
-
-
-def reduction(func, select_total, remove_per_iter, df, *args):
-    return 0
 
 
 def evaluation(func, *args):
@@ -659,81 +654,6 @@ def plot_feature_metric(features ):
     # plt.show()
 
 
-def name_imp_features(feature_df, filename):
-    """
-    Function name_imp_features: takes the dataframe of important features in the format
-                                [feature_id,metric] and a file to match the names of
-                                the features to the actual names from a given file.
-                                This is for naming species.
-    :param feature_df: the dataframe of features we want to name
-    :param filename: the filename (including absolute path if necessary) of the
-                     file to use to map the names of the features. This file must be in
-                     the format: feature name, [size], kingdom, phylum, class, order,
-                     family, genus, species. Each of those names must be wrapped in
-                     a formatter (e.g. k__Bacteria(100)
-    :return: the named feature df
-    """
-    # read in the naming file
-    namefile_path = filename
-    name_file = pd.read_csv(namefile_path, index_col='OTU')
-    # clean data file
-
-    if 'Size' in name_file.columns:
-        del name_file['Size']
-
-    name_file.replace(to_replace='[a-z]__', value='', inplace=True, regex=True)
-    name_file.replace(to_replace='\([0-9]*\)', value='', inplace=True, regex=True)
-
-    # make the dictionary
-    dicty = name_file.T.to_dict('list')
-    name_file['name'] = [[i for i in dicty[k] if i][-1] for k in dicty]
-    name_df = pd.DataFrame(index=name_file.index)
-    name_df['name'] = name_file['name']
-
-    # join the feature id to the actual name
-    merged = pd.concat([feature_df, name_df['name']], axis=1, join_axes=[feature_df.index])
-    name_dict = merged['name'].to_dict()
-    renamed_df = merged.rename(index=name_dict)
-    return renamed_df['metric']
-
-
-def name_feature_list(feature_df, filename):
-    """
-    Function name_feature_list: takes the dataframe of the winnowed data in its original
-                                abundance format and a file to match the names of
-                                the features to the actual names from a given file.
-                                This is for naming species.
-    :param feature_df: the dataframe of features we want to name
-    :param filename: the filename (including absolute path if necessary) of the
-                     file to use to map the names of the features. This file must be in
-                     the format: feature name, [size], kingdom, phylum, class, order,
-                     family, genus, species. Each of those names must be wrapped in
-                     a formatter (e.g. k__Bacteria(100)
-    :return: the named feature df
-    """
-    # read in the naming file
-    namefile_path = filename
-    name_file = pd.read_csv(namefile_path, index_col='OTU')
-    # clean data file
-
-    if 'Size' in name_file.columns:
-        del name_file['Size']
-
-    name_file.replace(to_replace='[a-z]__', value='', inplace=True, regex=True)
-    name_file.replace(to_replace='\([0-9]*\)', value='', inplace=True, regex=True)
-
-    # make the dictionary
-    dicty = name_file.T.to_dict('list')
-    name_file['name'] = [[i for i in dicty[k] if i][-1] for k in dicty]
-    name_df = pd.DataFrame(index=name_file.index)
-    name_df['name'] = name_file['name']
-
-    # join the feature id to the actual name
-    name_dict = name_df['name'].to_dict()
-    renamed_df = feature_df.rename(columns=name_dict)
-    return renamed_df
-
-
 def log_transfrom_balance(df, cond_type='add_one'):
     if (verbose):
         dump.write("In the Log Transfom Balance Function\n")
@@ -764,7 +684,8 @@ def log_transfrom(df, cond_type='add_one'):
     if( verbose ):
         dump.write("In the log Transfom Function\n")
 
-    return np.log(condition(df.copy(), cond_type))
+    conditioned = np.log(condition(df.copy(), cond_type))
+    return conditioned
 
 
 def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
@@ -850,9 +771,6 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     elif metric_name == 'pca_importance':
         metric = pca_importance
         important_features = selection(metric, total_select, iteration_select, data, pca_components, c_type)
-    elif metric_name == 'abundance':
-        metric = abundance
-        important_features = reduction(metric, total_select, iteration_select, data)
     elif metric_name == 'log_transform':
         metric = graph_centrality
         important_features = selection(metric, total_select, iteration_select, log_transfrom(data, c_type),
@@ -872,7 +790,6 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     #create a dataframe with the abundances of the features determined as 'important'
     feature_abundances = data[important_feature_list]
-
     if important_features.empty:
         important_features.loc[1] = 'Warning: No features returned.'
         if disjoint:
