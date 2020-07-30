@@ -66,14 +66,13 @@ class PluginRunTests( TestCase ):
                        f"Raised Exception - {e}, line: {sys.exc_info()[-1].tb_lineno} - unexpectedly.")
 
 
-    def test_plugin_F_ab_kl_ao_bt(self):
-        try:
-            process( infile1=self.testing_data, ab_comp=False, infile2=None, sample_types=self.testing_metadata,
-                     metric="abundance", evaluation="kl_divergence", min_count=3, conditioning="add_one",
-                     total_select=25, iteration_select={64,128}, centrality="betweenness", detailed=False, verbose=False)
-        except Exception as e:
-            self.fail( f"param ( False, abundance, kl_divergence, add_one, betweenness ) "
-                       f"Raised Exception - {e}, line: {sys.exc_info()[-1].tb_lineno} - unexpectedly.")
+    # def test_plugin_F_ab_kl_ao_bt(self):
+    #     try:
+    #         process(infile1=self.testing_data, ab_comp=False, infile2=None, sample_types=self.testing_metadata,
+    #                 metric="abundance", conditioning="add_one", total_select=25, iteration_select={64, 128}, detailed=False, verbose=False)
+    #     except Exception as e:
+    #         self.fail(f"param (False, abundance, kl_divergence, hellinger, betweenness, MIC, both ) "
+    #                   f"Raised Exception - {e}, line: {sys.exc_info()[-1].tb_lineno} - unexpectedly.")
 
 
 
