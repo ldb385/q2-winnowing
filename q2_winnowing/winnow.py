@@ -1,11 +1,11 @@
 
 
 import biom
-import qiime2
 import numpy as np
 import pandas as pd
 import os
 
+import qiime2
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
 
 # Import different functions from each file
@@ -129,6 +129,8 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     :return: return a list of single item with artifact see artifact generation for details on why this is done
     """
 
+    print("################### 0 ###################\n")
+
     if iteration_select is None: # Since default parameter can't be mutable
         iteration_select = {1, 4, 16, 64, 128}
 
@@ -178,6 +180,8 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
 
         name_new = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
+        print("################### 1-3 ###################\n")
+
         # <><><> Pass data to steps 1 to 3 <><><>
         _write_to_dump(verbose, dump, step=1)
         metric_result, important_features, abundances = \
@@ -196,6 +200,9 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
                 metric_output.columns = metric_result.columns # this accounts for differing # of OTUs
             metric_output = metric_output.append(metric_result, ignore_index=True ) # assign back since does not perform in place
 
+
+        print("################### 4-5 ###################\n")
+
         # <><><> Pass data to steps 4 to 5 <><><>
         _write_to_dump( verbose, dump, step=4 )
         auc_results, auc_parameters = \
@@ -206,6 +213,9 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         # Note: sample types correspond with abundances being passed
         # print( abundances, auc_results, sample_types )
 
+
+        print("################### 6 ###################\n")
+
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )
         permanova_results = \
@@ -215,6 +225,8 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         _write_to_dump( verbose, dump, step=6.5 )
 
 
+    print("################### 7-9 ###################\n")
+
     # <><><>  Pass data to steps 7 to 9 <><><>
     _write_to_dump( verbose, dump, step=7 )
     jaccard_results = _winnow_sensativity(
@@ -223,6 +235,9 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
 
     # Notify user of output path
     _write_to_dump( verbose, dump, step=10 )
+
+
+    print("################### DONE ###################\n")
 
     # assemble output and return as artifact
     artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, jaccard_results )
