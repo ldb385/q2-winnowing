@@ -27,7 +27,9 @@ _EXPECTED_PERMANOVA_HEADERS_ = ["test", "order", "auc", "SumsOfSqs", "MeanSqs", 
 def _1( WinnowedFile: WinnowedFeatureOrderingFormat ) -> pd.DataFrame:
     # No Doc String since annotation describes functionality
     with WinnowedFile.open() as wf:
-        is_ab_comp = wf.readline(1).split("\t")[0] # read ab_bool from ab_comp column
+        wf.seek(0)
+        wf.readline() # Move past headers
+        is_ab_comp = wf.readline().split("\t")[1] # read ab_bool from ab_comp column
         wf.seek(0)  # Reset read cursor to start of data
         if( is_ab_comp == False or is_ab_comp == "False" ):
             expected_col = _EXPECTED_FEATURE_HEADERS_FALSE_ + \
