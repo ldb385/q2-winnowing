@@ -447,10 +447,6 @@ def selection(func, s_total, s_per_iter, df, *args):
     return results
 
 
-def reduction(func, select_total, remove_per_iter, df, *args):
-    return 0
-
-
 def evaluation(func, *args):
     result = func(*args)
     return result
@@ -775,9 +771,6 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     elif metric_name == 'pca_importance':
         metric = pca_importance
         important_features = selection(metric, total_select, iteration_select, data, pca_components, c_type)
-    elif metric_name == 'abundance':
-        metric = abundance
-        important_features = reduction(metric, total_select, iteration_select, data)
     elif metric_name == 'log_transform':
         metric = graph_centrality
         important_features = selection(metric, total_select, iteration_select, log_transfrom(data, c_type),
