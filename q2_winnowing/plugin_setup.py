@@ -17,7 +17,7 @@ from q2_winnowing._summarize._visualizer import summarize
 
 # Setup Choice lists for easy accessibility
 # <><><> NOTE: THESE ARE FOR STEPS 1-3 <><><>
-_METRIC_TYPES_ = ["graph_centrality", "pca_importance", "log_transform", "abundance"]
+_METRIC_TYPES_ = ["graph_centrality", "pca_importance", "log_transform"]
 _CONDITIONING_TYPES_ = ["add_one", "hellinger"]
 _EVALUATION_TYPES_ = ["kl_divergence"]
 _CENTRALITY_TYPES_ = ["betweenness", "closeness", "degree", "eigenvector"]
@@ -136,6 +136,7 @@ plugin.methods.register_function(
                                        "AUC and Permanova values from the highest iteration selection. ")
     }
 )
+# Note: centrality, keep_threshold, correlation, weighted, correlation_prop are needed for graph centrality
 
 
 # <><><> Register visualizers <><><>

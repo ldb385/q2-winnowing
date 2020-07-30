@@ -88,6 +88,40 @@ def _write_to_dump( verbose, dump_path, step ):
     return # Nothing just signifies termination of function
 
 
+def _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centrality, correlation ):
+    """
+    This function provides preventative error checking.
+    If a metric is used make sure the parameters for it have been provided.
+    Otherwise the process should be terminated immediately in order to prevent wasted time and confusion.
+    :param metric: graph_centrality, log_transform, pca_importance, abundance
+    :param conditioning: add_one, hellinger
+    :param ab_comp: True, False
+    :param infile2: Dataframe used only in ab_comp
+    :param centrality: betweenness, closeness, degree, eigenvector
+    :param correlation: spearman, pearson, kendall, MIC
+    :return: Nothing: Success, Otherwise will terminate process with exception
+    """
+    if( ab_comp ):
+        if( infile2 == None ):
+            raise Exception( f"Error: Must provide infile2 in order to perform ab_comp. \n"
+                             f"Given parameters were ab_comp: {ab_comp}, infile2: {infile2}.")
+
+    if( metric == "graph_centrality" or metric == "log_transform" ):
+        if( conditioning == None or centrality == None or correlation == None ):
+            raise Exception( f"Error: {metric} requires conditioning, centrality, and correlation parameters. \n"
+                             f"Given parameters were {conditioning}, {centrality}, and {correlation}.")
+    elif( metric == "pca_importance" ):
+        if( conditioning == None ):
+            raise Exception( f"Error: A valid conditioning type must be given. Provided conditioning was {conditioning}.")
+    else:
+        # will not hit this point
+        raise Exception( f"Error: {metric} is not a valid metric.")
+    return # Nothing, just signifies termination of function
+
+
+
+
+
 def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, conditioning: Str,
                infile2: biom.Table=None, name: Str="-name-", ab_comp: Bool=False, min_count: Int=3,
                total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
@@ -129,7 +163,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     :return: return a list of single item with artifact see artifact generation for details on why this is done
     """
 
-    print("################### 0 ###################\n")
+    print("################### 0 ###################")
 
     if iteration_select is None: # Since default parameter can't be mutable
         iteration_select = {1, 4, 16, 64, 128}
@@ -156,6 +190,10 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         raise Exception( "Error: sample metadata must include a column titled Type.")
     if( num_samples != num_sample_types ):
         raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
+
+    # Verify parameters are all given
+    _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centrality, correlation )
+
     # if ab_comp is used we will assume that each sample type corresponds with the 1 - n sample of each dataframe
     if( ab_comp ):
         sample_types = pd.concat([sample_types, sample_types], ignore_index=True)
@@ -180,7 +218,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
 
         name_new = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
-        print("################### 1-3 ###################\n")
+        print("################### 1-3 ###################")
 
         # <><><> Pass data to steps 1 to 3 <><><>
         _write_to_dump(verbose, dump, step=1)
@@ -201,7 +239,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
             metric_output = metric_output.append(metric_result, ignore_index=True ) # assign back since does not perform in place
 
 
-        print("################### 4-5 ###################\n")
+        print("################### 4-5 ###################")
 
         # <><><> Pass data to steps 4 to 5 <><><>
         _write_to_dump( verbose, dump, step=4 )
@@ -214,7 +252,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         # print( abundances, auc_results, sample_types )
 
 
-        print("################### 6 ###################\n")
+        print("################### 6 ###################")
 
         # <><><> Pass data to step 6 <><><>
         _write_to_dump( verbose, dump, step=6 )
@@ -225,7 +263,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
         _write_to_dump( verbose, dump, step=6.5 )
 
 
-    print("################### 7-9 ###################\n")
+    print("################### 7-9 ###################")
 
     # <><><>  Pass data to steps 7 to 9 <><><>
     _write_to_dump( verbose, dump, step=7 )
@@ -237,7 +275,7 @@ def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, cond
     _write_to_dump( verbose, dump, step=10 )
 
 
-    print("################### DONE ###################\n")
+    print("################### DONE ###################")
 
     # assemble output and return as artifact
     artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, jaccard_results )
