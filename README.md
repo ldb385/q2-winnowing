@@ -51,9 +51,9 @@ __NOTE: These instructions assume you are working within a conda environment in 
          </pre>
     * --m-sample-types-column "Type"
     * __Command Example)__
-        * *qiime winnowing process --i-infile1 __inputFile.qza__ --p-metric graph_centrality --m-sample-types-file metadata_samples.txt --m-sample-types-column Type --p-evaluation kl_divergence --p-min-count 3 --p-conditioning add_one --p-total-select 25 --p-iteration-select {1,4,16,64,128} --p-centrality betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-correlation-prop both --p-detailed --p-verbose --output-dir __./OutFolder__*
+        * *qiime winnowing process --i-infile1 __inputFile.qza__ --p-metric graph_centrality --m-sample-types-file __metadata_samples.txt__ --m-sample-types-column Type --p-evaluation kl_divergence --p-min-count 3 --p-conditioning add_one --p-total-select 25 --p-iteration-select {1,4,16,64,128} --p-centrality betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-correlation-prop both --p-detailed --p-verbose --output-dir __./OutFolder__*
         * --__OR__--
-        * *qiime winnowing process --i-infile1 __inputFile.qza__ --p-metric graph_centrality --m-sample-types-file metadata_samples.txt --m-sample-types-column Type --p-evaluation kl_divergence --p-min-count 3 --p-conditioning add_one --p-total-select 25 --p-iteration-select {1,4,16,64,128} --p-centrality betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-correlation-prop both --p-detailed --p-verbose --o-result __./OutFile__*
+        * *qiime winnowing process --i-infile1 __inputFile.qza__ --p-metric graph_centrality --m-sample-types-file __metadata_samples.txt__ --m-sample-types-column Type --p-evaluation kl_divergence --p-min-count 3 --p-conditioning add_one --p-total-select 25 --p-iteration-select {1,4,16,64,128} --p-centrality betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-correlation-prop both --p-detailed --p-verbose --o-result __./OutFile__*
 
 * "qiime winnowing summarize" 
     * is only used to generate a .qzv artifact from the .qza artifact generated from "qiime winnowing processing".
