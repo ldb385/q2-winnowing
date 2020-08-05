@@ -23,8 +23,9 @@ setup(
     packages=find_packages(),
     author="",
     author_email="",
-    description="Infer the interaction type of microbial communities through statistical analysis. " +
-                "This will allow for a better understanding of taxa interaction at a micro scale.",
+    description="Used to perform a feature selection on data in order to generate a winnowed community."
+                " Diversity and Enviromental measures can then be performed on this output to mesure the connectivity"
+                " of the generated winnowed community.",
     url="https://github.com/ldb385/q2-winnowing",
     entry_points={
         "qiime2.plugins":
