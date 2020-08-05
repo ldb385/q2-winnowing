@@ -1,7 +1,7 @@
 # q2-winnowing
 <p> 
 Qiime2 plugin for generating a feature selection of data in order to generate a winnowed community.
-Diversity and Environmental measures can then be performed on this output to measure the connectivity of the generated winnowed community..</br>
+Diversity and Environmental measures can then be performed on this output to measure the connectivity of the generated winnowed community.</br>
 This plugin was developed in order integrate R and Jupyter code into Python as well as Qiime2.</br>
 </p>
 <b> NOTE THIS IS UNFINISHED </b>
