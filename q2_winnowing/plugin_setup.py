@@ -33,9 +33,10 @@ plugin = qiime2.plugin.Plugin(
     version=q2_winnowing.__version__,
     website="https://github.com/ldb385/q2-winnowing",
     package="q2_winnowing",
-    description="A Qiime2 plugin that will infer the interaction type of microbial communities through statistical analysis. " +
-                "This will allow for a better understanding of taxa interaction at a micro scale.",
-    short_description="Plugin for inferring the interaction type of microbial communities"
+    description="A Qiime2 plugin used to perform a feature selection on data in order to generate a winnowed community."
+                " Diversity and Environmental measures can then be performed on this output to measure the connectivity"
+                " of the generated winnowed community.",
+    short_description="Plugin for performing feature orderings in order to generate winnowed communities."
 )
 
 
