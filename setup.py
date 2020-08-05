@@ -24,7 +24,7 @@ setup(
     author="",
     author_email="",
     description="Used to perform a feature selection on data in order to generate a winnowed community."
-                " Diversity and Enviromental measures can then be performed on this output to mesure the connectivity"
+                " Diversity and Environmental measures can then be performed on this output to measure the connectivity"
                 " of the generated winnowed community.",
     url="https://github.com/ldb385/q2-winnowing",
     entry_points={
