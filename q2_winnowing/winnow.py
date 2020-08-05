@@ -122,7 +122,7 @@ def _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centralit
 
 
 
-def process(infile1: biom.Table, sample_types: MetadataColumn, metric: Str, conditioning: Str,
+def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, conditioning: Str,
                infile2: biom.Table=None, name: Str="-name-", ab_comp: Bool=False, min_count: Int=3,
                total_select: Str="all", iteration_select: Set[Int]=None, pca_components: Int=4,
                smooth_type: Str="sliding_window", window_size: Int=3, centrality: Str=None,

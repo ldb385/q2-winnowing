@@ -57,8 +57,7 @@ plugin.register_semantic_type_to_format(
 
 plugin.methods.register_function(
     name='winnowing processing',
-    description=("Infer the interaction type of microbial communities through statistical analysis. "
-                 "This will allow for a better understanding of taxa interaction at a micro scale."),
+    description=("Perform a feature selection to get the winnowed community."),
     function=process,
     inputs={
         "infile1": FeatureTable[RelativeFrequency],
@@ -69,7 +68,7 @@ plugin.methods.register_function(
     ],
     input_descriptions={
         "infile1": ("This is the biom file which will have OTU info extracted from and analyzed to generate "
-                    "an interaction table of taxom."),
+                    "the winnowed community."),
         "infile2": ("This is only used in the case of an A/B analysis and will not be used if ab_comp is False.")
     },
     parameters={
@@ -145,7 +144,7 @@ plugin.visualizers.register_function(
     inputs={ "data": Winnowed },
     parameters={},
     input_descriptions={
-        "data": ( "this is the measure OTU's along with their interactions and the meausure of interaction" )
+        "data": ( "this the output from the processing function." )
     },
     parameter_descriptions={
     },
