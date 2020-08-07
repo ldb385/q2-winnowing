@@ -65,7 +65,7 @@ __NOTE: These instructions assume you are working within a conda environment in 
         * *qiime winnowing summarize --i-data __./output_file.qza__ --o-visualization __./output_visual.qzv__*
 
 # File Structure Diagram
-![q2-winnowing-file-structure](https://user-images.githubusercontent.com/55117132/89670496-88379d80-d89e-11ea-9e5c-6114115656b7.png)
+![folderstructure](https://user-images.githubusercontent.com/55117132/89689166-0b69eb00-d8c1-11ea-9013-c9772589a655.png)
 
 # Versions
 <ul>
