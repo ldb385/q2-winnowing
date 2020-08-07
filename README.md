@@ -22,7 +22,7 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
     * See qiime2 documentation for more information https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/.
 1. Run "pip install minepy".
     * Other libraries used are:
-        * minepy, seaborn, matplotlib, sklearn, networkx, scipy, pandas, and numpy
+        * seaborn, matplotlib, sklearn, networkx, scipy, pandas, and numpy
 1. Run "qiime winnowing".
     * There should be quite a bit of output to console. This is just R configuring libraries and is nothing to be concerned about.
     * If you do not get output it might be that your libraries are already configured. __NOTE: output should only be extensive on first run of command.__
