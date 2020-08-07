@@ -21,7 +21,6 @@ setup(
     name="winnowing",
     version=__version__,
     packages=find_packages(),
-    setup_requires=["minepy","seaborn","matplotlib", "sklearn", "networkx", "scipy", "pandas", "numpy"],
     author="",
     author_email="",
     description="Used to perform a feature selection on data in order to generate a winnowed community."
