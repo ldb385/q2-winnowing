@@ -38,7 +38,7 @@ __NOTE: These instructions assume you are working within a conda environment in 
            2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin.
                * In tutorial look for:
                * "biom convert -i test_otu_table.transpose.txt -o test_otu_table.transpose.biom --table-type="OTU table" --to-hdf5"
-               * "qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable[RelativeFrequency]' --source-format BIOMV210Format --output-path test_otu_table.transpose.qza"
+               * "qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable\[RelativeFrequency]' --source-format BIOMV210Format --output-path test_otu_table.transpose.qza"
        * The same follows when using --i-infile2.
     * --m-sample-types-file
        * This is the path to the .txt metadata ( tab delimited ). Format is:
@@ -63,6 +63,9 @@ __NOTE: These instructions assume you are working within a conda environment in 
     * To view the .qzv artifact please drag&drop file into https://view.qiime2.org/ .
     * __Command Example)__
         * *qiime winnowing summarize --i-data __./output_file.qza__ --o-visualization __./output_visual.qzv__*
+
+# File Structure Diagram
+![q2-winnowing-file-structure](https://user-images.githubusercontent.com/55117132/89670496-88379d80-d89e-11ea-9e5c-6114115656b7.png)
 
 # Versions
 <ul>
