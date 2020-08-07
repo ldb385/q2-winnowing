@@ -72,5 +72,5 @@ __NOTE: These instructions assume you are working within a conda environment in 
  <li> 20.0.0 = Initial Plugin </li>
 </ul>
 
-# Useful Recourses
+# Useful Resources
 * Qiime2 User Documentation: https://docs.qiime2.org/2020.6/
