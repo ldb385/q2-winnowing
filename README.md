@@ -64,6 +64,20 @@ __NOTE: These instructions assume you are working within a conda environment in 
     * __Command Example)__
         * *qiime winnowing summarize --i-data __./output_file.qza__ --o-visualization __./output_visual.qzv__*
 
+# File Structure Diagram
+<!DOCTYPE html>
+<html>
+<head>
+<title>file_structure.html</title>
+<meta charset="utf-8"/>
+</head>
+<body>
+<div class="mxgraph" style="max-width:100%;border:1px solid transparent;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;nav&quot;:true,&quot;resize&quot;:true,&quot;xml&quot;:&quot;&lt;mxfile host=\&quot;www.diagrameditor.com\&quot; modified=\&quot;2020-08-07T16:52:43.313Z\&quot; agent=\&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36\&quot; etag=\&quot;hrjFs0aD30dKfwPm_uIm\&quot; version=\&quot;12.1.3\&quot; type=\&quot;device\&quot; pages=\&quot;1\&quot;&gt;&lt;diagram id=\&quot;2S_ZinG8kKINPOd-_2vE\&quot; name=\&quot;Page-1\&quot;&gt;7Zvdc6M2EMD/Gj/GA4gvP+bycdeZZnptctfmiZFhbasBRISI7fvrK5kPg0SauyuGcaYvMVoJSfx20e4KZYaukt1HhrPNHY0gnllGtJuh65llmbbhix8p2ZcSF6FSsGYkqhodBffkG1RCo5IWJIK805BTGnOSdYUhTVMIeUeGGaPbbrMVjbujZngNmuA+xLEu/ZNEfFNKfcc4yj8BWW/qkU2jqklw3bgS5Bsc0W1LhG5m6IpRysurZHcFsYRXcynvu32ltpkYg5R/zw3rpPjbuv30Fej20va36ObRxxdW2csLjovqgWeWG4v+PuQZTuWs+b5C4T4XcqofthvC4UJUh0J+KZqklCU4PjYQV2v5+2xdbEmaUvFnXfcqpld2XDapyDRjWIwWaQRyxmY91H050vVWGJiQbXgSV9UrEsdXNKbscC+KHPAjW06dM/oErRrfWiLXbcZ7AcZh9ypGs1GOsGqgCXC2F02qG+xKnftucXs0DrPW+KZlGHU7XNnjuun4qDJxUWntBzSINA3e4ScQaGBYuBj8VdgH1w19WK6GgWuaXboLne6iBy46FVxXg/vHzeX13c08iQalu/JDCHvpLn3HFovNSeiaaGK8noY3B15k82w/LN0VuP10I2+xNE5F15uYrq/RfbaC1op8dkuvSrgJEqYibJo97lPBKtx+Ji9jkj51GYqnZvu/RMGYO3XxsV13LZ/baEr7qlQOAZEWuCgcRaSE2Rr4W+5f593i6fTwrGUMYszJS3cafZCrET5TIiZ4VKfRVadvKHrKacFCqO5qRzZKRwvFLFylnxKD1s9B5c1T/wcr6AuizskK/EmtwHHehxXogViQF0mCmcxpztCdeQpPZ+rFVvdntOBZwQeFC6bwZV4f3IXrITyUJ1PhTh3omgsNbs4hMwN0jnGCQhdNHefWCWGLLoec54OyXRqAwO1ja4Bv+P5p2LquMzFbPQbL4mJN0uCccwmFsmd686k561FOmUsMTXiaNcJzpiesRxD1ttmKHiIdfTNOVlzkh11TuRVn+tlO34ire1nWgvl83tqQW6rthKwc8JVNOkGdd1XYVVVKU1D0WolwTNapKIZCSyDkH6QOSYjjy6oiIVEkh+m1maNVDfWaLbqxp+v3GYHdZwTOqYzA/t8IJjaCnmjBdsY0AX3XUaM/fD4JO8Jbt4nSY6vmeJMs/HgOWiZx//LQ6BUljZOEiiy0YwO295NJqNoRGjkLtfQt1bNNkhpPW7OcekPV0jPQICAp4UFwnkGQStiZPFHS09CMZCBWOXgnhKe2YaSnSzLRtwPnDOlqyejUHwSQniS9f9ddL4tvf23wpvTxyod73/pJF6/sM3tqqHBiD4/0LPH2l19vgt++PHz+8nCObl4Bave8xKY76lus52AhTZbCCUWBHIGEAYO8iHk+D/OX94C8Z29/ZOROr1syAxRERZLN+e4sI1iVc882/8ic9dzyMorIYVm1jDpVMOTxoVyOn0az8tAcMFleQwoMc5BSAcwyivxwvd2APCyGQ9GRWKPl6QLjK7AlzWW3M8vFidRH+VdIroFjMURU0sTi2UT/8zPUsON2Ndz3qaGJUtoa9k+mYT0DvBUUBeOUy1N6Rh4ykvGjdm9L7Q5Lf5z4T6Xf93r1wVeT8uHg6/lLfRpvYL6jHMdT+TZr1VuAT3base64BfgjaVasYRmPcyhPZdx3qGlkxnqK+DshCRzQZhCSFQlbPmJ1cAQ58GrdLzL5/IdPcM0aEzKo3cILyQsck2+DLznjfJnT1PW9r8TJ1hxbTwgeIK9ol657WNDjfGhWQdvW6d4LUTyewy8TteN/M6CbfwA=&lt;/diagram&gt;&lt;/mxfile&gt;&quot;,&quot;toolbar&quot;:&quot;pages zoom layers lightbox&quot;,&quot;page&quot;:0}"></div>
+<script type="text/javascript" src="https://www.draw.io/js/viewer.min.js"></script>
+</body>
+</html>
+
+
 # Versions
 <ul>
  <li> 20.0.0 = Initial Plugin </li>
