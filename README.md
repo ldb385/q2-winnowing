@@ -20,7 +20,7 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
     * If error please run python plugin_setup.py.
     * If qiime2 does not import it is likely an issue with PYTHONPATH or conda environment.
     * See qiime2 documentation for more information https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/.
-1. Dependencies should be automatically installed through setup.
+1. Dependencies should be automatically installed through setup.py.
     * Libraries used are:
         * minepy, seaborn, matplotlib, sklearn, networkx, scipy, pandas, and numpy
     * If a dependency was not installed use "pip install LIBRARY".
