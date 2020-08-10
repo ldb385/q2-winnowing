@@ -136,7 +136,6 @@ plugin.methods.register_function(
                                        "AUC and Permanova values from the highest iteration selection. ")
     }
 )
-# Note: centrality, keep_threshold, correlation, weighted, correlation_prop are needed for graph centrality
 
 
 # <><><> Register visualizers <><><>

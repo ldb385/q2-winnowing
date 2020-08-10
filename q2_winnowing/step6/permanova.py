@@ -300,8 +300,8 @@ def main( auc_ordering, abundances, sample_df, centrality_type, name, detailed=F
     take in auc, abundance, and sample information and output values with permanova table
     :param auc_ordering: auc ordering generated
     :param abundances: abundances generated
-    :param sample_df: samples with cooresponding types of invaded/natural
-    :param centrality_type: used for generating detailed output ( betweenness, degree, eigenvector, closseness )
+    :param sample_df: samples with corresponding types of invaded/natural
+    :param centrality_type: used for generating detailed output ( betweenness, degree, eigenvector, closeness )
     :param name: name attached to all detailed output
     :param detailed: Output helper tables
     :param verbose: Output helper prints
