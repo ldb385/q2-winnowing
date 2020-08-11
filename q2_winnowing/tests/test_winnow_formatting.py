@@ -143,7 +143,7 @@ class WinnowedFormatTests(unittest.TestCase):
 
     def test_writer_transformer(self):
         # `Artifact._from_view` invokes transformer that handles `dataframe` ->
-        # `WinnowedFormat`, because the `WinnowedDirectoryFormat` has
+        # `WinnowedFormat` with all input, because the `WinnowedDirectoryFormat` has
         # been registered as the directory format for the semantic type.
         artifact = Artifact._from_view(Winnowed, [(exp_featureOrdering, exp_auc, exp_permanova)],
                                        list, archive.ImportProvenanceCapture())
