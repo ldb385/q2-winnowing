@@ -74,3 +74,4 @@ __NOTE: These instructions assume you are working within a conda environment in 
 
 # Useful Resources
 * Qiime2 User Documentation: https://docs.qiime2.org/2020.6/
+* Biom Format Documentation: https://biom-format.org/documentation/biom_conversion.html
