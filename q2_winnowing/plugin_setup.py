@@ -61,8 +61,8 @@ plugin.methods.register_function(
     description=("Perform a feature selection to get the winnowed community."),
     function=process,
     inputs={
-        "infile1": FeatureTable[Frequency],
-        "infile2": FeatureTable[Frequency]
+        "infile1": FeatureTable[Frequency | RelativeFrequency ],
+        "infile2": FeatureTable[Frequency | RelativeFrequency ]
     },
     outputs=[
         ("result", Winnowed )
