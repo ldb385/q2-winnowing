@@ -116,24 +116,24 @@ class WinnowedFormatTests(unittest.TestCase):
             'q2_winnowing.tests', 'sample_data/test_in_dir')
 
         artifact = Artifact.import_data(Winnowed, fp)
-        featureOrdering_df, auc_df, permanova_df = artifact.view( type([]) )[0]
+        featureOrdering_df, auc_df, permanova_df = artifact.view( list )[0]
         # `Artifact.view` invokes the transformer that handles the
         # `WinnowedFormat` -> `dataframe` transformation.
         # print( featureOrdering_df, exp_featureOrdering )
         pd.testing.assert_frame_equal(
-            featureOrdering_df.astype(type("")),
-            exp_featureOrdering.astype(type("")),
+            featureOrdering_df.astype(str),
+            exp_featureOrdering.astype(str),
             check_dtype=False
         ) # Avoid checking values since reading df stores as objects while, hard coding in does not
         # ex) bool(False) == Object(False) in pandas is False although the values function the same.
         pd.testing.assert_frame_equal(
-            auc_df.astype(type("")),
-            exp_auc.astype(type("")),
+            auc_df.astype(str),
+            exp_auc.astype(str),
             check_dtype=False
         )
         pd.testing.assert_frame_equal(
-            permanova_df.astype(type("")),
-            exp_permanova.astype(type("")),
+            permanova_df.astype(str),
+            exp_permanova.astype(str),
             check_dtype=False
         )
 
@@ -143,27 +143,27 @@ class WinnowedFormatTests(unittest.TestCase):
 
     def test_writer_transformer(self):
         # `Artifact._from_view` invokes transformer that handles `dataframe` ->
-        # `WinnowedFormat`, because the `WinnowedDirectoryFormat` has
+        # `WinnowedFormat` with all input, because the `WinnowedDirectoryFormat` has
         # been registered as the directory format for the semantic type.
         artifact = Artifact._from_view(Winnowed, [(exp_featureOrdering, exp_auc, exp_permanova)],
                                        list, archive.ImportProvenanceCapture())
 
         # Test that the directory and file format can be read again.
-        got_featureOrdering, got_auc, got_permanova = artifact.view(type([]))[0]
+        got_featureOrdering, got_auc, got_permanova = artifact.view( list )[0]
         pd.testing.assert_frame_equal(
-            got_featureOrdering.astype(type("")),
-            exp_featureOrdering.astype(type("")),
+            got_featureOrdering.astype(str),
+            exp_featureOrdering.astype(str),
             check_dtype=False
         ) # Avoid checking values since reading df stores as objects while, hard coding in does not
         # ex) bool(False) == Object(False) in pandas is False although the values function the same.
         pd.testing.assert_frame_equal(
-            got_auc.astype(type("")),
-            exp_auc.astype(type("")),
+            got_auc.astype(str),
+            exp_auc.astype(str),
             check_dtype=False
         )
         pd.testing.assert_frame_equal(
-            got_permanova.astype(type("")),
-            exp_permanova.astype(type("")),
+            got_permanova.astype(str),
+            exp_permanova.astype(str),
             check_dtype=False
         )
 

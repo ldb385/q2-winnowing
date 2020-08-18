@@ -3,7 +3,7 @@ import importlib
 
 import qiime2.plugin
 from qiime2.plugin import MetadataColumn, Categorical
-from q2_types.feature_table import FeatureTable, RelativeFrequency
+from q2_types.feature_table import FeatureTable, RelativeFrequency, Frequency
 
 import q2_winnowing
 from ._type import Winnowed
@@ -57,12 +57,12 @@ plugin.register_semantic_type_to_format(
 # <><><> Register functions <><><>
 
 plugin.methods.register_function(
-    name='winnowing processing',
+    name='Winnowing Processing Function',
     description=("Perform a feature selection to get the winnowed community."),
     function=process,
     inputs={
-        "infile1": FeatureTable[RelativeFrequency],
-        "infile2": FeatureTable[RelativeFrequency]
+        "infile1": FeatureTable[Frequency | RelativeFrequency ],
+        "infile2": FeatureTable[Frequency | RelativeFrequency ]
     },
     outputs=[
         ("result", Winnowed )
@@ -136,7 +136,6 @@ plugin.methods.register_function(
                                        "AUC and Permanova values from the highest iteration selection. ")
     }
 )
-# Note: centrality, keep_threshold, correlation, weighted, correlation_prop are needed for graph centrality
 
 
 # <><><> Register visualizers <><><>
@@ -149,7 +148,7 @@ plugin.visualizers.register_function(
     },
     parameter_descriptions={
     },
-    name="Winnow Interaction Visualization",
+    name="Winnowing Interaction Visualization Function",
     description=("Visualize the output from processing function through tables.")
 )
 

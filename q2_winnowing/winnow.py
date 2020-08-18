@@ -187,7 +187,8 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
     except:
         raise Exception( "Error: sample metadata must include a column titled Type.")
     if( num_samples != num_sample_types ):
-        raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ) ")
+        raise Exception( "Error: each provided sample must have a corresponding type. ( natural/invaded ).\n"
+                         f"Was given {num_samples} samples and {num_sample_types} types. ")
 
     # Verify parameters are all given
     _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centrality, correlation )
