@@ -4,6 +4,7 @@ import biom
 import numpy as np
 import pandas as pd
 import os
+from pathlib import Path
 
 import qiime2
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
@@ -51,6 +52,33 @@ def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard
     return artifact_winnowed
 
 
+def _verify_output_folders():
+    """
+    Detailed and verbose methods rely on folders being available that can be written to
+    with execution steps as well as additive output if the user specifies.
+
+    :return: Nothing simply terminate after all folders are verified
+    """
+
+    file_path = f"{os.path.dirname(os.path.realpath(__file__))}" # use relative path never absolute.
+    # please see README.md for details on folder structure
+    winnow_output = f"{file_path}/output"
+    pipeline_output = f"{file_path}/step1_3/output"
+    decay_output = f"{file_path}/step4_5/output"
+    permanova_output = f"{file_path}/step6/output"
+    jaccard_output = f"{file_path}/step7_9/output"
+
+    # Create output folder if one does not already exists
+    Path(winnow_output).mkdir( parents=True, exist_ok=True )
+    Path(pipeline_output).mkdir( parents=True, exist_ok=True )
+    Path(decay_output).mkdir( parents=True, exist_ok=True )
+    Path(permanova_output).mkdir( parents=True, exist_ok=True )
+    Path(jaccard_output).mkdir( parents=True, exist_ok=True )
+
+    return # Nothing function is terminated
+
+
+
 def _write_to_dump( verbose, dump_path, step ):
     """
     this is simply to write to a dump file if verbose is selected.
@@ -63,8 +91,9 @@ def _write_to_dump( verbose, dump_path, step ):
     """
 
     if( verbose ):
-        with open( dump_path, "a" ) as dump: # allows for closeing if exception is throwns
+        with open( dump_path, "a" ) as dump: # allows for closing if exception is thrown
             if( step == 0 ):
+                dump.write("Output folders verified.\n")
                 dump.write("Beginning to convert input to dataframes.\n")
             elif( step == 0.5 ):
                 dump.write("Finished converting input to dataframes.\n")
@@ -165,6 +194,9 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
 
     if iteration_select is None: # Since default parameter can't be mutable
         iteration_select = {1, 4, 16, 64, 128}
+
+    # make sure proper file structure is present
+    _verify_output_folders()
 
     out_dir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
