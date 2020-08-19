@@ -38,7 +38,7 @@ __NOTE: These instructions assume you are working within a conda environment in 
            2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin.
                * In tutorial look for:
                * "biom convert -i test_otu_table.transpose.txt -o test_otu_table.transpose.biom --table-type="OTU table" --to-hdf5"
-               * "qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable\[RelativeFrequency]' --source-format BIOMV210Format --output-path test_otu_table.transpose.qza"
+               * "qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable[RelativeFrequency]' --input-format BIOMV210Format --output-path test_otu_table.transpose.qza"
                * __NOTE: FeatureTable\[Frequency] and FeatureTable\[RelativeFrequency] are accepted__
        * The same follows when using --i-infile2.
     * --m-sample-types-file
