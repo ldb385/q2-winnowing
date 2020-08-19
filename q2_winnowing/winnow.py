@@ -268,7 +268,7 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
                 new_columns = [ col for col in metric_result.columns if not col in metric_output.columns ]
                 for col in new_columns:
                     metric_output[ col ] = "" # Default as empty
-            metric_output = pd.concat( [metric_output, metric_result], ignore_index=True ) # assign back since does not perform in place
+            metric_output = pd.concat( [metric_output, metric_result], sort=False, ignore_index=True ) # assign back since does not perform in place
 
         # <><><> Pass data to steps 4 to 5 <><><>
         _write_to_dump( verbose, dump, step=4 )
@@ -302,6 +302,7 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
     # assemble output and return as artifact
     metric_output.replace(r'^\s*$', np.nan, regex=True, inplace=True) # Replace blank with Nan
     artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, jaccard_results )
+
     return artifact_directory
 
 
