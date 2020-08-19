@@ -264,8 +264,11 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
             metric_output = metric_result
         else:
             if( len(metric_output.columns) < len(metric_result.columns) ):
-                metric_output.columns = metric_result.columns # this accounts for differing # of OTUs
-            metric_output = metric_output.append(metric_result, ignore_index=True ) # assign back since does not perform in place
+                # the dataframe must be extended to be able to hold new data
+                new_columns = [ col for col in metric_result.columns if not col in metric_output.columns ]
+                for col in new_columns:
+                    metric_output[ col ] = "" # Default as empty
+            metric_output = pd.concat( [metric_output, metric_result], ignore_index=True ) # assign back since does not perform in place
 
         # <><><> Pass data to steps 4 to 5 <><><>
         _write_to_dump( verbose, dump, step=4 )
@@ -297,6 +300,7 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
     print("############################# DONE #############################")
 
     # assemble output and return as artifact
+    metric_output.replace(r'^\s*$', np.nan, regex=True, inplace=True) # Replace blank with Nan
     artifact_directory = _assemble_artifact_output( metric_output, auc_output, permanova_output, jaccard_results )
     return artifact_directory
 
