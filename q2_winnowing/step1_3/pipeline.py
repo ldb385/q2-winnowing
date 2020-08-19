@@ -316,11 +316,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     num_subgraphs = networkx.number_connected_components(df_g)
     total_nodes = networkx.number_of_nodes(df_g)
     subgraphs = [ df_g.subgraph(c) for c in networkx.connected_components( df_g ) ]
-    # if( len(subgraphs) <= 0 ): # Since there are no subgraphs the empty graph is under min connectedness
-    #     print('graph under min connectedness... returning')
-    #     disjoint = True
-    #     return pd.DataFrame()
-    # largest_subgraph = max( networkx.connected_component_subgraphs(df_g), key=len ) #Deprecated
+
     try:
         largest_subgraph = max(subgraphs, key=len)
     except ValueError:
