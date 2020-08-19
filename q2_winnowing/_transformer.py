@@ -8,7 +8,7 @@ from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
 
 
 # <><><> DEFINE STATIC HEADERS FOR SNIFFING <><><>
-_EXPECTED_FEATURE_HEADERS_FALSE_ = ["ab_comp", "dataframe1", "metric", "centrality", "iteration select", "total select", "min count",
+_EXPECTED_FEATURE_HEADERS_FALSE_ = ["ab_comp", "dataframe1", "metric", "centrality", "total select", "iteration select", "min count",
                     "smooth type", "conditioning", "keep threshold", "correlation", "weighted",
                     "correlation property", "run time", "kappa", "agreement"]
 _EXPECTED_FEATURE_HEADERS_TRUE_ = ["ab_comp", "dataframe1", "dataframe2", "metric", "centrality", "iteration select", "total select", "min count",
