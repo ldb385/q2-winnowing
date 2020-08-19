@@ -316,24 +316,29 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     num_subgraphs = networkx.number_connected_components(df_g)
     total_nodes = networkx.number_of_nodes(df_g)
     subgraphs = [ df_g.subgraph(c) for c in networkx.connected_components( df_g ) ]
-    # if( len(subgraphs) <= 0 ): # Since there are no subgraphs the empty graph is under min connectedness
-    #     print('graph under min connectedness... returning')
-    #     disjoint = True
-    #     return pd.DataFrame()
-    largest_subgraph = max( subgraphs, key=len )
-    # largest_subgraph = max( networkx.connected_component_subgraphs(df_g), key=len ) #Deprecated
+
+    try:
+        largest_subgraph = max(subgraphs, key=len)
+    except ValueError:
+        largest_subgraph = networkx.empty_graph()
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
 
     if (verbose):
         dump.write(f"total, {total_nodes}, largest, {nodes_sg}\n")
-    percent_connected = nodes_sg / total_nodes * 100
+
+    if( nodes_sg <= 0 ):
+        percent_connected = 0
+    else:
+        percent_connected = nodes_sg/total_nodes*100
+
     if (verbose):
         dump.write(f"percent connected, {percent_connected}\n")
     global connectedness
     connectedness.append((nodes_sg, total_nodes, float(str(round(percent_connected, 2)))))
     if (verbose):
         dump.write(f"connectedness, {connectedness}\n")
-    if percent_connected < float(min_connected):
+
+    if percent_connected == 0 or percent_connected < float(min_connected):
         if (verbose):
             dump.write('graph under min connectedness... returning\n')
         disjoint = True

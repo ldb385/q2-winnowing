@@ -2,7 +2,7 @@
 import qiime2.plugin.model as model
 
 # <><><> DEFINE STATIC HEADERS <><><>
-_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'iteration select', 'total select', 'min count',
+_EXPECTED_FEATURE_HEADERS_ = ['ab_comp', 'dataframe1', 'metric', 'centrality', 'total select', 'iteration select', 'min count',
                     'smooth type', 'conditioning', 'keep threshold', 'correlation', 'weighted',
                     'correlation property', 'run time', 'kappa', 'agreement']
 _EXPECTED_AUC_HEADERS_ = ["auc", "otu.num"]
