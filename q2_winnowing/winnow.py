@@ -99,6 +99,8 @@ def _write_to_dump( verbose, dump_path, step ):
                 dump.write("Finished converting input to dataframes.\n")
             elif( step == 1 ):
                 dump.write("Starting steps 1 to 3\n")
+            elif( step == 1.5 ):
+                dump.write("Unable to generate feature ordering, moving to next iteration.\n")
             elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
                 dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
             elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
@@ -260,33 +262,40 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
                               min_connected=min_connected, detailed=detailed, verbose=verbose)
         # these are used in: Step7_9, Step4_5, Step6
 
-        if( metric_output.empty ): # create a dataframe of import OTU's for jaccard step
+        if (metric_output.empty):  # create a dataframe of import OTU's for jaccard step
             metric_output = metric_result
         else:
-            if( len(metric_output.columns) < len(metric_result.columns) ):
+            if (len(metric_output.columns) < len(metric_result.columns)):
                 # the dataframe must be extended to be able to hold new data
-                new_columns = [ col for col in metric_result.columns if not col in metric_output.columns ]
+                new_columns = [col for col in metric_result.columns if not col in metric_output.columns]
                 for col in new_columns:
-                    metric_output[ col ] = "" # Default as empty
-            metric_output = pd.concat( [metric_output, metric_result], sort=False, ignore_index=True ) # assign back since does not perform in place
+                    metric_output[col] = ""  # Default as empty
+            metric_output = pd.concat([metric_output, metric_result], sort=False,
+                                      ignore_index=True)  # assign back since does not perform in place
 
-        # <><><> Pass data to steps 4 to 5 <><><>
-        _write_to_dump( verbose, dump, step=4 )
-        auc_results, auc_parameters = \
-            _winnow_ordering( dataframe=important_features, name=name_new, detailed=detailed, verbose=verbose)
-        # these are used in: Step6, None
-        auc_output = auc_results
+        # check if a metric result was generated before attempting other steps, must be atleast 2 OTUs
+        if( 1 in metric_result.columns and 2 in metric_result.columns ):
 
-        # Note: sample types correspond with abundances being passed
-        # print( abundances, auc_results, sample_types )
+            # <><><> Pass data to steps 4 to 5 <><><>
+            _write_to_dump( verbose, dump, step=4 )
+            auc_results, auc_parameters = \
+                _winnow_ordering( dataframe=important_features, name=name_new, detailed=detailed, verbose=verbose)
+            # these are used in: Step6, None
+            auc_output = auc_results
 
-        # <><><> Pass data to step 6 <><><>
-        _write_to_dump( verbose, dump, step=6 )
-        permanova_results = \
-            _winnow_permanova( auc_ordering_df=auc_results, abundances_df=abundances, samples_df=sample_types,
-                               centrality_type=centrality, name=name_new, detailed=detailed, verbose=verbose )
-        permanova_output = permanova_results
-        _write_to_dump( verbose, dump, step=6.5 )
+            # Note: sample types correspond with abundances being passed
+            # print( abundances, auc_results, sample_types )
+
+            # <><><> Pass data to step 6 <><><>
+            _write_to_dump( verbose, dump, step=6 )
+            permanova_results = \
+                _winnow_permanova( auc_ordering_df=auc_results, abundances_df=abundances, samples_df=sample_types,
+                                   centrality_type=centrality, name=name_new, detailed=detailed, verbose=verbose )
+            permanova_output = permanova_results
+            _write_to_dump( verbose, dump, step=6.5 )
+
+        else:
+            _write_to_dump( verbose, dump, step=1.5)
 
 
     # <><><>  Pass data to steps 7 to 9 <><><>
