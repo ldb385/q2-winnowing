@@ -30,7 +30,7 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
 
 # Usage
 __NOTE: These instructions assume you are working within a conda environment in terminal and have completed the Installation portion.__
-* Usage should be fairly intuitive however there is some things to note about plugin. Will be easiest to run through potentially confusing parameters for each function. 
+* Usage should be fairly intuitive however there is some things to note about plugin. Will be easiest to run through potentially confusing parameters for each function. __Please see https://github.com/ldb385/q2-winnowing/tree/master/example_data for examples of files produced by the winnowing plugin.__
 * *qiime winnowing process*
     * --i-infile1 must be frequency table in qza format
        * .qza formatted file can be generated from .csv file. The steps are slightly confusing but it goes .csv-->.txt-->.biom-->.qza .
