@@ -21,6 +21,10 @@ setup(
     name="winnowing",
     version=__version__,
     packages=find_packages(),
+    package_data={"": ["auc.html","auc_ordered.tsv","feature_ordered.html","feature_ordered.tsv",
+                       "permanova.html","permanova_ordered.tsv","index.html",
+                       "button_formatting.css","dataframe_formatting.css","frame_formatting.css","page_formatting.css"]},
+    include_package_data=True,
     author="",
     author_email="",
     description="Used to perform a feature selection on data in order to generate a winnowed community."
