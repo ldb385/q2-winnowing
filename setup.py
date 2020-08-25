@@ -16,7 +16,6 @@ with open('q2_winnowing/__init__.py', 'rb') as f:
     __version__ = str(ast.literal_eval(hit))
 
 # setup information of plugin
-# TODO: Change to valid information
 setup(
     name="winnowing",
     version=__version__,
@@ -25,8 +24,8 @@ setup(
                        "permanova.html","permanova_ordered.tsv","index.html",
                        "button_formatting.css","dataframe_formatting.css","frame_formatting.css","page_formatting.css"]},
     include_package_data=True,
-    author="",
-    author_email="",
+    author="Kevin Stanley",
+    author_email="kgs325@usask.ca",
     description="Used to perform a feature selection on data in order to generate a winnowed community."
                 " Diversity and Environmental measures can then be performed on this output to measure the connectivity"
                 " of the generated winnowed community.",
