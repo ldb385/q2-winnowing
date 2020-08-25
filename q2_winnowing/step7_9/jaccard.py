@@ -7,13 +7,8 @@ import numpy as np
 from rpy2.robjects.packages import importr
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import StrVector
-from rpy2.robjects import r
-from scipy.spatial.distance import pdist,squareform
 from rpy2.robjects import pandas2ri
-from rpy2.robjects import Formula
-import rpy2.robjects as robjects
-import matplotlib.pyplot as plt
-from scipy.interpolate import UnivariateSpline
+
 
 # Setup R packages used
 pandas2ri.activate()
@@ -21,9 +16,8 @@ pandas2ri.activate()
 utils = rpackages.importr('utils')
 utils.chooseCRANmirror(ind=1)
 
-packnames = ('vegan', 'scales','data.table','zoo','dplyr','irr')
+packnames = ['irr']
 names_to_install = []
-#names_to_install = [x for packnames if not rpackages.isinstalled(x)]
 
 for x in packnames:
     if (rpackages.isinstalled(x)==False):
@@ -32,14 +26,7 @@ for x in packnames:
 if len(names_to_install) > 0:
     utils.install_packages(StrVector(names_to_install))
 
-rvegan = importr('vegan')
-rscales = importr('scales')
-rzoo = importr('zoo')
-rdatatable = importr('data.table')
-rstats = importr('stats')
-rdplyr = importr('dplyr',on_conflict="warn")
 rirr = importr('irr')
-rsummary = r['summary']
 
 
 # <><><> DEFINE FUNCTIONS <><><>
