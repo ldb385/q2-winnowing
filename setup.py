@@ -1,9 +1,6 @@
 
 from setuptools import setup, find_packages
 
-# NOTE: This is temporary placement and is subject to change
-# Nothing specified should be interpreted as factual or unchangeable
-
 import re
 import ast
 
