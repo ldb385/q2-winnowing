@@ -4,7 +4,6 @@ Qiime2 plugin for generating a feature selection of data in order to generate a 
 Diversity and Environmental measures can then be performed on this output to measure the connectivity of the generated winnowed community.</br>
 This plugin was developed in order integrate R and Jupyter code into Python as well as Qiime2.</br>
 </p>
-<b> NOTE THIS IS UNFINISHED </b>
  
 # Installation
 __NOTE: These instructions assume you are working within a terminal. If not in a terminal please open one to follow along.__
