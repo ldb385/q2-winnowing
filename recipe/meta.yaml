@@ -1,0 +1,38 @@
+# referenced https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html
+{% set name = "click" %}
+{% set version = "20.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  path: ../
+
+# no binaries include so files are architecture-independent
+build:
+  noarch: generic
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - # Qiime2 modules
+    - qiime2 >=2019.1
+    - q2-types
+    # Other modules
+    - biom-format
+    - seaborn
+    - matplotlib
+    - sklearn
+    - networkx
+    - scipy
+    - pandas
+    - numpy
+
+about:
+  home: https://github.com/ldb385/q2-winnowing
+  license: BSD
+  license_family: BSD
