@@ -1,0 +1,431 @@
+Processing Input File:         auc otu.num
+1      auc1       3
+2      auc2       3
+3      auc3       3
+4      auc4       3
+5      auc5       3
+..      ...     ...
+96    auc96       9
+97    auc97       9
+98    auc98       9
+99    auc99       9
+100  auc100       8
+
+[100 rows x 2 columns] 
+Processing Input file:     Otu1092  Otu1009  Otu1059  Otu1034  Otu1067  Otu1042  Otu1084  Otu1017
+0       5.0      8.0      7.0      4.0     10.0      6.0      4.0     12.0
+1       0.0      0.0      0.0      0.0      0.0      0.0      0.0      0.0
+2       5.0     26.0     22.0     13.0      9.0      5.0     11.0     10.0
+3       1.0      2.0      2.0      1.0      3.0      1.0      1.0      3.0
+4       6.0     14.0     12.0      7.0     13.0      7.0      6.0     15.0
+..      ...      ...      ...      ...      ...      ...      ...      ...
+95      4.0      2.0      2.0      1.0      7.0      4.0      1.0      8.0
+96      6.0     29.0     25.0     14.0     13.0      7.0     12.0     15.0
+97      0.0      1.0      1.0      0.0      0.0      0.0      0.0      0.0
+98      8.0     34.0     29.0     17.0     16.0      9.0     15.0     19.0
+99      5.0     11.0     10.0      5.0     10.0      6.0      5.0     12.0
+
+[100 rows x 8 columns] 
+0 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.957
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+1 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.958
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+2 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.971
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+3 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.976
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+4 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.964
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+5 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.948
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+6 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.976
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+7 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.962
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+8 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.964
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+9 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.968
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+10 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.963
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+11 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.972
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+12 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.967
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+13 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035    0.97
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+14 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.962
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+15 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.964
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+16 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.959
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+17 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.969
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+18 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.005228  0.005228  0.034318  0.00035   0.951
+Residuals  98.0  14.929046  0.152337       NaN  0.99965     NaN
+Total      99.0  14.934274       NaN       NaN  1.00000     NaN
+19 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.968
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+20 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.954
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+21 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.958
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+22 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.965
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+23 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675    0.97
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+24 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675    0.95
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+25 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.964
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+26 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.954
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+27 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.963
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+28 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.969
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+29 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.965
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+30 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.963
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+31 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.963
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+32 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.976
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+33 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.966
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+34 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.969
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+35 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.010981  0.010981  0.066189  0.000675   0.962
+Residuals  98.0  16.258592  0.165904       NaN  0.999325     NaN
+Total      99.0  16.269573       NaN       NaN  1.000000     NaN
+36 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.912
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+37 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.892
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+38 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016    0.93
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+39 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.902
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+40 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.896
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+41 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.905
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+42 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016     0.9
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+43 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.899
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+44 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.888
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+45 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016    0.88
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+46 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.908
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+47 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.908
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+48 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016   0.915
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+49 -              Df  SumsOfSqs   MeanSqs   F.Model      R2  Pr(>F)
+y           1.0   0.022869  0.022869  0.157086  0.0016    0.92
+Residuals  98.0  14.267106  0.145583       NaN  0.9984     NaN
+Total      99.0  14.289975       NaN       NaN  1.0000     NaN
+50 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.898
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+51 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.885
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+52 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.891
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+53 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.901
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+54 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.904
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+55 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.911
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+56 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.898
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+57 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.895
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+58 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.888
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+59 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.894
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+60 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.891
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+61 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.916
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+62 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.901
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+63 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.908
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+64 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.025085  0.025085  0.172364  0.001756   0.895
+Residuals  98.0  14.262738  0.145538       NaN  0.998244     NaN
+Total      99.0  14.287823       NaN       NaN  1.000000     NaN
+65 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.905
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+66 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.917
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+67 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.911
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+68 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.911
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+69 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.922
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+70 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.914
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+71 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.911
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+72 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.913
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+73 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.895
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+74 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.908
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+75 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735     0.9
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+76 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.912
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+77 -              Df  SumsOfSqs   MeanSqs   F.Model        R2  Pr(>F)
+y           1.0   0.026155  0.026155  0.170322  0.001735   0.914
+Residuals  98.0  15.049086  0.153562       NaN  0.998265     NaN
+Total      99.0  15.075241       NaN       NaN  1.000000     NaN
+78 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.844
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+79 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.857
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+80 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.856
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+81 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232    0.86
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+82 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.826
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+83 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.861
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+84 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.877
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+85 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.852
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+86 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.858
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+87 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.849
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+88 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232    0.85
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+89 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.849
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+90 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.865
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+91 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.874
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+92 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.851
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+93 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.837
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+94 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.835
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+95 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.835
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+96 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.851
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+97 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.863
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+98 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.886
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+99 -              Df  SumsOfSqs   MeanSqs   F.Model       R2  Pr(>F)
+y           1.0   0.031871  0.031871  0.227863  0.00232   0.865
+Residuals  98.0  13.707077  0.139868       NaN  0.99768     NaN
+Total      99.0  13.738948       NaN       NaN  1.00000     NaN
+Output is Written in File: /media/sf_q2-winnowing/q2_winnowing/step6/output/-name-_128__PERMANOVA_result.csv 
+
+Plots generated to /media/sf_q2-winnowing/q2_winnowing/step6/output.
