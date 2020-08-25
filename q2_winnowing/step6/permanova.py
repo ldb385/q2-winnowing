@@ -279,6 +279,9 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
 
         premanova_df.loc[i] = [_pTest, _pOrder, _pAUC, _pSumOfSquares, _pMeanSquares, _pFModel, _pR2, _pPVal, _pNTaxa, _pFModelScale]
 
+        if( verbose ):
+            dump.write( f"{i} - {str( radonis[0] )}\n")
+
     # This is STEP 4.5
     # Convert F.model to a scaled version of F.model
     premanova_df["F.model.scale"] = (premanova_df["F.model"] - min(premanova_df["F.model"]))/(max(premanova_df["F.model"]) - min(premanova_df["F.model"]))
