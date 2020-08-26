@@ -54,7 +54,7 @@ def _assemble_artifact_output( combined_metric_df, auc_df, permanova_df, jaccard
 
 def _verify_output_folders():
     """
-    Detailed and verbose methods rely on folders being available that can be written to
+    Detailed methods rely on folders being available that can be written to
     with execution steps as well as additive output if the user specifies.
 
     :return: Nothing simply terminate after all folders are verified
@@ -79,42 +79,38 @@ def _verify_output_folders():
 
 
 
-def _write_to_dump( verbose, dump_path, step ):
+def _verbose( step ):
     """
-    this is simply to write to a dump file if verbose is selected.
+    this is simply to print if verbose is selected.
     by using this in function it improves readability and removes clutterness of code
     with multiple verbose checks
-    :param verbose: if selected will write to dump file
-    :param dump_path: the file that is being written to
     :param step: this is which step the program is on, each step corresponds to script ran
     :return: nothing is returned program functions as simple printing function
     """
 
-    if( verbose ):
-        with open( dump_path, "a" ) as dump: # allows for closing if exception is thrown
-            if( step == 0 ):
-                dump.write("Output folders verified.\n")
-                dump.write("Beginning to convert input to dataframes.\n")
-            elif( step == 0.5 ):
-                dump.write("Finished converting input to dataframes.\n")
-            elif( step == 1 ):
-                dump.write("Starting steps 1 to 3\n")
-            elif( step == 1.5 ):
-                dump.write("Unable to generate feature ordering, moving to next iteration.\n")
-            elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
-                dump.write("Finished steps 1 to 3.\nStarting steps 4 to 5\n")
-            elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
-                dump.write("Finished steps 4 to 5.\nStarting step 6\n")
-            elif( step == 6.5 ):
-                dump.write("Finished step 6.\n")
-            elif( step == 7 ):
-                dump.write("\nStarting steps 7 to 9\n")
-            elif( step == 10 ):
-                dump.write(
-                    "Output for each winnowing step is written to the respective output folder within each step folder \n"
-                    "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
-                    "\tThis applies for each step.")
-                dump.write("Winnow processing finished.")
+    if( step == 0 ):
+        print("\nOutput folders verified.\n")
+        print("\nBeginning to convert input to dataframes.\n")
+    elif( step == 0.5 ):
+        print("\nFinished converting input to dataframes.\n")
+    elif( step == 1 ):
+        print("\nStarting steps 1 to 3 *pipeline*\n")
+    elif( step == 1.5 ):
+        print("\nUnable to generate feature ordering, moving to next iteration.\n")
+    elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
+        print("\nFinished steps 1 to 3 *pipeline*.\nStarting steps 4 to 5 *AUC calculation*\n")
+    elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
+        print("\nFinished steps 4 to 5 *AUC calculation*.\nStarting step 6 *PERMANOVA calculation*.\n")
+    elif( step == 6.5 ):
+        print("\nFinished step 6 *PERMANOVA calculation*.\n")
+    elif( step == 7 ):
+        print("\nStarting steps 7 to 9 *Jaccard calculation*.\n")
+    elif( step == 10 ):
+        print(
+            "\nOutput for each winnowing step is written to the respective output folder within each step folder \n"
+            "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
+            "\tThis applies for each step.")
+        print("\nWinnow processing finished.\n")
 
     return # Nothing just signifies termination of function
 
@@ -159,7 +155,7 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
                smooth_type: Str="sliding_window", window_size: Int=3, centrality: Str=None,
                keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, correlation_prop: Str="both",
                evaluation: Str="kl_divergence", min_connected: Int=0,
-               detailed: Bool=False, verbose: Bool=False ) -> list:
+               detailed: Bool=False ) -> list:
     """
     This is function corresponds with qiime2 function and takes care of file passing between all parts of plugin.
 
@@ -188,9 +184,6 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
     :param min_connected: The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.
     :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
         computation. If not enabled files will not be generated
-    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
-        may have been output through print statements during execution. Each dump.txt file is stored in output folders
-        that correspond with each step.
     :return: return a list of single item with artifact see artifact generation for details on why this is done
     """
 
@@ -202,11 +195,8 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
 
     out_dir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
     # allows for cleaner execution and use of relative paths
-    dump = open(f"{out_dir}/processing_dump.txt", "w+", encoding="utf-8") # Overwrite file to new empty
-    dump.close()
-    dump = f"{out_dir}/processing_dump.txt"
 
-    _write_to_dump( verbose, dump, step=0)
+    _verbose( step=0 )
 
     # This will be used as part of the PERMANOVA calculation
     if( not isinstance( sample_types, pd.DataFrame ) ): # allows for easier testing and input directly to python
@@ -234,7 +224,7 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
     metric_output = pd.DataFrame() # dataframe to write metrics new
     auc_output = pd.DataFrame() # Keep most accurate AUC
     permanova_output = pd.DataFrame() # Keep most accurate PERMANOVA value
-    _write_to_dump( verbose, dump, step=0.5 )
+    _verbose( step=0.5 )
 
     for iteration_selected in sorted( iteration_select ):
 
@@ -252,14 +242,14 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
         name_new = f"{name}_{iteration_selected}_" # will allow for easier iteration selection
 
         # <><><> Pass data to steps 1 to 3 <><><>
-        _write_to_dump(verbose, dump, step=1)
+        _verbose( step=1)
         metric_result, important_features, abundances = \
             _winnow_pipeline( dataframe_1=dataframe_1, dataframe_2=dataframe_2, ab_comp=ab_comp, metric_name=metric,
                               c_type=conditioning, min_count=min_count, total_select=total_select, iteration_select=iteration_selected,
                               pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                               centrality_type=centrality, keep_threshold=keep_threshold, correlation=correlation,
                               weighted=weighted, corr_prop=correlation_prop, evaluation_type=evaluation,
-                              min_connected=min_connected, detailed=detailed, verbose=verbose)
+                              min_connected=min_connected, detailed=detailed )
         # these are used in: Step7_9, Step4_5, Step6
 
         if (metric_output.empty):  # create a dataframe of import OTU's for jaccard step
@@ -277,9 +267,9 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
         if( 1 in metric_result.columns and 2 in metric_result.columns ):
 
             # <><><> Pass data to steps 4 to 5 <><><>
-            _write_to_dump( verbose, dump, step=4 )
+            _verbose( step=4 )
             auc_results, auc_parameters = \
-                _winnow_ordering( dataframe=important_features, name=name_new, detailed=detailed, verbose=verbose)
+                _winnow_ordering( dataframe=important_features, name=name_new, detailed=detailed )
             # these are used in: Step6, None
             auc_output = auc_results
 
@@ -287,25 +277,25 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
             # print( abundances, auc_results, sample_types )
 
             # <><><> Pass data to step 6 <><><>
-            _write_to_dump( verbose, dump, step=6 )
+            _verbose( step=6 )
             permanova_results = \
                 _winnow_permanova( auc_ordering_df=auc_results, abundances_df=abundances, samples_df=sample_types,
-                                   centrality_type=centrality, name=name_new, detailed=detailed, verbose=verbose )
+                                   centrality_type=centrality, name=name_new, detailed=detailed )
             permanova_output = permanova_results
-            _write_to_dump( verbose, dump, step=6.5 )
+            _verbose( step=6.5 )
 
         else:
-            _write_to_dump( verbose, dump, step=1.5)
+            _verbose( step=1.5)
 
 
     # <><><>  Pass data to steps 7 to 9 <><><>
-    _write_to_dump( verbose, dump, step=7 )
+    _verbose( step=7 )
     jaccard_results = _winnow_sensativity(
         metric_output, name=f"{metric}_{correlation}_{str(keep_threshold)}_{centrality}_{name}",
-        detailed=detailed, verbose=verbose )
+        detailed=detailed )
 
     # Notify user of output path
-    _write_to_dump( verbose, dump, step=10 )
+    _verbose( step=10 )
     print("############################# DONE #############################")
 
     # assemble output and return as artifact
@@ -319,7 +309,7 @@ def _winnow_pipeline( dataframe_1, dataframe_2, ab_comp: Bool=False, metric_name
                  c_type: Str=None, min_count: Int=3, total_select: Str=None, iteration_select: Str=None,
                  pca_components: Int=4, smooth_type: Str="sliding_window", window_size: Int=3, centrality_type: Str=None,
                  keep_threshold: Float=0.5, correlation: Str=None, weighted: Bool=False, corr_prop: Str="both",
-                 evaluation_type: Str=None, min_connected: Int=0, detailed: Bool=False, verbose: Bool=False
+                 evaluation_type: Str=None, min_connected: Int=0, detailed: Bool=False
                  ):
     """
     Note this function executes the main functionality of steps 1-3 in the pipeline of
@@ -349,9 +339,6 @@ def _winnow_pipeline( dataframe_1, dataframe_2, ab_comp: Bool=False, metric_name
     :param min_connected: The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted.
     :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
         computation. If not enabled files will not be generated
-    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
-        may have been output through print statements during execution. Each dump.txt file is stored in output folders
-        that correspond with each step.
     :return: This is the completed table of different taxa with their corresponding interactions to other taxa
          in their enviroment. This was computed through the use of methods such as: Abundance analysis, AUC analysis,
          F-Score ordering, PERMANOVA calculation, Jacobian matrices, and SEM analysis
@@ -370,7 +357,7 @@ def _winnow_pipeline( dataframe_1, dataframe_2, ab_comp: Bool=False, metric_name
                           pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
                           weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type,
-                          min_connected=min_connected, detailed=detailed,verbose_p=verbose )
+                          min_connected=min_connected, detailed=detailed )
     else:
         metric_result, important_features, abundances = \
             step1_3_main( dataframe1=dataframe_1, dataframe2=None, ab_comp=False, metric_name=metric_name, c_type=c_type,
@@ -378,32 +365,29 @@ def _winnow_pipeline( dataframe_1, dataframe_2, ab_comp: Bool=False, metric_name
                           pca_components=pca_components, smooth_type=smooth_type, window_size=window_size,
                           centrality_type=centrality_type, keep_threshold=keep_threshold, correlation=correlation,
                           weighted=weighted, corr_prop=corr_prop, evaluation_type=evaluation_type,
-                          min_connected=min_connected, detailed=detailed,verbose_p=verbose )
+                          min_connected=min_connected, detailed=detailed )
 
 
     return ( metric_result, important_features, abundances )
 
 
-def _winnow_ordering( dataframe, name, detailed: Bool=False, verbose: Bool=False ):
+def _winnow_ordering( dataframe, name, detailed: Bool=False ):
     """
     Each OTU is now ordered by centrality and the AUC of each is calculated.
     :param dataframe: Important features and OTUs that have been passed on to be ordered
     :param name: Each file generated by this step will be identified by this name
     :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
         computation. If not enabled files will not be generated
-    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
-        may have been output through print statements during execution. Each dump.txt file is stored in output folders
-        that correspond with each step.
     :return: A dataframe representing each OTU ordered by centrality and calculated AUC
     """
 
     # Output files and Parameter files are both generated from this function
-    auc_result, auc_param = step4_5_main( dataframe , name=name, detailed=detailed, verbose=verbose )
+    auc_result, auc_param = step4_5_main( dataframe , name=name, detailed=detailed )
 
     return ( auc_result, auc_param )
 
 
-def _winnow_permanova( auc_ordering_df, abundances_df, samples_df, centrality_type, name, detailed=False, verbose=False ):
+def _winnow_permanova( auc_ordering_df, abundances_df, samples_df, centrality_type, name, detailed=False ):
     """
     100 Permanovas are ran, Each time adding in more OTUs at a 1% interval according to their order in step 5
     Essentially a sweet spot of additions will be reached and the most influential OTUs will be identified based off
@@ -414,21 +398,18 @@ def _winnow_permanova( auc_ordering_df, abundances_df, samples_df, centrality_ty
     :param name: Each file generated by this step will be identified by this name
     :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
         computation. If not enabled files will not be generated
-    :param verbose: Notifies plugin to generate dump files for every step. These will contain all data that previously
-        may have been output through print statements during execution. Each dump.txt file is stored in output folders
-        that correspond with each step.
     :return: a dataframe organised to represent the most influential OTUs
     """
 
     # Permanova results are generated here
     permanova_result = step6_main( auc_ordering_df, abundances_df, samples_df, centrality_type, name=name,
-                                   detailed=detailed, verbose=verbose)
+                                   detailed=detailed )
 
     return permanova_result
 
 
 
-def _winnow_sensativity( metric_results_df, name, detailed=False, verbose=False ):
+def _winnow_sensativity( metric_results_df, name, detailed=False ):
     """
     tested if the number of OTUs selected at each iteration influenced the results. If the results
     were consistent. if so use  leave-one-out analysis to distribute the centrality measure among samples.
@@ -438,13 +419,10 @@ def _winnow_sensativity( metric_results_df, name, detailed=False, verbose=False 
     :param name: Each file generated by this step will be identified by this name
     :param detailed: Notifies plugin to output diagrams and csv files to each steps respective output folder throughout
         computation. If not enabled files will not be generated
-    :param verbose:  Notifies plugin to generate dump files for every step. These will contain all data that previously
-        may have been output through print statements during execution. Each dump.txt file is stored in output folders
-        that correspond with each step.
     :return: A dataframe with output stating measures used as well as the resultant kappa and agreement values.
     """
 
-    jaccard_result = step7_9_main( metric_results_df, name=name, detailed=detailed, verbose=verbose )
+    jaccard_result = step7_9_main( metric_results_df, name=name, detailed=detailed )
 
     return jaccard_result # Dataframe with Kappa and Agreement values
 
