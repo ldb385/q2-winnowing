@@ -1,5 +1,5 @@
 # referenced https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html
-{% set name = "q2_winnowing" %}
+{% set name = "q2-winnowing" %}
 {% set version = "20.0.0" %}
 
 package:
