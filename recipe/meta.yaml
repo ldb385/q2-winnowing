@@ -1,5 +1,5 @@
 # referenced https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html
-{% set name = "click" %}
+{% set name = "winnowing" %}
 {% set version = "20.0.0" %}
 
 package:
@@ -13,24 +13,30 @@ source:
 build:
   noarch: generic
 
+# Add bioconda channel for biom
+extra:
+  channels:
+    - conda-forge
+    - bioconda
+
 requirements:
   host:
     - pip
-    - python
+    - python=3.6
+    - setuptools
   run:
-    - python
-    - # Qiime2 modules
+    - python=3.6
+    # Qiime2 modules
     - qiime2 >=2019.1
     - q2-types
     # Other modules
     - biom-format
     - seaborn
     - matplotlib
-    - sklearn
     - networkx
     - scipy
     - pandas
-    - numpy
+    - numpy >=1.11
 
 about:
   home: https://github.com/ldb385/q2-winnowing
