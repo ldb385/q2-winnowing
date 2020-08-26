@@ -31,22 +31,21 @@ rirr = importr('irr')
 
 # <><><> DEFINE FUNCTIONS <><><>
 
-def _print_summaries( kappa_df, dump ):
+def _print_summaries( kappa_df ):
     """
-    Output table and column stats to dump
+    Output table and column stats to stdout
     :param kappa_df: Dataframe which is refrenced for prints
-    :param dump: file where output is written to
     :return: nothing is returned function is simply for generating verbose output
     """
 
     kappa_df['select_iter'] = kappa_df['select_iter'].astype('int')
     # <><><> OUTPUT TABLE <><><>
-    dump.write( str( kappa_df ) + "\n\n")
+    print( str( kappa_df ) )
 
     # <><><> PRINTS STATS OF COLUMNS <><><>
-    dump.write(str( kappa_df.groupby(['conditioning', 'centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
-    dump.write(str( kappa_df.loc[( kappa_df["conditioning"] == "Add1") & ( kappa_df["correl"] == "MIC")].groupby(
-        ['centrality', 'correl', 'threshold'])['agreement'].mean() ) + "\n")
+    print(str( kappa_df.groupby(['conditioning', 'centrality', 'correl', 'threshold'])['agreement'].mean() ) )
+    print(str( kappa_df.loc[( kappa_df["conditioning"] == "Add1") & ( kappa_df["correl"] == "MIC")].groupby(
+        ['centrality', 'correl', 'threshold'])['agreement'].mean() ) )
 
     return  # finished print
 
@@ -62,13 +61,12 @@ def jaccard_coefficient(x,y):
     return len(set(x) & set(y)) / len(set(x) | set(y)) # Set gets rid of duplicates
 
 
-def main( leave_one_out_df, name, detailed=False, verbose=False ):
+def main( leave_one_out_df, name, detailed=False ):
     """
     perform jaccard index on data to find most influential taxa.
     :param leave_one_out_df: result of leave one out feature ordering method. Ordered OTU
     :param name: name that is attached to output data for identification
     :param detailed: Output helper tables
-    :param verbose: Output helper prints
     :return:
     """
 
@@ -122,11 +120,8 @@ def main( leave_one_out_df, name, detailed=False, verbose=False ):
         kappa_df.to_csv( out_file )
         out_file.close()
 
-    if( verbose ):
-        # write all summaries to dump file
-        dump = open( f"{out_dir}/step7_9_dump.txt", "w", encoding="utf-8" )
-        _print_summaries( kappa_df, dump )
-        dump.close()
+    # display summuries if --verbose is used
+    _print_summaries( kappa_df )
 
     return kappa_df
 
