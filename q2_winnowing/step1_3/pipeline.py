@@ -262,7 +262,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     :return:
     """
 
-    print('In Graph Centrality Function\n')
+    print('In Graph Centrality Function')
 
     data = df.copy()
     conditioned_df = condition(data, cond_type)  # condition data
@@ -317,20 +317,20 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     except ValueError:
         largest_subgraph = networkx.empty_graph()
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
-    print(f"total, {total_nodes}, largest, {nodes_sg}\n")
+    print(f"total, {total_nodes}, largest, {nodes_sg}")
 
     if( nodes_sg <= 0 ):
         percent_connected = 0
     else:
         percent_connected = nodes_sg/total_nodes*100
 
-    print(f"percent connected, {percent_connected}\n")
+    print(f"percent connected, {percent_connected}")
     global connectedness
     connectedness.append((nodes_sg, total_nodes, float(str(round(percent_connected, 2)))))
-    print(f"connectedness, {connectedness}\n")
+    print(f"connectedness, {connectedness}")
 
     if percent_connected == 0 or percent_connected < float(min_connected):
-        print('graph under min connectedness... returning\n')
+        print('graph under min connectedness... returning')
         disjoint = True
         return pd.DataFrame()
     else:
@@ -344,7 +344,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
             try:
                 centrality = networkx.eigenvector_centrality(largest_subgraph)
             except:
-                print('eigenvector failed to converge... returning\n')
+                print('eigenvector failed to converge... returning')
                 disjoint = True
                 return pd.DataFrame()
         else:
@@ -649,7 +649,7 @@ def plot_feature_metric(features ):
 
 
 def log_transfrom_balance(df, cond_type='add_one'):
-    print("In the Log Transfom Balance Function\n")
+    print("In the Log Transfom Balance Function")
 
     data = condition(df.copy(), cond_type)
 
@@ -674,7 +674,7 @@ def log_transfrom_balance(df, cond_type='add_one'):
 
 
 def log_transfrom(df, cond_type='add_one'):
-    print("In the log Transfom Function\n")
+    print("In the log Transfom Function")
 
     conditioned = np.log(condition(df.copy(), cond_type))
     return conditioned

@@ -179,7 +179,7 @@ def _convert_to_dist_hel_matrix( array, length ):
 
     # initialize an empty matrix to fill
     matrix_new = np.zeros( (length, length), dtype=float )
-    # print( len( array ), array.size, "\n" , len( matrix_new ), matrix_new.size )
+    # print( len( array ), array.size, "" , len( matrix_new ), matrix_new.size )
 
     col_index = 0
     row_index = 1
@@ -267,7 +267,7 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False ):
 
         premanova_df.loc[i] = [_pTest, _pOrder, _pAUC, _pSumOfSquares, _pMeanSquares, _pFModel, _pR2, _pPVal, _pNTaxa, _pFModelScale]
 
-        print( f"{i} - {str( radonis[0] )}\n")
+        print( f"{i} - {str( radonis[0] )}")
 
     # This is STEP 4.5
     # Convert F.model to a scaled version of F.model
@@ -276,7 +276,7 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False ):
 
     if( detailed ):
         premanova_df.to_csv( out_file )
-        print( f"Output is Written in File: {str(out_file)} \n\n" )
+        print( f"Output is Written in File: {str(out_file)} " )
 
     return premanova_df
 

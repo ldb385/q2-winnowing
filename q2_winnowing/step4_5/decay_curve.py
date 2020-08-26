@@ -56,7 +56,7 @@ def calc_auc_percentile( input_df ):
             area = raucx(input_df["metric"], input_df.index, interval=rc(1, end_range))
             end_range += 1
 
-        print( f"The point at which we reach {str(round(factor * 100, 2))}% of the AUC is = {str(end_range)}\n" )
+        print( f"The point at which we reach {str(round(factor * 100, 2))}% of the AUC is = {str(end_range)}" )
 
         #2. sum trapezoid areas to get AUC
         result_df.loc[int(round(factor * 100, 2))] = ["auc" + str(int(round(factor * 100, 2)))] + [end_range]

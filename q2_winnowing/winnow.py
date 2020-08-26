@@ -61,6 +61,8 @@ def _verify_output_folders():
     :return: Nothing simply terminate after all folders are verified
     """
 
+    print("Verifying output folders.")
+
     file_path = f"{os.path.dirname(os.path.realpath(__file__))}" # use relative path never absolute.
     # please see README.md for details on folder structure
     pipeline_output = f"{file_path}/step1_3/output"
@@ -90,6 +92,8 @@ def _verify_output_folders():
     if not ( pipeline_cumulative_df is None):
         pipeline_cumulative_df.to_csv( pipeline_cumulative_output, index=False )
 
+    print("Output folders verified.")
+
     return # Nothing function is terminated
 
 
@@ -104,7 +108,6 @@ def _verbose( step ):
     """
 
     if( step == 0 ):
-        print("\nOutput folders verified.\n")
         print("\nBeginning to convert input to dataframes.\n")
     elif( step == 0.5 ):
         print("\nFinished converting input to dataframes.\n")
@@ -143,6 +146,8 @@ def _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centralit
     :param correlation: spearman, pearson, kendall, MIC
     :return: Nothing: Success, Otherwise will terminate process with exception
     """
+
+    print("Verifying Input.")
     if( ab_comp ):
         if( infile2 == None ):
             raise Exception( f"Error: Must provide infile2 in order to perform ab_comp. \n"
@@ -158,6 +163,7 @@ def _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centralit
     else:
         # This is only for when definition is directly called in python, qiime2 will not allow this to be reached.
         raise Exception( f"Error: {metric} is not a valid metric.")
+    print("Input verified/")
     return # Nothing, just signifies termination of function
 
 
@@ -207,10 +213,6 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
 
     # make sure proper file structure is present
     _verify_output_folders()
-
-    out_dir = f"{os.path.dirname(os.path.realpath(__file__))}/output"
-    # allows for cleaner execution and use of relative paths
-
     _verbose( step=0 )
 
     # This will be used as part of the PERMANOVA calculation
