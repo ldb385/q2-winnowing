@@ -16,6 +16,8 @@ def summarize( output_dir: str, data: list ) -> None:
     :return: Standard to have no return in Qiime2 visualizers.
     """
 
+    print( "Separating data.")
+
     feature_ordering, auc_ordering, permanova_ordering = data[0] # Split directory into its parts
 
     # <><><> Allow user to download data <><><>
@@ -29,11 +31,15 @@ def summarize( output_dir: str, data: list ) -> None:
     permanova_ordering_new = os.path.join( output_dir, 'permanova_ordered.tsv')
     permanova_ordering.to_csv( permanova_ordering_new, sep="\t" )
 
+    print( "Retrieving templates.")
+
     # Get html files that will be written to
     index_html = os.path.join( TEMPLATES, "assets", "index.html" )
     feature_ordering_html = os.path.join( TEMPLATES, "assets", "feature_ordered.html" )
     auc_html = os.path.join( TEMPLATES, "assets", "auc.html" )
     permanova_html = os.path.join( TEMPLATES, "assets", "permanova.html" )
+
+    print( "Writing to templates.")
 
     # Write files to output directory
     index_html_new = os.path.join( output_dir, "index.html" )
@@ -44,6 +50,8 @@ def summarize( output_dir: str, data: list ) -> None:
     shutil.copyfile( auc_html, auc_html_new )
     permanova_html_new = os.path.join( output_dir, "permanova.html" )
     shutil.copyfile( permanova_html, permanova_html_new )
+
+    print( "Formatting templates.")
 
     # copy css stylesheets
     css = os.path.join( TEMPLATES, "assets", "css" )
@@ -67,6 +75,7 @@ def summarize( output_dir: str, data: list ) -> None:
     with open( permanova_html_new, "w" ) as f:
         f.write( dataframe_format_string.format( table=permanova_ordering.to_html(classes="style_df")) )
 
+    print( "Finished.")
 
     return # Standard to not return on qiime2 visualizer
 

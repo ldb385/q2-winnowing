@@ -4,7 +4,6 @@ Qiime2 plugin for generating a feature selection of data in order to generate a 
 Diversity and Environmental measures can then be performed on this output to measure the connectivity of the generated winnowed community.</br>
 This plugin was developed in order integrate R and Jupyter code into Python as well as Qiime2.</br>
 </p>
-<b> NOTE THIS IS UNFINISHED </b>
  
 # Installation
 __NOTE: These instructions assume you are working within a terminal. If not in a terminal please open one to follow along.__
@@ -37,8 +36,18 @@ __NOTE: These instructions assume you are working within a conda environment in 
            1. To convert from .csv it is easiest to save as .txt ( tab delimited ) while in MS Excel.
            2. For next steps a good tutorial is https://cduvallet.github.io/posts/2018/03/qiime2-plugin.
                * In tutorial look for:
-               * *biom convert -i test_otu_table.transpose.txt -o test_otu_table.transpose.biom --table-type="OTU table" --to-hdf5*
-               * *qiime tools import --input-path test_otu_table.transpose.biom --type 'FeatureTable[RelativeFrequency]' --input-format BIOMV210Format --output-path test_otu_table.transpose.qza*
+               * <pre>biom convert \
+                    -i test_otu_table.transpose.txt \
+                    -o test_otu_table.transpose.biom \
+                    --table-type="OTU table" \
+                    --to-hdf5
+                 </pre>
+               * <pre>qiime tools import \
+                    --input-path test_otu_table.transpose.biom \
+                    --type 'FeatureTable[RelativeFrequency]' \
+                    --input-format BIOMV210Format \
+                    --output-path test_otu_table.transpose.qza
+                  </pre>
                * __NOTE: FeatureTable\[Frequency] and FeatureTable\[RelativeFrequency] are accepted__
        * The same follows when using --i-infile2.
     * --m-sample-types-file
@@ -55,15 +64,54 @@ __NOTE: These instructions assume you are working within a conda environment in 
          </pre>
     * --m-sample-types-column "Type"
     * __Command Example)__
-        * *qiime winnowing process --i-infile1 __inputFile.qza__ --p-metric graph_centrality --m-sample-types-file __metadata_samples.txt__ --m-sample-types-column Type --p-evaluation kl_divergence --p-min-count 3 --p-conditioning add_one --p-total-select 25 --p-iteration-select {1,4,16,64,128} --p-centrality betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-correlation-prop both --p-detailed --p-verbose --output-dir __./OutFolder__*
+        * <pre>qiime winnowing process \
+             --i-infile1 <b>inputFile.qza</b> \
+             --p-metric graph_centrality \
+             --m-sample-types-file <b>metadata_samples.txt</b> \
+             --m-sample-types-column Type \
+             --p-evaluation kl_divergence \
+             --p-min-count 3 \
+             --p-conditioning add_one \
+             --p-total-select 25 \
+             --p-iteration-select {1,4,16,64,128} \
+             --p-centrality betweenness \
+             --p-keep-threshold 0.5 \
+             --p-correlation spearman \
+             --p-weighted \
+             --p-correlation-prop both \
+             --p-detailed \
+             --p-verbose \
+             --output-dir <b>./OutFolder</b>
+          </pre>
         * --__OR__--
-        * *qiime winnowing process --i-infile1 __inputFile.qza__ --p-metric graph_centrality --m-sample-types-file __metadata_samples.txt__ --m-sample-types-column Type --p-evaluation kl_divergence --p-min-count 3 --p-conditioning add_one --p-total-select 25 --p-iteration-select {1,4,16,64,128} --p-centrality betweenness --p-keep-threshold 0.5 --p-correlation spearman --p-weighted --p-correlation-prop both --p-detailed --p-verbose --o-result __./OutFile__*
+        * <pre>qiime winnowing process \
+             --i-infile1 <b>inputFile.qza</b> \
+             --p-metric graph_centrality \
+             --m-sample-types-file <b>metadata_samples.txt</b> \
+             --m-sample-types-column Type \
+             --p-evaluation kl_divergence \
+             --p-min-count 3 \
+             --p-conditioning add_one \
+             --p-total-select 25 \
+             --p-iteration-select {1,4,16,64,128} \
+             --p-centrality betweenness \
+             --p-keep-threshold 0.5 \
+             --p-correlation spearman \
+             --p-weighted \
+             --p-correlation-prop both \
+             --p-detailed \
+             --p-verbose \
+             --o-result <b>./OutFile</b>
+          </pre>
 
 * *qiime winnowing summarize* 
     * is only used to generate a .qzv artifact from the .qza artifact generated from "qiime winnowing processing".
     * To view the .qzv artifact please drag&drop file into https://view.qiime2.org/ .
     * __Command Example)__
-        * *qiime winnowing summarize --i-data __./output_file.qza__ --o-visualization __./output_visual.qzv__*
+        * <pre>qiime winnowing summarize \
+             --i-data <b>./output_file.qza</b> \
+             --o-visualization <b>./output_visual.qzv</b>
+          </pre>
 
 # File Structure Diagram
 ![q2-winnowing-plugin-structure](https://user-images.githubusercontent.com/55117132/89689299-4e2bc300-d8c1-11ea-9cde-6e6bf7a9764b.png)

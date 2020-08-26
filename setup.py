@@ -1,9 +1,6 @@
 
 from setuptools import setup, find_packages
 
-# NOTE: This is temporary placement and is subject to change
-# Nothing specified should be interpreted as factual or unchangeable
-
 import re
 import ast
 
@@ -16,17 +13,17 @@ with open('q2_winnowing/__init__.py', 'rb') as f:
     __version__ = str(ast.literal_eval(hit))
 
 # setup information of plugin
-# TODO: Change to valid information
 setup(
     name="winnowing",
     version=__version__,
     packages=find_packages(),
     package_data={"": ["auc.html","auc_ordered.tsv","feature_ordered.html","feature_ordered.tsv",
                        "permanova.html","permanova_ordered.tsv","index.html",
-                       "button_formatting.css","dataframe_formatting.css","frame_formatting.css","page_formatting.css"]},
+                       "button_formatting.css","dataframe_formatting.css","frame_formatting.css","page_formatting.css"],
+                  "q2_winnowing": ["citations.bib"]},
     include_package_data=True,
-    author="",
-    author_email="",
+    author="Kevin Stanley",
+    author_email="kgs325@usask.ca",
     description="Used to perform a feature selection on data in order to generate a winnowed community."
                 " Diversity and Environmental measures can then be performed on this output to measure the connectivity"
                 " of the generated winnowed community.",
