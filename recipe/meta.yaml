@@ -39,6 +39,7 @@ requirements:
     - pandas
     - numpy
     - rpy2
+    - shutil
 
 test:
   imports:

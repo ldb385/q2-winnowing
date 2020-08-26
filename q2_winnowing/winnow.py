@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 from pathlib import Path
+import shutil
 
 import qiime2
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
@@ -63,15 +64,31 @@ def _verify_output_folders():
     file_path = f"{os.path.dirname(os.path.realpath(__file__))}" # use relative path never absolute.
     # please see README.md for details on folder structure
     pipeline_output = f"{file_path}/step1_3/output"
+    pipeline_cumulative_output = f"{pipeline_output}/combined_metric_results.csv"
     decay_output = f"{file_path}/step4_5/output"
     permanova_output = f"{file_path}/step6/output"
     jaccard_output = f"{file_path}/step7_9/output"
 
-    # Create output folder if one does not already exists
+    # keep cumulative output from step 1 - 3 *pipeline*
+    pipeline_cumulative_df = None
+    if( os.path.exists( pipeline_cumulative_output )):
+        pipeline_cumulative_df = pd.read_csv( pipeline_cumulative_output, index_col=False )
+
+    # Clear out previous output in folder in order to avoid too much disk usage if exists
+    shutil.rmtree(pipeline_output, ignore_errors=True)
+    shutil.rmtree(decay_output, ignore_errors=True)
+    shutil.rmtree(permanova_output, ignore_errors=True)
+    shutil.rmtree(jaccard_output, ignore_errors=True)
+
+    # Create output folder
     Path(pipeline_output).mkdir( parents=True, exist_ok=True )
     Path(decay_output).mkdir( parents=True, exist_ok=True )
     Path(permanova_output).mkdir( parents=True, exist_ok=True )
     Path(jaccard_output).mkdir( parents=True, exist_ok=True )
+
+    # write cumulative output back into folder
+    if not ( pipeline_cumulative_df is None):
+        pipeline_cumulative_df.to_csv( pipeline_cumulative_output, index=False )
 
     return # Nothing function is terminated
 
