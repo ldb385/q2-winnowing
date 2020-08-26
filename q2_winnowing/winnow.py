@@ -62,14 +62,12 @@ def _verify_output_folders():
 
     file_path = f"{os.path.dirname(os.path.realpath(__file__))}" # use relative path never absolute.
     # please see README.md for details on folder structure
-    winnow_output = f"{file_path}/output"
     pipeline_output = f"{file_path}/step1_3/output"
     decay_output = f"{file_path}/step4_5/output"
     permanova_output = f"{file_path}/step6/output"
     jaccard_output = f"{file_path}/step7_9/output"
 
     # Create output folder if one does not already exists
-    Path(winnow_output).mkdir( parents=True, exist_ok=True )
     Path(pipeline_output).mkdir( parents=True, exist_ok=True )
     Path(decay_output).mkdir( parents=True, exist_ok=True )
     Path(permanova_output).mkdir( parents=True, exist_ok=True )
