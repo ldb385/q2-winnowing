@@ -1,5 +1,5 @@
 # referenced https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html
-{% set name = "winnowing" %}
+{% set name = "q2_winnowing" %}
 {% set version = "20.0.0" %}
 
 package:
@@ -31,12 +31,19 @@ requirements:
     - q2-types
     # Other modules
     - biom-format
+    - minepy
     - seaborn
     - matplotlib
     - networkx
     - scipy
     - pandas
-    - numpy >=1.11
+    - numpy
+    - rpy2
+
+test:
+  imports:
+    - minepy
+    - rpy2
 
 about:
   home: https://github.com/ldb385/q2-winnowing
