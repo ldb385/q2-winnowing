@@ -12,8 +12,7 @@ from ._format import ( WinnowedDirectoryFormat, WinnowedFeatureOrderingFormat,
 from q2_winnowing.winnow import process
 from q2_winnowing._summarize._visualizer import summarize
 
-# cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
-# Note: this can be replaced with a bibliography when the thesis is completed.
+cites = qiime2.plugin.Citations.load("citations.bib", package="q2_winnowing")
 
 # Setup Choice lists for easy accessibility
 # <><><> NOTE: THESE ARE FOR STEPS 1-3 <><><>
@@ -33,6 +32,7 @@ plugin = qiime2.plugin.Plugin(
     version=q2_winnowing.__version__,
     website="https://github.com/ldb385/q2-winnowing",
     package="q2_winnowing",
+    citations=[cites],
     description="A Qiime2 plugin used to perform a feature selection on data in order to generate a winnowed community."
                 " Diversity and Environmental measures can then be performed on this output to measure the connectivity"
                 " of the generated winnowed community.",
