@@ -89,8 +89,7 @@ plugin.methods.register_function(
         "weighted": qiime2.plugin.Bool,
         "correlation_prop": qiime2.plugin.Str % qiime2.plugin.Choices(_CORRELATION_PROPERTIES_),
         "min_connected": qiime2.plugin.Float,
-        "detailed": qiime2.plugin.Bool,
-        "verbose": qiime2.plugin.Bool
+        "detailed": qiime2.plugin.Bool
     },
     parameter_descriptions={
         "name": ("This is the string that will be attached to output files. This is used especially in "
@@ -123,10 +122,7 @@ plugin.methods.register_function(
         "min_connected": (
             "The minimum percentage of connectedness of the graph that should be considered before the winnowing process is aborted. "),
         "detailed": ("Notifies plugin to output diagrams and csv files to each steps respective output folder throughout "
-                     "computation. If not enabled files will not be generated. "),
-        "verbose": ("Notifies plugin to generate dump files for every step. These will contain all data that previously "
-                    "may have been output through print statements during execution. Each dump.txt file is stored in "
-                    "output foleders that correspond with each step. ")
+                     "computation. If not enabled files will not be generated. ")
     },
     output_descriptions={
         "result": ("This is a directory containing an feature ordering based off influential taxom. "

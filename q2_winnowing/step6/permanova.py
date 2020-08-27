@@ -179,7 +179,7 @@ def _convert_to_dist_hel_matrix( array, length ):
 
     # initialize an empty matrix to fill
     matrix_new = np.zeros( (length, length), dtype=float )
-    # print( len( array ), array.size, "\n" , len( matrix_new ), matrix_new.size )
+    # print( len( array ), array.size, "" , len( matrix_new ), matrix_new.size )
 
     col_index = 0
     row_index = 1
@@ -201,7 +201,7 @@ def _convert_to_dist_hel_matrix( array, length ):
 
 
 
-def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, verbose=False, dump=None):
+def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False ):
     """
     Perform ANOVA calculation with permutations
     :param sample_df: Sample that provide data on whether taxom were invaded or natural
@@ -209,14 +209,11 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
     :param auc100_df: abundances generated
     :param out_file: this is the result folder where output is written to if detailed
     :param detailed: Output helper tables
-    :param verbose: Output helper prints
-    :param dump: file were verbose is being written to
     :return: data frame containing calculations performed
     """
 
-    if( verbose ):
-        dump.write( f"Processing Input File: {str(auc_df)} \n") # AUC curves for subsetting
-        dump.write( f"Processing Input file: {str(auc100_df)} \n") # Abundances used for Hellinger
+    print( f"Processing AUC Input File: {str(auc_df)}") # AUC curves for subsetting
+    print( f"Processing Abundances Input file: {str(auc100_df)}") # Abundances used for Hellinger
 
     # Make sure indices begin at 0 so loop works
     auc_df.reset_index( drop=True, inplace=True )
@@ -270,8 +267,7 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
 
         premanova_df.loc[i] = [_pTest, _pOrder, _pAUC, _pSumOfSquares, _pMeanSquares, _pFModel, _pR2, _pPVal, _pNTaxa, _pFModelScale]
 
-        if( verbose ):
-            dump.write( f"{i} - {str( radonis[0] )}\n")
+        print( f"{i} - {str( radonis[0] )}")
 
     # This is STEP 4.5
     # Convert F.model to a scaled version of F.model
@@ -280,16 +276,14 @@ def perform_permanova( auc_df, auc100_df, sample_df, out_file, detailed=False, v
 
     if( detailed ):
         premanova_df.to_csv( out_file )
-
-    if( verbose and detailed ):
-        dump.write( f"Output is Written in File: {str(out_file)} \n\n" )
+        print( f"Output is Written in File: {str(out_file)} " )
 
     return premanova_df
 
 
 
 # <><><> DEFINE EXECUTION FUNCTION <><><>
-def main( auc_ordering, abundances, sample_df, centrality_type, name, detailed=False, verbose=False):
+def main( auc_ordering, abundances, sample_df, centrality_type, name, detailed=False ):
     """
     take in auc, abundance, and sample information and output values with permanova table
     :param auc_ordering: auc ordering generated
@@ -298,7 +292,6 @@ def main( auc_ordering, abundances, sample_df, centrality_type, name, detailed=F
     :param centrality_type: used for generating detailed output ( betweenness, degree, eigenvector, closeness )
     :param name: name attached to all detailed output
     :param detailed: Output helper tables
-    :param verbose: Output helper prints
     :return: table of all values generated during permanova calculation
     """
 
@@ -309,29 +302,12 @@ def main( auc_ordering, abundances, sample_df, centrality_type, name, detailed=F
         out_file = f"{out_dir}/{name}_PERMANOVA_result.csv"
         # Create new files for output
 
-        if( verbose ):
-
-            dump = open(f"{out_dir}/step6_dump.txt", "w", encoding="utf-8")
-
-            # Call PERMANOVA calculation
-            permanova_df = perform_permanova( auc_ordering, abundances, sample_df, out_file, detailed, verbose, dump )
-            dump.write( f"Plots generated to {out_dir}.\n" )
-            dump.close()
-
-        else:
-            # Call PERMANOVA calculation
-            permanova_df = perform_permanova( auc_ordering, abundances, sample_df, out_file, detailed )
+        # Call PERMANOVA calculation
+        permanova_df = perform_permanova( auc_ordering, abundances, sample_df, out_file, detailed )
+        print( f"Plots generated to {out_dir}." )
 
         # Since this is detailed must generate plots
         _generate_figures( permanova_df, centrality_type, out_dir, name )
-
-    elif( verbose ):
-
-        dump = open(f"{out_dir}/step6_dump.txt", "w", encoding="utf-8")
-
-        # Call PERMANOVA calculation
-        permanova_df = perform_permanova( auc_ordering, abundances, sample_df, None, verbose=verbose, dump=dump )
-        dump.close()
 
     else:
         # No excess files necessary just generate dataframe to pass on

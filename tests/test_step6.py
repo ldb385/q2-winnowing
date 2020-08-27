@@ -86,7 +86,7 @@ class Step6Tests( TestCase ):
 
     def test_step6_main(self):
 
-        permanova_output = step6_main( self.auc_df_in, self.abundances_df_in, self.samples_df_in, "", False, False )
+        permanova_output = step6_main( self.auc_df_in, self.abundances_df_in, self.samples_df_in, "", False )
 
         for row in range(0, len(permanova_output) ):
             self.assertEqual(

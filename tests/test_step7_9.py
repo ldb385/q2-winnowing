@@ -85,7 +85,7 @@ class Step7_9Tests( TestCase ):
             metric_results_in = pd.read_csv( metric_results_path )
             jaccard_out = pd.read_csv( jaccard_path, index_col=0 )
 
-            jaccard_result = step7_9_main( metric_results_in, "", False, False )
+            jaccard_result = step7_9_main( metric_results_in, "", False )
 
             for row in range(0, len(jaccard_result)):
                 # <><> verify tables are in proper format <><>

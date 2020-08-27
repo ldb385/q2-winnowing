@@ -40,7 +40,7 @@ class Step4_5Tests( TestCase ):
 
         important_features_path, parameter_path, auc_path = self.testing_data["degree"]
         important_features_in = pd.read_csv( important_features_path )
-        auc_result, auc_param = step4_5_main( important_features_in, "", False, False )
+        auc_result, auc_param = step4_5_main( important_features_in, "", False )
         parameter_out = pd.read_csv( parameter_path, index_col=0 )
         auc_out = pd.read_csv( auc_path, index_col=0 )
         # Read in data as needed to avoid unnecessary memory consumption
@@ -60,7 +60,7 @@ class Step4_5Tests( TestCase ):
 
         important_features_path, parameter_path, auc_path = self.testing_data["closeness"]
         important_features_in = pd.read_csv( important_features_path )
-        auc_result, auc_param = step4_5_main( important_features_in, "", False, False )
+        auc_result, auc_param = step4_5_main( important_features_in, "", False )
         parameter_out = pd.read_csv( parameter_path, index_col=0 )
         auc_out = pd.read_csv( auc_path, index_col=0 )
         # Read in data as needed to avoid unnecessary memory consumption
@@ -80,7 +80,7 @@ class Step4_5Tests( TestCase ):
 
         important_features_path, parameter_path, auc_path = self.testing_data["eigenvector"]
         important_features_in = pd.read_csv( important_features_path )
-        auc_result, auc_param = step4_5_main( important_features_in, "", False, False )
+        auc_result, auc_param = step4_5_main( important_features_in, "", False )
         parameter_out = pd.read_csv( parameter_path, index_col=0 )
         auc_out = pd.read_csv( auc_path, index_col=0 )
         # Read in data as needed to avoid unnecessary memory consumption
@@ -100,7 +100,7 @@ class Step4_5Tests( TestCase ):
 
         important_features_path, parameter_path, auc_path = self.testing_data["betweeness"]
         important_features_in = pd.read_csv( important_features_path )
-        auc_result, auc_param = step4_5_main( important_features_in, "", False, False )
+        auc_result, auc_param = step4_5_main( important_features_in, "", False )
         parameter_out = pd.read_csv( parameter_path, index_col=0 )
         auc_out = pd.read_csv( auc_path, index_col=0 )
         # Read in data as needed to avoid unnecessary memory consumption

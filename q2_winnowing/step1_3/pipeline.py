@@ -24,11 +24,7 @@ global outdir
 global disjoint
 global connectedness
 
-
-# Verbose global will help prevent not necessary graphs from always being generated
-global verbose
-global dump
-
+global detailed_
 
 def remove_min_count(df, min_count):
     """
@@ -266,8 +262,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     :return:
     """
 
-    if (verbose):
-        dump.write('In Graph Centrality Function\n')
+    print('In Graph Centrality Function')
 
     data = df.copy()
     conditioned_df = condition(data, cond_type)  # condition data
@@ -322,25 +317,20 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
     except ValueError:
         largest_subgraph = networkx.empty_graph()
     nodes_sg = networkx.number_of_nodes(largest_subgraph)
-
-    if (verbose):
-        dump.write(f"total, {total_nodes}, largest, {nodes_sg}\n")
+    print(f"total, {total_nodes}, largest, {nodes_sg}")
 
     if( nodes_sg <= 0 ):
         percent_connected = 0
     else:
         percent_connected = nodes_sg/total_nodes*100
 
-    if (verbose):
-        dump.write(f"percent connected, {percent_connected}\n")
+    print(f"percent connected, {percent_connected}")
     global connectedness
     connectedness.append((nodes_sg, total_nodes, float(str(round(percent_connected, 2)))))
-    if (verbose):
-        dump.write(f"connectedness, {connectedness}\n")
+    print(f"connectedness, {connectedness}")
 
     if percent_connected == 0 or percent_connected < float(min_connected):
-        if (verbose):
-            dump.write('graph under min connectedness... returning\n')
+        print('graph under min connectedness... returning')
         disjoint = True
         return pd.DataFrame()
     else:
@@ -354,8 +344,7 @@ def graph_centrality(df, cent_type='betweenness', keep_thresh=0.5, cond_type='ad
             try:
                 centrality = networkx.eigenvector_centrality(largest_subgraph)
             except:
-                if (verbose):
-                    dump.write('eigenvector failed to converge... returning\n')
+                print('eigenvector failed to converge... returning')
                 disjoint = True
                 return pd.DataFrame()
         else:
@@ -635,7 +624,7 @@ def create_ecological_network(df, data ):
 
     metric_matrix.to_csv(os.path.join(outdir, "Metric Network.csv"))
 
-    if (verbose):
+    if (detailed_):
         plt.figure()
         plt.title("Feature Metric Heatmap")
         plt.tight_layout()
@@ -660,8 +649,7 @@ def plot_feature_metric(features ):
 
 
 def log_transfrom_balance(df, cond_type='add_one'):
-    if (verbose):
-        dump.write("In the Log Transfom Balance Function\n")
+    print("In the Log Transfom Balance Function")
 
     data = condition(df.copy(), cond_type)
 
@@ -686,8 +674,7 @@ def log_transfrom_balance(df, cond_type='add_one'):
 
 
 def log_transfrom(df, cond_type='add_one'):
-    if( verbose ):
-        dump.write("In the log Transfom Function\n")
+    print("In the log Transfom Function")
 
     conditioned = np.log(condition(df.copy(), cond_type))
     return conditioned
@@ -697,15 +684,12 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
          total_select, iteration_select, pca_components, smooth_type,
          window_size, centrality_type, keep_threshold, correlation,
          weighted, corr_prop, evaluation_type, min_connected,
-         detailed=False, verbose_p=False):
-
-    global dump
-    dump = open(f"{os.path.dirname(os.path.realpath(__file__))}/output/step1_3-{iteration_select}_dump.txt", "w", encoding="utf-8")  # Overwrite file to new empty
+         detailed=False ):
 
     t_start = time.perf_counter()
 
-    global verbose # Using global since this will not change and passing verbose to all methods will be confusing
-    verbose = verbose_p
+    global detailed_ # Using global since this will not change and passing detailed_ to all methods will be confusing
+    detailed_ = detailed
 
     # read the file(s) into a pandas dataframe and condition it
     dataframe1.reset_index( drop=True, inplace=True )
@@ -739,7 +723,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
         data_file = pd.concat([dataframe2, dataframe1])
 
-        if( detailed ):
+        if( detailed_ ):
             metric_filename = f"{dataframe1.name}-{dataframe2.name}-results.csv"
             abundance_filename = f"{dataframe1.name}-{dataframe2.name}-abundances.csv"
 
@@ -755,7 +739,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
         data_file = dataframe1
 
-        if( detailed ):
+        if( detailed_ ):
             metric_filename = f"{dataframe1.name}-importantFeatures.csv"
             abundance_filename = f"{dataframe1.name}-abundances.csv"
 
@@ -804,13 +788,13 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     #     feature_abundances = name_feature_list(feature_abundances, naming_file)
 
     # Create graphs if wanted
-    if detailed:
+    if detailed_:
         # plot_metric
         plot_feature_metric(important_features )
-    if detailed and (metric == pca_importance or metric == pca_abundance):
+    if detailed_ and (metric == pca_importance or metric == pca_abundance):
         # plot_pca
         create_pca_plot(important_features )
-    if detailed and metric == graph_centrality:
+    if detailed_ and metric == graph_centrality:
         # graph centrality
         plot_graph_centrality(feature_abundances, c_type, correlation, corr_prop, keep_threshold, weighted )
 
@@ -826,7 +810,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
 
     # get the abundances for each of the important features and write those to a new file
     # print('final important features', important_features)
-    if( detailed ):
+    if( detailed_ ):
         # if files exist just append row to them, else want to keep the headers
         metric_path = os.path.join(outdir, f"metric_results.csv")
         if( os.path.exists( metric_path )):
@@ -835,13 +819,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
                 writer.writerow(feature_row)
         else:
             feature_df.to_csv( metric_path, index=False )
-        combined_metric_path = os.path.join( resultsOutdir, 'combined_metric_results.csv')
-        if( os.path.exists( combined_metric_path )):
-            with open( combined_metric_path, 'a') as f:
-                writer = csv.writer(f)
-                writer.writerow(feature_row)
-        else:
-            feature_df.to_csv( combined_metric_path, index=False )
+
         # rewrite these since it's entire output
         important_features.to_csv(os.path.join(outdir, metric_filename))
         feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)
@@ -867,7 +845,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
                       'runtime': runtime, 'min_connected': min_connected,
                       'connectedness': connectedness}
 
-    if( detailed ):
+    if( detailed_ ):
         parameter_df = pd.DataFrame(list(param_dict.items()),
                                     columns=['Parameter', 'Values'])
         param_filename = f'parameter_list.csv'
@@ -877,9 +855,6 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
     feature_df.reset_index( drop=True, inplace=True )
     important_features.reset_index( drop=True, inplace=True )
     feature_abundances.reset_index( drop=True, inplace=True )
-
-    dump.write("\n\n") # for easier readability
-    dump.close()
 
     return ( feature_df, important_features, feature_abundances )
 

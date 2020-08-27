@@ -54,7 +54,7 @@ class Step1_3Tests( TestCase ):
                           total_select=25, iteration_select=128, pca_components=4, smooth_type="sliding_window",
                           window_size=3, centrality_type="betweenness", keep_threshold=0.5, correlation="spearman",
                           weighted=True, corr_prop="both", evaluation_type="kl_divergence", min_connected=0,
-                          detailed=False, verbose_p=False )
+                          detailed=False )
 
         run_out = features_out.pop("run time")
         run_result = features_result.pop("run time")
@@ -95,7 +95,7 @@ class Step1_3Tests( TestCase ):
                          window_size=3, centrality_type="degree", keep_threshold=0.5,
                          correlation="spearman",
                          weighted=True, corr_prop="both", evaluation_type="kl_divergence", min_connected=0,
-                         detailed=False, verbose_p=False)
+                         detailed=False )
 
         run_out = features_out.pop("run time")
         run_result = features_result.pop("run time")
@@ -136,7 +136,7 @@ class Step1_3Tests( TestCase ):
                          window_size=3, centrality_type="eigenvector", keep_threshold=0.5,
                          correlation="spearman",
                          weighted=True, corr_prop="both", evaluation_type="kl_divergence", min_connected=0,
-                         detailed=False, verbose_p=False)
+                         detailed=False )
 
         run_out = features_out.pop("run time")
         run_result = features_result.pop("run time")
@@ -177,7 +177,7 @@ class Step1_3Tests( TestCase ):
                          window_size=3, centrality_type="closeness", keep_threshold=0.5,
                          correlation="spearman",
                          weighted=True, corr_prop="both", evaluation_type="kl_divergence", min_connected=0,
-                         detailed=False, verbose_p=False)
+                         detailed=False )
 
         run_out = features_out.pop("run time")
         run_result = features_result.pop("run time")
