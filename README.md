@@ -12,9 +12,8 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
     * If you have a qiime2 environment created activate with "source activate __env_name__".
         * Ex) If environment is named "qiime2-dev" use *source activate qiime2-dev*
 1. winnowing packages can be accessed through Conda and Git
-    1. Install using Conda.
-        1. <pre>conda config --add channels ldb385
-           conda install q2-winnowing
+    1. Install using Conda. https://anaconda.org/ldb385/q2-winnowing
+        1. <pre>conda install -c ldb385 q2-winnowing
         </pre>
     1. Install using Git.
         1. Clone plugin repo in desired location.
