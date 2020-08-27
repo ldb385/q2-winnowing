@@ -44,7 +44,7 @@ __NOTE: These instructions assume you are working within a conda environment in 
                  </pre>
                * <pre>qiime tools import \
                     --input-path test_otu_table.transpose.biom \
-                    --type 'FeatureTable[RelativeFrequency]' \
+                    --type 'FeatureTable[Frequency]' \
                     --input-format BIOMV210Format \
                     --output-path test_otu_table.transpose.qza
                   </pre>
@@ -80,8 +80,8 @@ __NOTE: These instructions assume you are working within a conda environment in 
              --p-weighted \
              --p-correlation-prop both \
              --p-detailed \
-             --p-verbose \
-             --output-dir <b>./OutFolder</b>
+             --output-dir <b>./OutFolder</b> \
+             --verbose
           </pre>
         * --__OR__--
         * <pre>qiime winnowing process \
@@ -100,8 +100,8 @@ __NOTE: These instructions assume you are working within a conda environment in 
              --p-weighted \
              --p-correlation-prop both \
              --p-detailed \
-             --p-verbose \
-             --o-result <b>./OutFile</b>
+             --o-result <b>./OutFile</b> \
+             --verbose
           </pre>
 
 * *qiime winnowing summarize* 
@@ -110,7 +110,8 @@ __NOTE: These instructions assume you are working within a conda environment in 
     * __Command Example)__
         * <pre>qiime winnowing summarize \
              --i-data <b>./output_file.qza</b> \
-             --o-visualization <b>./output_visual.qzv</b>
+             --o-visualization <b>./output_visual.qzv</b> \
+             --verbose
           </pre>
 
 # File Structure Diagram
