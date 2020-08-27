@@ -819,13 +819,7 @@ def main(ab_comp, dataframe1, dataframe2, metric_name, c_type, min_count,
                 writer.writerow(feature_row)
         else:
             feature_df.to_csv( metric_path, index=False )
-        combined_metric_path = os.path.join( resultsOutdir, 'combined_metric_results.csv')
-        if( os.path.exists( combined_metric_path )):
-            with open( combined_metric_path, 'a') as f:
-                writer = csv.writer(f)
-                writer.writerow(feature_row)
-        else:
-            feature_df.to_csv( combined_metric_path, index=False )
+
         # rewrite these since it's entire output
         important_features.to_csv(os.path.join(outdir, metric_filename))
         feature_abundances.to_csv(os.path.join(outdir, abundance_filename), index=False)

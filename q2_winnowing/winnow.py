@@ -4,8 +4,8 @@ import biom
 import numpy as np
 import pandas as pd
 import os
-from pathlib import Path
 import shutil
+import csv
 
 import qiime2
 from qiime2.plugin import Bool, Str, Int, Float, MetadataColumn, Set
@@ -61,20 +61,14 @@ def _verify_output_folders():
     :return: Nothing simply terminate after all folders are verified
     """
 
-    print("Verifying output folders.")
+    print("######## Verifying output folders. ########")
 
     file_path = f"{os.path.dirname(os.path.realpath(__file__))}" # use relative path never absolute.
     # please see README.md for details on folder structure
     pipeline_output = f"{file_path}/step1_3/output"
-    pipeline_cumulative_output = f"{pipeline_output}/combined_metric_results.csv"
     decay_output = f"{file_path}/step4_5/output"
     permanova_output = f"{file_path}/step6/output"
     jaccard_output = f"{file_path}/step7_9/output"
-
-    # keep cumulative output from step 1 - 3 *pipeline*
-    pipeline_cumulative_df = None
-    if( os.path.exists( pipeline_cumulative_output )):
-        pipeline_cumulative_df = pd.read_csv( pipeline_cumulative_output, index_col=False )
 
     # Clear out previous output in folder in order to avoid too much disk usage if exists
     shutil.rmtree(pipeline_output, ignore_errors=True)
@@ -83,16 +77,12 @@ def _verify_output_folders():
     shutil.rmtree(jaccard_output, ignore_errors=True)
 
     # Create output folder
-    Path(pipeline_output).mkdir( parents=True, exist_ok=True )
-    Path(decay_output).mkdir( parents=True, exist_ok=True )
-    Path(permanova_output).mkdir( parents=True, exist_ok=True )
-    Path(jaccard_output).mkdir( parents=True, exist_ok=True )
+    os.mkdir( pipeline_output )
+    os.mkdir( decay_output)
+    os.mkdir( permanova_output)
+    os.mkdir( jaccard_output)
 
-    # write cumulative output back into folder
-    if not ( pipeline_cumulative_df is None):
-        pipeline_cumulative_df.to_csv( pipeline_cumulative_output, index=False )
-
-    print("Output folders verified.")
+    print("######## Output folders verified. ########")
 
     return # Nothing function is terminated
 
@@ -108,27 +98,27 @@ def _verbose( step ):
     """
 
     if( step == 0 ):
-        print("\nBeginning to convert input to dataframes.\n")
+        print("\n######## Beginning to convert input to dataframes. ########\n")
     elif( step == 0.5 ):
-        print("\nFinished converting input to dataframes.\n")
+        print("\n######## Finished converting input to dataframes. ########\n")
     elif( step == 1 ):
-        print("\nStarting steps 1 to 3 *pipeline*\n")
+        print("\n######## Starting steps 1 to 3 *pipeline* ########\n")
     elif( step == 1.5 ):
-        print("\nUnable to generate feature ordering, moving to next iteration.\n")
+        print("\n######## Unable to generate feature ordering, moving to next iteration. ########\n")
     elif( step == 4 ): # assume starting of step 4 is end of step 1 - 3
-        print("\nFinished steps 1 to 3 *pipeline*.\nStarting steps 4 to 5 *AUC calculation*\n")
+        print("\n######## Finished steps 1 to 3 *pipeline*. ########\n######## Starting steps 4 to 5 *AUC calculation* ########\n")
     elif( step == 6 ): # assume starting of step 6 is end of step 4 - 5
-        print("\nFinished steps 4 to 5 *AUC calculation*.\nStarting step 6 *PERMANOVA calculation*.\n")
+        print("\n######## Finished steps 4 to 5 *AUC calculation*. ########\n######## Starting step 6 *PERMANOVA calculation*. ########\n")
     elif( step == 6.5 ):
-        print("\nFinished step 6 *PERMANOVA calculation*.\n")
+        print("\n######## Finished step 6 *PERMANOVA calculation*. ########\n")
     elif( step == 7 ):
-        print("\nStarting steps 7 to 9 *Jaccard calculation*.\n")
+        print("\n######## Starting steps 7 to 9 *Jaccard calculation*. ########\n")
     elif( step == 10 ):
         print(
-            "\nOutput for each winnowing step is written to the respective output folder within each step folder \n"
+            "\n######## Output for each winnowing step is written to the respective output folder within each step folder \n"
             "Example is results form PERMANOVA calculation is written to 'q2_winnowing/step6/output'.\n"
-            "\tThis applies for each step.")
-        print("\nWinnow processing finished.\n")
+            "\tThis applies for each step. ########")
+        print("\n######## Winnow processing finished. ########\n")
 
     return # Nothing just signifies termination of function
 
@@ -147,7 +137,7 @@ def _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centralit
     :return: Nothing: Success, Otherwise will terminate process with exception
     """
 
-    print("Verifying Input.")
+    print("######## Verifying Input. ########")
     if( ab_comp ):
         if( infile2 == None ):
             raise Exception( f"Error: Must provide infile2 in order to perform ab_comp. \n"
@@ -163,7 +153,7 @@ def _verify_input_is_provided( metric, conditioning, ab_comp, infile2, centralit
     else:
         # This is only for when definition is directly called in python, qiime2 will not allow this to be reached.
         raise Exception( f"Error: {metric} is not a valid metric.")
-    print("Input verified/")
+    print("######## Input verified. ########")
     return # Nothing, just signifies termination of function
 
 
@@ -208,6 +198,7 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
     :return: return a list of single item with artifact see artifact generation for details on why this is done
     """
 
+    print("\n############################# START #############################")
     if iteration_select is None: # Since default parameter can't be mutable
         iteration_select = {1, 4, 16, 64, 128}
 
