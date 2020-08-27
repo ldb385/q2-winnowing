@@ -115,7 +115,7 @@ __NOTE: These instructions assume you are working within a conda environment in 
           </pre>
 
 # File Structure Diagram
-![q2-winnowing-plugin-structure](https://user-images.githubusercontent.com/55117132/89689299-4e2bc300-d8c1-11ea-9cde-6e6bf7a9764b.png)
+![q2-winnowing-plugin-structure](https://user-images.githubusercontent.com/55117132/91479374-9144da80-e85e-11ea-9f62-f704b210efb2.png)
 
 # Versions
 <ul>
