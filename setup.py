@@ -22,7 +22,7 @@ setup(
                        "button_formatting.css","dataframe_formatting.css","frame_formatting.css","page_formatting.css"],
                   "q2_winnowing": ["citations.bib"]},
     include_package_data=True,
-    author="Kevin Stanley",
+    author="Kevin Stanley and Liam Bigelow",
     author_email="kgs325@usask.ca",
     description="Used to perform a feature selection on data in order to generate a winnowed community."
                 " Diversity and Environmental measures can then be performed on this output to measure the connectivity"
