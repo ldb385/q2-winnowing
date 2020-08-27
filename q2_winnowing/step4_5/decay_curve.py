@@ -69,7 +69,6 @@ def calc_auc_percentile( input_df ):
     return result_df, parameter_df.iloc[1:, :]
 
 
-
 # <><><> DEFINE EXECUTION FUNCTION <><><>
 
 
