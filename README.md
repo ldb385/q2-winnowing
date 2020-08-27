@@ -11,15 +11,18 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
     * See https://docs.qiime2.org/2020.6/install/ for more information. I recommend using a VM if plugin is being tested or git is being forked.
     * If you have a qiime2 environment created activate with "source activate __env_name__".
         * Ex) If environment is named "qiime2-dev" use *source activate qiime2-dev*
-1. Clone plugin repo in desired location.
-    * Run *git clone 'https://github.com/ldb385/q2-winnowing.git'* in desired directory. --__OR__-- Download and unzip zip file in desired directory.
-1. Navigate to inside directory.
-    * Run *cd q2-winnowing* if git was copied into current working directory ( check with "ls" if unsure if it is in CWD ).
-1. *make install*   --__OR__--   *python setup.py install*
-    * If error please run python plugin_setup.py.
-    * If qiime2 does not import it is likely an issue with PYTHONPATH or conda environment.
-    * See qiime2 documentation for more information https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/.
-1. Run *pip install minepy*
+1. winnowing packages can be accessed through Conda and Git
+    1. Install using Conda.
+    1. Install using Git.
+        1. Clone plugin repo in desired location.
+            * Run *git clone 'https://github.com/ldb385/q2-winnowing.git'* in desired directory. --__OR__-- Download and unzip zip file in desired directory.
+        1. Navigate to inside directory.
+            * Run *cd q2-winnowing* if git was copied into current working directory ( check with "ls" if unsure if it is in CWD ).
+        1. *make install*   --__OR__--   *python setup.py install*
+            * If error please run python plugin_setup.py.
+            * If qiime2 does not import it is likely an issue with PYTHONPATH or conda environment.
+            * See qiime2 documentation for more information https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/.
+1. Run *pip install minepy* and *pip install rpy2*
     * Other libraries used are:
         * seaborn, matplotlib, sklearn, networkx, scipy, pandas, and numpy
 1. Run *qiime winnowing*
@@ -125,3 +128,5 @@ __NOTE: These instructions assume you are working within a conda environment in 
 # Useful Resources
 * Qiime2 User Documentation: https://docs.qiime2.org/2020.6/
 * Biom Format Documentation: https://biom-format.org/documentation/biom_conversion.html
+* Anaconda Documentation: https://docs.anaconda.com/anaconda-cloud/user-guide/tasks/work-with-packages/
+
