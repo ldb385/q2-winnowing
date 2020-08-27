@@ -47,5 +47,5 @@ test:
 
 about:
   home: https://github.com/ldb385/q2-winnowing
-  license: BSD
+  license: BSD-3-Clause
   license_family: BSD
