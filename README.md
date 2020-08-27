@@ -13,6 +13,9 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
         * Ex) If environment is named "qiime2-dev" use *source activate qiime2-dev*
 1. winnowing packages can be accessed through Conda and Git
     1. Install using Conda.
+        1. <pre>conda config --add channels ldb385
+           conda install q2-winnowing
+        </pre>
     1. Install using Git.
         1. Clone plugin repo in desired location.
             * Run *git clone 'https://github.com/ldb385/q2-winnowing.git'* in desired directory. --__OR__-- Download and unzip zip file in desired directory.
@@ -22,7 +25,9 @@ __NOTE: These instructions assume you are working within a terminal. If not in a
             * If error please run python plugin_setup.py.
             * If qiime2 does not import it is likely an issue with PYTHONPATH or conda environment.
             * See qiime2 documentation for more information https://dev.qiime2.org/latest/tutorials/first-plugin-tutorial/.
-1. Run *pip install minepy* and *pip install rpy2*
+1. <pre>pip install minepy
+   pip install rpy2
+   </pre>
     * Other libraries used are:
         * seaborn, matplotlib, sklearn, networkx, scipy, pandas, and numpy
 1. Run *qiime winnowing*
