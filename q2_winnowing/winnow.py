@@ -304,6 +304,7 @@ def process( infile1: biom.Table, sample_types: MetadataColumn, metric: Str, con
 
     # Notify user of output path
     _verbose( step=10 )
+    print(f"Please see:\n\t{os.path.dirname(os.path.realpath(__file__))}\nfolder for detailed output.")
     print("############################# DONE #############################")
 
     # assemble output and return as artifact
