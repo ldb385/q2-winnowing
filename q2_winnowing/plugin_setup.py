@@ -3,7 +3,7 @@ import importlib
 
 import qiime2.plugin
 from qiime2.plugin import MetadataColumn, Categorical
-from q2_types.feature_table import FeatureTable, RelativeFrequency, Frequency
+from q2_types.feature_table import FeatureTable, Frequency
 
 import q2_winnowing
 from ._type import Winnowed
@@ -59,8 +59,8 @@ plugin.methods.register_function(
     description=("Perform a feature selection to get the winnowed community."),
     function=process,
     inputs={
-        "infile1": FeatureTable[Frequency | RelativeFrequency ],
-        "infile2": FeatureTable[Frequency | RelativeFrequency ]
+        "infile1": FeatureTable[Frequency],
+        "infile2": FeatureTable[Frequency]
     },
     outputs=[
         ("result", Winnowed )
