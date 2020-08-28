@@ -55,7 +55,6 @@ __NOTE: These instructions assume you are working within a conda environment in 
                     --input-format BIOMV210Format \
                     --output-path test_otu_table.transpose.qza
                   </pre>
-               * __NOTE: FeatureTable\[Frequency] and FeatureTable\[RelativeFrequency] are accepted__
        * The same follows when using --i-infile2.
     * --m-sample-types-file
        * This is the path to the .txt metadata ( tab delimited ). Format is:
